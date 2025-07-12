@@ -148,11 +148,23 @@
     flex-wrap: wrap;
   }
 
-  /* Make all social icons black */
-.social-icons .icon-link i {
-  color: black;
-  font-size: 1.5em;
-}
+  .icon-link {
+    font-size: 1.8rem;
+    color: black;
+    margin-right: 1rem;
+    transition: color 0.3s ease;
+  }
+
+  .icon-link:hover {
+    color: gray;
+  }
+
+  .social-icons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+  }
 
   
   .footer {
@@ -161,5 +173,19 @@
     padding: 2rem 0;
     text-align: center;
     font-size: 0.9rem;
+  }
+
+  .hero-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .profile-pic {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
   
