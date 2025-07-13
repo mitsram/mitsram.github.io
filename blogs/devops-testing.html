@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Continuous Testing in DevOps Pipelines | mitsram</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <h1>mitsram</h1>
+      <nav>
+        <a href="index.html#about">About</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#contact">Contact</a>
+        <a href="index.html" style="color: var(--primary);">Blogs</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="blog-container">
+      <aside class="blog-sidebar">
+        <h2>All Articles</h2>
+        <ul class="blog-list">
+          <li class="blog-item">
+            <a href="scalable-frameworks.html" class="blog-link">
+              <div class="blog-title">Building Scalable Test Automation Frameworks</div>
+              <div class="blog-date">June 15, 2025</div>
+            </a>
+          </li>
+          <li class="blog-item">
+            <a href="ai-testing.html" class="blog-link">
+              <div class="blog-title">The Future of AI in Software Testing</div>
+              <div class="blog-date">May 28, 2025</div>
+            </a>
+          </li>
+          <li class="blog-item">
+            <a href="clean-architecture.html" class="blog-link">
+              <div class="blog-title">Clean Architecture in Test Automation</div>
+              <div class="blog-date">April 12, 2025</div>
+            </a>
+          </li>
+          <li class="blog-item active">
+            <a href="devops-testing.html" class="blog-link">
+              <div class="blog-title">Continuous Testing in DevOps Pipelines</div>
+              <div class="blog-date">March 22, 2025</div>
+            </a>
+          </li>
+        </ul>
+      </aside>
+      
+      <div class="blog-content">
+        <article class="blog-post">
+          <h2>Continuous Testing in DevOps Pipelines</h2>
+          <div class="post-meta">
+            <span class="date">March 22, 2025</span>
+            <div class="tags">
+              <span class="tag">DevOps</span>
+              <span class="tag">CI/CD</span>
+              <span class="tag">Automation</span>
+            </div>
+          </div>
+          
+          <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="DevOps pipeline">
+          
+          <p>Integrating continuous testing into DevOps pipelines is essential for achieving rapid, reliable software delivery. In this article, we'll explore strategies for implementing effective testing at every stage of the CI/CD pipeline.</p>
+          
+          <h3>The Testing Pyramid in DevOps</h3>
+          <p>Optimizing test distribution across the pipeline:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-terminal"></i>
+                <span>Pipeline Test Distribution</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-bash"># Pipeline Stage: Commit
+# Run: Unit tests, static analysis
+npm run test:unit
+npm run lint
+
+# Pipeline Stage: Build
+# Run: Integration tests, security scans
+npm run test:integration
+npm run security-scan
+
+# Pipeline Stage: Staging Deployment
+# Run: API tests, contract tests
+npm run test:api
+npm run test:contract
+
+# Pipeline Stage: Pre-Production
+# Run: End-to-end tests, performance tests
+npm run test:e2e
+npm run test:performance
+
+# Pipeline Stage: Production
+# Run: Synthetic monitoring, canary tests
+npm run monitor:synthetic
+npm run test:canary</code></pre>
+            </div>
+          </div>
+          
+          <h3>GitHub Actions Pipeline</h3>
+          <p>Full CI/CD pipeline with integrated testing:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fab fa-github"></i>
+                <span>GitHub Actions - CI/CD Pipeline</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-yaml">name: Continuous Deployment Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run unit tests
+      run: npm run test:unit
+      
+    - name: Run integration tests
+      run: npm run test:integration
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: production-build
+        path: dist/
+        
+  deploy-to-staging:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: production-build
+        
+    - name: Deploy to staging
+      run: npm run deploy:staging
+      
+    - name: Run API tests
+      run: npm run test:api -- --env=staging
+      
+    - name: Run E2E tests
+      run: npm run test:e2e -- --env=staging
+      
+  deploy-to-production:
+    needs: deploy-to-staging
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: production-build
+        
+    - name: Deploy to production
+      run: npm run deploy:production
+      
+    - name: Run smoke tests
+      run: npm run test:smoke -- --env=production
+      
+    - name: Start synthetic monitoring
+      run: npm run monitor:synthetic</code></pre>
+            </div>
+          </div>
+          
+          <h3>Parallel Test Execution</h3>
+          <p>Running tests in parallel for faster feedback:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-terminal"></i>
+                <span>Command Line - Parallel Execution</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-bash"># Run tests in parallel across 4 containers
+npm run test:parallel -- --shard=1/4
+npm run test:parallel -- --shard=2/4
+npm run test:parallel -- --shard=3/4
+npm run test:parallel -- --shard=4/4
+
+# Alternative: Using a test runner with built-in parallelization
+npx playwright test --workers=4
+
+# Docker-based parallel execution
+docker run -e SHARD=1 -e TOTAL_SHARDS=4 test-automation
+docker run -e SHARD=2 -e TOTAL_SHARDS=4 test-automation
+docker run -e SHARD=3 -e TOTAL_SHARDS=4 test-automation
+docker run -e SHARD=4 -e TOTAL_SHARDS=4 test-automation</code></pre>
+            </div>
+          </div>
+          
+          <h3>Test Environment Management</h3>
+          <p>Managing ephemeral test environments:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-terminal"></i>
+                <span>Environment Management Commands</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-bash"># Create ephemeral environment
+npm run env:create -- --branch=feature/new-checkout
+
+# Output:
+# Environment created: https://feature-new-checkout.staging.example.com
+# Expires in: 6 hours
+
+# Run tests against environment
+npm run test:e2e -- --env=feature-new-checkout
+
+# Destroy environment after testing
+npm run env:destroy -- --env=feature-new-checkout
+
+# List active environments
+npm run env:list
+
+# Extend environment lifetime
+npm run env:extend -- --env=feature-new-checkout --hours=2</code></pre>
+            </div>
+          </div>
+          
+          <h3>Test Result Analysis</h3>
+          <p>Analyzing and visualizing test results:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-terminal"></i>
+                <span>Test Reporting Commands</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-bash"># Generate HTML test report
+npm run report:html -- --input=results/ --output=reports/
+
+# Generate JUnit XML report
+npm run report:junit -- --input=results/ --output=reports/junit.xml
+
+# Generate dashboard metrics
+npm run report:dashboard -- \
+  --junit=reports/junit.xml \
+  --coverage=coverage/ \
+  --performance=perf-results/ \
+  --output=dashboard.html
+
+# Send results to test management system
+npm run report:upload -- \
+  --format=xray \
+  --project=ECOMM \
+  --results=reports/junit.xml</code></pre>
+            </div>
+          </div>
+          
+          <h3>Performance Testing in Pipeline</h3>
+          <p>Automated performance testing:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-terminal"></i>
+                <span>Performance Testing Commands</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-bash"># Run performance test with 100 users
+npm run test:perf -- --users=100 --duration=5m
+
+# Compare against baseline
+npm run perf:compare -- \
+  --current=perf-results/run-20250322 \
+  --baseline=perf-results/baseline \
+  --threshold=10% \
+  --output=perf-report.html
+
+# Generate SLA report
+npm run perf:sla -- \
+  --input=perf-results/run-20250322 \
+  --sla=response_time:95percentile<2000 \
+  --sla=error_rate<0.5% \
+  --output=sla-report.md
+
+# Set new performance baseline
+npm run perf:baseline -- --set=perf-results/run-20250322</code></pre>
+            </div>
+          </div>
+          
+          <h3>Security Scanning</h3>
+          <p>Integrating security tests into the pipeline:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-terminal"></i>
+                <span>Security Testing Commands</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-bash"># Run static application security testing (SAST)
+npm run security:sast -- --format=sarif --output=sast-results.sarif
+
+# Run dependency scanning
+npm run security:dependencies -- --output=dependency-report.json
+
+# Run dynamic application security testing (DAST)
+npm run security:dast -- --target=https://staging.example.com
+
+# Run container scanning
+npm run security:container -- --image=my-app:latest
+
+# Generate security dashboard
+npm run security:dashboard -- \
+  --sast=sast-results.sarif \
+  --dependencies=dependency-report.json \
+  --dast=dast-results.json \
+  --container=container-scan.json \
+  --output=security-report.html</code></pre>
+            </div>
+          </div>
+          
+          <a href="index.html" class="back-to-blog">
+            <i class="fas fa-arrow-left"></i> Back to All Blogs
+          </a>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      &copy; 2025 mitsram. All rights reserved.
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+</body>
+</html>

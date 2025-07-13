@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clean Architecture in Test Automation | mitsram</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <h1>mitsram</h1>
+      <nav>
+        <a href="index.html#about">About</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#contact">Contact</a>
+        <a href="index.html" style="color: var(--primary);">Blogs</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="blog-container">
+      <aside class="blog-sidebar">
+        <h2>All Articles</h2>
+        <ul class="blog-list">
+          <li class="blog-item">
+            <a href="scalable-frameworks.html" class="blog-link">
+              <div class="blog-title">Building Scalable Test Automation Frameworks</div>
+              <div class="blog-date">June 15, 2025</div>
+            </a>
+          </li>
+          <li class="blog-item">
+            <a href="ai-testing.html" class="blog-link">
+              <div class="blog-title">The Future of AI in Software Testing</div>
+              <div class="blog-date">May 28, 2025</div>
+            </a>
+          </li>
+          <li class="blog-item active">
+            <a href="clean-architecture.html" class="blog-link">
+              <div class="blog-title">Clean Architecture in Test Automation</div>
+              <div class="blog-date">April 12, 2025</div>
+            </a>
+          </li>
+          <li class="blog-item">
+            <a href="devops-testing.html" class="blog-link">
+              <div class="blog-title">Continuous Testing in DevOps Pipelines</div>
+              <div class="blog-date">March 22, 2025</div>
+            </a>
+          </li>
+        </ul>
+      </aside>
+      
+      <div class="blog-content">
+        <article class="blog-post">
+          <h2>Clean Architecture in Test Automation</h2>
+          <div class="post-meta">
+            <span class="date">April 12, 2025</span>
+            <div class="tags">
+              <span class="tag">Architecture</span>
+              <span class="tag">Design Patterns</span>
+              <span class="tag">Maintainability</span>
+            </div>
+          </div>
+          
+          <img src="https://images.unsplash.com/photo-1550439062-609e1531270e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Clean architecture diagram">
+          
+          <p>Applying clean architecture principles to test automation frameworks dramatically improves maintainability and reduces technical debt. Many teams treat test code as second-class code, but it deserves the same architectural rigor as production code.</p>
+          
+          <h3>Core Layers of Test Architecture</h3>
+          <p>1. <strong>Domain Layer</strong>: Contains the core business logic and entities. This layer is completely framework-agnostic.</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-code"></i>
+                <span>C# - Domain Layer</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-csharp">// Domain entities
+public class Product {
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    public int Stock { get; set; }
+}
+
+// Business rules
+public class ShoppingCart {
+    private List&lt;Product> _items = new List&lt;Product>();
+    
+    public void AddProduct(Product product, int quantity) {
+        if (product.Stock &lt; quantity) {
+            throw new InsufficientStockException();
+        }
+        // Add to cart logic
+    }
+    
+    public decimal CalculateTotal() {
+        return _items.Sum(p => p.Price);
+    }
+}</code></pre>
+            </div>
+          </div>
+          
+          <p>2. <strong>Application Layer</strong>: Orchestrates test flows and coordinates between domain and infrastructure layers.</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-code"></i>
+                <span>TypeScript - Application Layer</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-typescript">class CheckoutService {
+    constructor(
+        private productRepo: ProductRepository,
+        private cartRepo: CartRepository
+    ) {}
+    
+    async addToCart(productId: string, quantity: number): Promise&lt;void> {
+        const product = await this.productRepo.getProduct(productId);
+        if (product.stock < quantity) {
+            throw new Error('Insufficient stock');
+        }
+        
+        await this.cartRepo.addItem({
+            productId,
+            quantity,
+            unitPrice: product.price
+        });
+    }
+    
+    async completePurchase(userId: string): Promise&lt;Order> {
+        const cart = await this.cartRepo.getCart(userId);
+        // Payment processing and order creation logic
+    }
+}</code></pre>
+            </div>
+          </div>
+          
+          <h3>Infrastructure Layer</h3>
+          <p>Handles framework-specific implementations like browser drivers, API clients, and database access.</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-code"></i>
+                <span>Java - Selenium Implementation</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-java">public class SeleniumProductRepository implements ProductRepository {
+    private WebDriver driver;
+    
+    public SeleniumProductRepository(WebDriver driver) {
+        this.driver = driver;
+    }
+    
+    public Product getProduct(String productId) {
+        driver.findElement(By.id("search-box")).sendKeys(productId);
+        driver.findElement(By.id("search-btn")).click();
+        
+        // Extract product details from page
+        String name = driver.findElement(By.css(".product-name")).getText();
+        double price = Double.parseDouble(
+            driver.findElement(By.css(".product-price")).getText().replace("$", "")
+        );
+        int stock = Integer.parseInt(
+            driver.findElement(By.css(".product-stock")).getText()
+        );
+        
+        return new Product(productId, name, price, stock);
+    }
+}</code></pre>
+            </div>
+          </div>
+          
+          <h3>Project Structure</h3>
+          <p>Here's how to organize your test automation project using clean architecture:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-terminal"></i>
+                <span>Project Structure</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-bash">tests/
+├── domain/               # Business logic and entities
+│   ├── entities/
+│   ├── repositories/
+│   └── services/
+├── application/          # Test orchestration
+│   ├── usecases/
+│   └── dtos/
+├── infrastructure/       # Framework implementations
+│   ├── web/
+│   ├── api/
+│   └── database/
+└── test-suites/          # Executable test cases
+    ├── smoke/
+    ├── regression/
+    └── e2e/</code></pre>
+            </div>
+          </div>
+          
+          <h3>Setting Up the Project</h3>
+          <p>Initialize a new test project with clean architecture:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-terminal"></i>
+                <span>Command Line - Project Setup</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-bash"># Create project structure
+mkdir -p tests/{domain,application,infrastructure,test-suites}
+
+# Initialize Node.js project
+npm init -y
+
+# Install core dependencies
+npm install typescript ts-node jest @types/jest --save-dev
+
+# Create tsconfig.json
+npx tsc --init --target es2020 --module commonjs \
+  --rootDir src --outDir dist --esModuleInterop true
+
+# Create domain entity
+mkdir tests/domain/entities
+touch tests/domain/entities/Product.ts
+
+# Sample Product.ts content:
+# export class Product {
+#   constructor(
+#     public id: string,
+#     public name: string,
+#     public price: number,
+#     public stock: number
+#   ) {}
+# }</code></pre>
+            </div>
+          </div>
+          
+          <h3>Dependency Management</h3>
+          <p>Use dependency injection to decouple layers:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-code"></i>
+                <span>TypeScript - Dependency Injection</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-typescript">// Set up dependency container
+import { Container } from 'inversify';
+
+const container = new Container();
+
+// Bind implementations
+container.bind&lt;ProductRepository>('ProductRepository')
+  .to(SeleniumProductRepository);
+
+container.bind&lt;CartRepository>('CartRepository')
+  .to(ApiCartRepository);
+
+// Resolve dependencies in tests
+const checkoutService = container.get&lt;CheckoutService>(CheckoutService);
+
+// Use in test
+test('Add product to cart', async () => {
+  await checkoutService.addToCart('prod123', 2);
+  // Assertions
+});</code></pre>
+            </div>
+          </div>
+          
+          <h3>Running Tests</h3>
+          <p>Execute tests with environment-specific configurations:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-terminal"></i>
+                <span>Command Line - Test Execution</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-bash"># Run tests with development config
+npm test -- --env=dev --tags="@smoke"
+
+# Run tests with production config and HTML report
+npm test -- --env=prod --reporter=html --output=reports/
+
+# Run specific test suite with debugging
+DEBUG=true npm run test:suite -- --suite="checkout-flow"</code></pre>
+            </div>
+          </div>
+          
+          <a href="index.html" class="back-to-blog">
+            <i class="fas fa-arrow-left"></i> Back to All Blogs
+          </a>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      &copy; 2025 mitsram. All rights reserved.
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+</body>
+</html>

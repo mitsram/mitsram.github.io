@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Building Scalable Test Automation Frameworks | mitsram</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <h1>mitsram</h1>
+      <nav>
+        <a href="index.html#about">About</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#contact">Contact</a>
+        <a href="index.html" style="color: var(--primary);">Blogs</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="blog-container">
+      <aside class="blog-sidebar">
+        <h2>All Articles</h2>
+        <ul class="blog-list">
+          <li class="blog-item active">
+            <a href="scalable-frameworks.html" class="blog-link">
+              <div class="blog-title">Building Scalable Test Automation Frameworks</div>
+              <div class="blog-date">June 15, 2025</div>
+            </a>
+          </li>
+          <li class="blog-item">
+            <a href="ai-testing.html" class="blog-link">
+              <div class="blog-title">The Future of AI in Software Testing</div>
+              <div class="blog-date">May 28, 2025</div>
+            </a>
+          </li>
+          <li class="blog-item">
+            <a href="clean-architecture.html" class="blog-link">
+              <div class="blog-title">Clean Architecture in Test Automation</div>
+              <div class="blog-date">April 12, 2025</div>
+            </a>
+          </li>
+        </ul>
+      </aside>
+      
+      <div class="blog-content">
+        <article class="blog-post">
+          <h2>Building Scalable Test Automation Frameworks</h2>
+          <div class="post-meta">
+            <span class="date">June 15, 2025</span>
+            <div class="tags">
+              <span class="tag">Automation</span>
+              <span class="tag">Best Practices</span>
+              <span class="tag">Scalability</span>
+            </div>
+          </div>
+          
+          <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Code on screen">
+          
+          <p>Creating a test automation framework that can grow with your application is crucial for long-term success. Too many teams focus on immediate needs without considering how their framework will evolve over time.</p>
+          
+          <h3>Core Principles for Scalability</h3>
+          <p>1. <strong>Modular Architecture</strong>: Design your framework in independent modules that can be developed, tested, and maintained separately.</p>
+          
+          <p>2. <strong>Configuration Management</strong>: Externalize all environment-specific configurations using JSON, YAML, or environment variables.</p>
+          
+          <h3>Command Line Interface</h3>
+          <p>A well-designed CLI is essential for scalable automation. Here's an example of our test runner CLI:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-terminal"></i>
+                <span>Bash - Test Runner CLI</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-bash"># Run all tests in parallel
+npm run test -- --env=staging --workers=4
+
+# Run specific test suite
+npm run test:suite -- --suite="checkout-flow"
+
+# Generate test report
+npm run report -- --format=html --output=reports/
+
+# Example output:
+# =============================================
+# Test Suite: checkout-flow
+# Environment: staging
+# =============================================
+# ✓ Add to cart (1.2s)
+# ✓ Guest checkout (3.4s)
+# ✓ Registered user checkout (4.1s)
+# =============================================
+# 3 passed (8.7s)</code></pre>
+            </div>
+          </div>
+          
+          <h3>Implementation Strategies</h3>
+          <p>When building CleanTest.Framework, I focused on creating abstraction layers that allow swapping out components.</p>
+          
+          <h4>Driver Abstraction</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-code"></i>
+                <span>C# - Driver Abstraction</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-csharp">public interface IWebDriverFacade {
+    void NavigateTo(string url);
+    IWebElement FindElement(By locator);
+}
+
+public class SeleniumDriver : IWebDriverFacade {
+    private IWebDriver _driver;
+    
+    public SeleniumDriver() {
+        _driver = new ChromeDriver();
+    }
+    
+    public void NavigateTo(string url) {
+        _driver.Navigate().GoToUrl(url);
+    }
+}</code></pre>
+            </div>
+          </div>
+          
+          <h4>Component-Based Approach</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fas fa-code"></i>
+                <span>TypeScript - Component-Based Approach</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-typescript">class Component {
+    constructor(protected locator: string) {}
+    
+    async click(): Promise&lt;void> {
+        await this.getElement().click();
+    }
+}
+
+class LoginPage {
+    usernameInput = new TextInput('#username');
+    submitButton = new Button('#submit');
+}</code></pre>
+            </div>
+          </div>
+          
+          <h3>CI/CD Integration</h3>
+          <p>Here's a GitHub Actions workflow for running tests in CI:</p>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <div class="language">
+                <i class="fab fa-github"></i>
+                <span>GitHub Actions - CI Pipeline</span>
+              </div>
+            </div>
+            <div class="code-content">
+              <pre><code class="language-yaml">name: Test Automation CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - run: npm run test -- --env=ci --workers=4
+    - name: Upload Test Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-report
+        path: test-results/</code></pre>
+            </div>
+          </div>
+          
+          <a href="index.html" class="back-to-blog">
+            <i class="fas fa-arrow-left"></i> Back to All Blogs
+          </a>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      &copy; 2025 mitsram. All rights reserved.
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+</body>
+</html>

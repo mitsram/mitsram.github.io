@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>mitsram | Technical Blog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <h1>mitsram</h1>
+      <nav>
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+        <a href="#" style="color: var(--primary);">Blogs</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-content">
+      <div class="hero-text">
+        <h2>My Technical Writings</h2>
+        <p>Exploring test automation, software quality, and innovative solutions in software development.</p>        
+      </div>
+      <div>
+        <a href="#blogs" class="btn-light">Read Articles</a>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <div id="blogs" class="blog-container">
+      <!-- Blog Sidebar -->
+      <aside class="blog-sidebar">
+        <h2>All Articles</h2>
+        <ul class="blog-list">
+          <li class="blog-item active">
+            <a href="scalable-frameworks.html" class="blog-link">
+              <div class="blog-title">Building Scalable Test Automation Frameworks</div>
+              <div class="blog-date">June 15, 2025</div>
+            </a>
+          </li>
+          <li class="blog-item">
+            <a href="ai-testing.html" class="blog-link">
+              <div class="blog-title">The Future of AI in Software Testing</div>
+              <div class="blog-date">May 28, 2025</div>
+            </a>
+          </li>
+          <li class="blog-item">
+            <a href="clean-architecture.html" class="blog-link">
+              <div class="blog-title">Clean Architecture in Test Automation</div>
+              <div class="blog-date">April 12, 2025</div>
+            </a>
+          </li>
+          <li class="blog-item">
+            <a href="#devops-testing" class="blog-link">
+              <div class="blog-title">Continuous Testing in DevOps Pipelines</div>
+              <div class="blog-date">March 22, 2025</div>
+            </a>
+          </li>
+          <li class="blog-item">
+            <a href="#cleantest-lessons" class="blog-link">
+              <div class="blog-title">Lessons from Building CleanTest.Framework</div>
+              <div class="blog-date">February 8, 2025</div>
+            </a>
+          </li>
+        </ul>
+      </aside>
+      
+      <!-- Blog Content Area -->
+      <div class="blog-content">
+        <!-- Content will be loaded from individual blog files -->
+        <div class="blog-welcome">
+          <h2>Welcome to My Technical Blog</h2>
+          <p>Select an article from the sidebar to read about test automation best practices, framework design, and emerging trends in software quality assurance.</p>
+          <div class="featured-article">
+            <h3>Featured Article</h3>
+            <a href="scalable-frameworks.html">
+              <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Code on screen">
+              <div class="blog-title">Building Scalable Test Automation Frameworks</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      &copy; 2025 mitsram. All rights reserved.
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
