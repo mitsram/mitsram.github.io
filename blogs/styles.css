@@ -52,6 +52,11 @@ body {
   font-weight: 700;
 }
 
+.header a {  
+  text-decoration: none;
+  color: inherit  
+}
+
 .header nav a {
   margin-left: 1.5rem;
   text-decoration: none;
