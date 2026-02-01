@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Case Design Prompt Evaluation Guide</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #7c3aed;
+            --accent-color: #06b6d4;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #1e293b;
+            --light-bg: #f8fafc;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --code-bg: #f1f5f9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--light-bg);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        nav {
+            background: white;
+            border-bottom: 2px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 0.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        nav li {
+            margin: 0.25rem;
+        }
+
+        nav a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        nav a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            background: white;
+            margin-bottom: 2rem;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem 0;
+        }
+
+        h4 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--danger-color);
+        }
+
+        pre {
+            background: var(--dark-bg);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: var(--light-bg);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+            border-left: 4px solid var(--accent-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-left: 4px solid var(--warning-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-left: 4px solid var(--success-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .danger-box {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border-left: 4px solid var(--danger-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .feature-card h4 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+        }
+
+        .mermaid {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border: 1px solid var(--border-color);
+        }
+
+        footer {
+            background: var(--dark-bg);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.75rem;
+            }
+
+            header p {
+                font-size: 1rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+
+            nav li {
+                width: 100%;
+            }
+
+            section {
+                padding: 1.5rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        .score-indicator {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+
+        .score-excellent {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .score-good {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .score-acceptable {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .score-needs-improvement {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 200px);
+        }
+
+        aside {
+            width: 250px;
+            background: #f8f9fa;
+            padding: 1rem;
+            position: fixed;
+            top: 200px;
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border-color);
+        }
+
+        aside h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        aside ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        aside li {
+            margin: 0.5rem 0;
+        }
+
+        aside a {
+            color: var(--text-primary);
+            text-decoration: none;
+            display: block;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        aside a:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        aside a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 250px;
+        }
+
+        @media (max-width: 768px) {
+            aside {
+                display: none;
+            }
+            .content {
+                margin-left: 0;
+            }
+        }
+
+        /* Sidebar override: place sidebar in the page flow and blend visually */
+        .page-container, .container {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        aside {
+            width: 300px;
+            background: #ffffff;
+            padding: 1rem;
+            position: -webkit-sticky;
+            position: sticky;
+            top: 120px;
+            margin-top: 0;
+            align-self: flex-start;
+            height: fit-content;
+            overflow: visible;
+            z-index: 5;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+        }
+
+        aside h3 { margin-bottom: 0.75rem; color: var(--text-primary); }
+
+        .content { flex: 1 1 0; max-width: 1200px; margin-left: 0 !important; margin-top: 2rem; }
+
+        .article-card { background: #ffffff; border-radius: 12px; padding: 1.75rem; box-shadow: 0 6px 18px rgba(16,24,40,0.04); font-size: 18px; line-height: 1.8; }
+
+        @media (max-width: 768px) { aside { display: none; } .content { max-width: 100%; } .article-card { padding: 1rem; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Prompt Evaluation Guidle - Test Case Design</h1>
+        <p>Test case design specific prompt evaluation guide</p>
+    </header>
+
+    <div class="page-container">
+        <aside>
+            <h3>Prompt Evaluation Guides</h3>
+            <ul>
+                <li><a href="llm-prompt-evaluation-guide.html">Overview</a></li>
+                <li><a href="requirement-analysis-prompt-evaluation-guide.html">Requirement Analysis Guide</a></li>
+                <li><a href="test-case-design-prompt-evaluation-guide.html" class="active">Test Case Design Guide</a></li>
+                <li><a href="automated-test-script-prompt-evaluation-guide.html">Automated Test Script Guide</a></li>
+                <li><a href="unified-evaluation-system-v2.html">Solution</a></li>
+                <li><a href="code-architecture.html">Code Architecture</a></li>
+            </ul>
+        </aside>
+        <div class="content">
+        <nav>
+            <div class="main-content">
+                <ul>
+                    <li><a href="#overview">Overview</a></li>
+                    <li><a href="#understanding">Understanding Prompts</a></li>
+                    <li><a href="#metrics">Recommended Metrics</a></li>
+                    <li><a href="#architecture">Architecture</a></li>
+                    <li><a href="#deepeval">DeepEval Config</a></li>
+                    <li><a href="#nltk">NLTK Config</a></li>
+                    <li><a href="#pipeline">Combined Pipeline</a></li>
+                    <li><a href="#patterns">Design Patterns</a></li>
+                    <li><a href="#scoring">Scoring & Thresholds</a></li>
+                    <li><a href="#implementation">Implementation</a></li>
+                    <li><a href="#structure">Project Structure</a></li>
+                    <li><a href="#workflow">Execution Workflow</a></li>
+                </ul>
+            </div>
+        </nav>        
+
+    <main class="main-content">
+        <section id="overview">
+            <h2>Overview</h2>
+            
+            <h3>Purpose</h3>
+            <p>This guide provides a detailed framework for evaluating LLM prompts that generate <strong>test cases and test scenarios</strong> from IT project requirements. Quality test case generation is crucial for software quality assurance, and poorly generated test cases can lead to missed defects, inadequate coverage, and wasted testing effort.</p>
+
+            <h3>The Challenge</h3>
+            <p>Generating test cases from requirements using LLMs presents unique challenges:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Challenge</th>
+                        <th>Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Requirement Traceability</strong></td>
+                        <td>Test cases must map back to specific requirements</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Coverage Completeness</strong></td>
+                        <td>Must cover positive, negative, boundary, and edge cases</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Technical Accuracy</strong></td>
+                        <td>Test steps must be executable and technically correct</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Format Consistency</strong></td>
+                        <td>Must follow organizational test case templates</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test Data Quality</strong></td>
+                        <td>Generated test data must be realistic and valid</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Independence</strong></td>
+                        <td>Test cases should be independent and not interdependent</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>What You'll Build</h3>
+            <div class="mermaid">
+graph TB
+    A[TEST CASE DESIGN PROMPT<br/>EVALUATION SYSTEM] --> B[DeepEval<br/>Metrics]
+    A --> C[NLTK<br/>Analysis]
+    A --> D[Custom<br/>Metrics]
+    
+    B --> B1[• Faithfulness<br/>• Relevancy<br/>• G-Eval Custom]
+    C --> C1[• Structure<br/>• Action Verbs<br/>• Clarity<br/>• Terminology]
+    D --> D1[• Coverage Analysis<br/>• Traceability<br/>• Format]
+    
+    B1 --> E[Combined Score<br/>& Report]
+    C1 --> E
+    D1 --> E
+    
+    style A fill:#2563eb,color:#fff
+    style E fill:#10b981,color:#fff
+    style B fill:#7c3aed,color:#fff
+    style C fill:#7c3aed,color:#fff
+    style D fill:#7c3aed,color:#fff
+            </div>
+        </section>
+
+        <section id="understanding">
+            <h2>Understanding Test Case Design Prompts</h2>
+
+            <h3>Types of Test Case Generation Tasks</h3>
+            <p>Your prompts may ask the LLM to perform various test-related tasks:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>1. Test Case Generation from User Stories</h4>
+                    <p><strong>Input:</strong> User story with acceptance criteria</p>
+                    <p><strong>Output:</strong> Detailed test cases covering all criteria</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>2. Test Scenario Creation</h4>
+                    <p><strong>Input:</strong> Feature description or use case</p>
+                    <p><strong>Output:</strong> High-level test scenarios covering different paths</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>3. Test Data Generation</h4>
+                    <p><strong>Input:</strong> Test case or data requirements</p>
+                    <p><strong>Output:</strong> Realistic test data sets</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>4. Negative Test Case Generation</h4>
+                    <p><strong>Input:</strong> Functional requirements</p>
+                    <p><strong>Output:</strong> Test cases for invalid inputs, error conditions</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>5. Boundary Value Analysis</h4>
+                    <p><strong>Input:</strong> Input constraints/ranges</p>
+                    <p><strong>Output:</strong> Boundary and edge case test cases</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>6. End-to-End Scenario Design</h4>
+                    <p><strong>Input:</strong> Business process description</p>
+                    <p><strong>Output:</strong> Complete E2E test scenarios with multiple steps</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>7. Regression Test Suite Generation</h4>
+                    <p><strong>Input:</strong> Change request or bug fix description</p>
+                    <p><strong>Output:</strong> Relevant regression test cases</p>
+                </div>
+            </div>
+
+            <h3>Test Case Components That Must Be Evaluated</h3>
+            <div class="info-box">
+                <h4>TEST CASE ANATOMY</h4>
+                <pre><code>TEST CASE ID: TC-LOGIN-001
+TITLE: Verify successful login with valid credentials
+
+REQUIREMENT ID: REQ-AUTH-001                          [TRACEABILITY]
+
+PRIORITY: High | TYPE: Functional | CATEGORY: Positive
+
+PRECONDITIONS:                                        [SETUP]
+  1. User account exists in the system
+  2. User is not currently logged in
+  3. Application is accessible
+
+TEST DATA:                                            [DATA]
+  • Username: testuser@example.com
+  • Password: ValidP@ss123
+
+TEST STEPS:                                           [EXECUTION]
+  1. Navigate to the login page
+  2. Enter username in the username field
+  3. Enter password in the password field
+  4. Click the "Login" button
+
+EXPECTED RESULTS:                                     [VERIFICATION]
+  1. User is redirected to the dashboard
+  2. Welcome message displays user's name
+  3. Session is created (verify via cookies/token)
+
+POSTCONDITIONS:                                       [CLEANUP]
+  • User session is active
+  • Login timestamp is recorded</code></pre>
+            </div>
+
+            <h3>Test Case Quality Attributes</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Attribute</th>
+                        <th>Description</th>
+                        <th>Why It Matters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Traceable</strong></td>
+                        <td>Links to specific requirement</td>
+                        <td>Ensures coverage and justification</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Atomic</strong></td>
+                        <td>Tests one specific thing</td>
+                        <td>Easy to identify failure cause</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Independent</strong></td>
+                        <td>Can run without other tests</td>
+                        <td>Reliable execution order</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Repeatable</strong></td>
+                        <td>Same result every execution</td>
+                        <td>Consistent quality assurance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Clear</strong></td>
+                        <td>Unambiguous steps and results</td>
+                        <td>Anyone can execute</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Complete</strong></td>
+                        <td>All necessary information included</td>
+                        <td>No guesswork needed</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Verifiable</strong></td>
+                        <td>Expected results are measurable</td>
+                        <td>Pass/fail determination is clear</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="metrics">
+            <h2>Recommended Metrics for Test Case Evaluation</h2>
+
+            <h3>Metric Selection Framework</h3>
+            <p>For test case design evaluation, we need metrics across multiple dimensions:</p>
+
+            <div class="mermaid">
+graph LR
+    A[SEMANTIC<br/>ACCURACY] --> A1[Are test cases<br/>aligned with reqs?]
+    B[COVERAGE<br/>ANALYSIS] --> B1[Are all requirement<br/>aspects covered?]
+    C[STRUCTURE<br/>COMPLIANCE] --> C1[Does output follow<br/>required format?]
+    D[QUALITY<br/>ATTRIBUTES] --> D1[Are test cases<br/>executable & clear?]
+    
+    E[TRACEABILITY] --> E1[Can each test case<br/>be traced to req?]
+    F[TEST DATA<br/>QUALITY] --> F1[Is test data<br/>realistic & valid?]
+    G[ACTION<br/>CLARITY] --> G1[Are steps using<br/>clear action verbs?]
+    H[EXPECTED<br/>RESULTS] --> H1[Are results<br/>specific & measurable?]
+    
+    style A fill:#2563eb,color:#fff
+    style B fill:#2563eb,color:#fff
+    style C fill:#2563eb,color:#fff
+    style D fill:#2563eb,color:#fff
+    style E fill:#7c3aed,color:#fff
+    style F fill:#7c3aed,color:#fff
+    style G fill:#7c3aed,color:#fff
+    style H fill:#7c3aed,color:#fff
+            </div>
+
+            <h3>Primary Metrics (Must-Have)</h3>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>1. Requirement Faithfulness</h4>
+                    <p><strong>Tool:</strong> DeepEval</p>
+                    <p><strong>Purpose:</strong> Ensures test cases are grounded in the provided requirements.</p>
+                    <p><strong>Threshold:</strong> ≥ 0.90</p>
+                    <div class="info-box">
+                        <p><strong>Formula:</strong> Test Assertions Supported by Requirements / Total Assertions</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h4>2. Coverage Completeness</h4>
+                    <p><strong>Tool:</strong> Custom + DeepEval G-Eval</p>
+                    <p><strong>Purpose:</strong> Measures if all aspects of requirements are covered by test cases.</p>
+                    <p><strong>Threshold:</strong> ≥ 0.85</p>
+                    <div class="info-box">
+                        <p><strong>Formula:</strong> Covered Scenarios / Total Required Scenarios</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h4>3. Test Case Executability</h4>
+                    <p><strong>Tool:</strong> Custom + NLTK</p>
+                    <p><strong>Purpose:</strong> Validates that test steps are clear and actionable.</p>
+                    <p><strong>Threshold:</strong> ≥ 0.95</p>
+                    <div class="info-box">
+                        <p><strong>Formula:</strong> Executable Steps / Total Steps</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h4>4. Format Compliance</h4>
+                    <p><strong>Tool:</strong> Custom + NLTK</p>
+                    <p><strong>Purpose:</strong> Ensures test cases follow the required template structure.</p>
+                    <p><strong>Threshold:</strong> ≥ 0.95</p>
+                    <div class="info-box">
+                        <p><strong>Formula:</strong> Compliant Elements / Required Elements</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h4>5. Traceability</h4>
+                    <p><strong>Tool:</strong> Custom</p>
+                    <p><strong>Purpose:</strong> Verifies that test cases link back to requirements.</p>
+                    <p><strong>Threshold:</strong> ≥ 1.0 (all must be traceable)</p>
+                    <div class="info-box">
+                        <p><strong>Formula:</strong> Traceable Test Cases / Total Test Cases</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Secondary Metrics (Recommended)</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Tool</th>
+                        <th>Purpose</th>
+                        <th>Threshold</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Expected Result Specificity</strong></td>
+                        <td>NLTK + G-Eval</td>
+                        <td>Ensures expected results are specific and verifiable</td>
+                        <td>≥ 0.90</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test Data Quality</strong></td>
+                        <td>Custom</td>
+                        <td>Validates that test data is realistic and complete</td>
+                        <td>≥ 0.90</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Action Verb Clarity</strong></td>
+                        <td>NLTK</td>
+                        <td>Ensures test steps use proper action verbs</td>
+                        <td>≥ 0.95</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test Independence</strong></td>
+                        <td>Custom + G-Eval</td>
+                        <td>Checks that test cases can run independently</td>
+                        <td>≥ 0.90</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scenario Diversity</strong></td>
+                        <td>Custom</td>
+                        <td>Ensures variety in test scenarios</td>
+                        <td>Target mix: Positive 40%, Negative 30%, Boundary 20%, Edge 10%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Metric Summary Table</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Tool</th>
+                        <th>Weight</th>
+                        <th>Threshold</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Requirement Faithfulness</td>
+                        <td>DeepEval</td>
+                        <td>20%</td>
+                        <td>≥ 0.90</td>
+                        <td><span class="score-indicator score-excellent">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td>Coverage Completeness</td>
+                        <td>G-Eval/Custom</td>
+                        <td>20%</td>
+                        <td>≥ 0.85</td>
+                        <td><span class="score-indicator score-excellent">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td>Test Case Executability</td>
+                        <td>NLTK/Custom</td>
+                        <td>15%</td>
+                        <td>≥ 0.95</td>
+                        <td><span class="score-indicator score-excellent">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td>Format Compliance</td>
+                        <td>NLTK/Custom</td>
+                        <td>10%</td>
+                        <td>≥ 0.95</td>
+                        <td><span class="score-indicator score-excellent">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td>Traceability</td>
+                        <td>Custom</td>
+                        <td>10%</td>
+                        <td>= 1.00</td>
+                        <td><span class="score-indicator score-excellent">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td>Expected Result Specificity</td>
+                        <td>NLTK/G-Eval</td>
+                        <td>8%</td>
+                        <td>≥ 0.90</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                    <tr>
+                        <td>Test Data Quality</td>
+                        <td>Custom</td>
+                        <td>7%</td>
+                        <td>≥ 0.90</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                    <tr>
+                        <td>Action Verb Clarity</td>
+                        <td>NLTK</td>
+                        <td>5%</td>
+                        <td>≥ 0.95</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                    <tr>
+                        <td>Test Independence</td>
+                        <td>G-Eval</td>
+                        <td>3%</td>
+                        <td>≥ 0.90</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                    <tr>
+                        <td>Scenario Diversity</td>
+                        <td>Custom</td>
+                        <td>2%</td>
+                        <td>Target mix</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="architecture">
+            <h2>Evaluation Framework Architecture</h2>
+
+            <h3>System Architecture</h3>
+            <div class="mermaid">
+graph TB
+    subgraph INPUT["INPUT LAYER"]
+        A1[Source Requirements]
+        A2[Generated Test Cases]
+        A3[Test Case Templates]
+    end
+    
+    A1 --> B[TEST CASE PARSER]
+    A2 --> B
+    A3 --> B
+    
+    B --> B1[Extract test case components<br/>Identify test steps, expected results<br/>Parse test data]
+    
+    B1 --> C{EVALUATION ENGINE}
+    
+    C --> D[DEEPEVAL MODULE]
+    D --> D1[FaithfulnessMetric<br/>AnswerRelevancyMetric<br/>GEval: Coverage<br/>GEval: Independence<br/>GEval: Expected Result Quality]
+    
+    C --> E[NLTK MODULE]
+    E --> E1[Action Verb Analysis<br/>Step Clarity Checker<br/>Expected Result Specificity<br/>Terminology Consistency<br/>Readability Analysis]
+    
+    C --> F[CUSTOM METRICS MODULE]
+    F --> F1[Format Compliance Checker<br/>Traceability Validator<br/>Test Data Quality Analyzer<br/>Coverage Calculator<br/>Scenario Diversity Checker]
+    
+    D1 --> G[AGGREGATION LAYER]
+    E1 --> G
+    F1 --> G
+    
+    G --> G1[Per-Test Case Scores<br/>Suite-Level Aggregation<br/>Pass/Fail Determination]
+    
+    G1 --> H[OUTPUT LAYER]
+    H --> H1[Detailed Report]
+    H --> H2[Coverage Matrix]
+    H --> H3[Quality Dashboard]
+    
+    style INPUT fill:#e0f2fe
+    style C fill:#7c3aed,color:#fff
+    style D fill:#2563eb,color:#fff
+    style E fill:#2563eb,color:#fff
+    style F fill:#2563eb,color:#fff
+    style G fill:#10b981,color:#fff
+    style H fill:#10b981,color:#fff
+            </div>
+
+            <h3>Data Flow</h3>
+            <div class="info-box">
+                <ol>
+                    <li><strong>Input Requirements + Generated Test Cases</strong></li>
+                    <li><strong>Parse Test Cases into Components</strong>
+                        <ul>
+                            <li>Test Case ID, Title</li>
+                            <li>Preconditions</li>
+                            <li>Test Steps</li>
+                            <li>Expected Results</li>
+                            <li>Test Data</li>
+                            <li>Requirement References</li>
+                        </ul>
+                    </li>
+                    <li><strong>Run DeepEval Metrics</strong></li>
+                    <li><strong>Run NLTK Analysis</strong></li>
+                    <li><strong>Run Custom Metrics</strong></li>
+                    <li><strong>Aggregate Per-Test-Case Results</strong></li>
+                    <li><strong>Aggregate Suite-Level Metrics</strong></li>
+                    <li><strong>Generate Reports & Coverage Matrix</strong></li>
+                    <li><strong>Determine Pass/Fail</strong></li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="deepeval">
+            <h2>DeepEval Configuration for Test Case Design</h2>
+
+            <h3>Installation and Setup</h3>
+            <pre><code>pip install deepeval</code></pre>
+
+            <h3>Metric Configuration</h3>
+            <p>Configure DeepEval metrics specifically for test case evaluation:</p>
+
+            <h4>1. Faithfulness Metric</h4>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Ensures test cases are grounded in the provided requirements.</p>
+                <p><strong>Configuration:</strong></p>
+                <pre><code>from deepeval.metrics import FaithfulnessMetric
+
+faithfulness_metric = FaithfulnessMetric(
+    threshold=0.90,
+    model="gpt-4",
+    include_reason=True
+)</code></pre>
+                <p><strong>What it evaluates:</strong></p>
+                <ul>
+                    <li>Do test cases align with the source requirements?</li>
+                    <li>No fabricated features being tested?</li>
+                    <li>All test assertions traceable to requirements?</li>
+                </ul>
+            </div>
+
+            <h4>2. Answer Relevancy Metric</h4>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Measures if test cases address the right requirements.</p>
+                <pre><code>from deepeval.metrics import AnswerRelevancyMetric
+
+relevancy_metric = AnswerRelevancyMetric(
+    threshold=0.85,
+    model="gpt-4",
+    include_reason=True
+)</code></pre>
+            </div>
+
+            <h4>3. G-Eval: Coverage Completeness</h4>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Comprehensive coverage evaluation using custom criteria.</p>
+                <pre><code>from deepeval.metrics import GEval
+from deepeval.test_case import LLMTestCaseParams
+
+coverage_metric = GEval(
+    name="CoverageCompleteness",
+    criteria="""
+    Evaluate if the generated test cases provide comprehensive coverage 
+    of the source requirement.
+    
+    Check for:
+    1. Positive path testing (happy path)
+    2. Negative path testing (invalid inputs, error conditions)
+    3. Boundary value testing (min, max, edge values)
+    4. Edge case coverage (unusual but valid scenarios)
+    5. Error handling scenarios
+    
+    A score of 1.0 means all scenario types are covered.
+    A score of 0.0 means only basic positive testing is present.
+    """,
+    evaluation_params=[
+        LLMTestCaseParams.INPUT,
+        LLMTestCaseParams.ACTUAL_OUTPUT,
+        LLMTestCaseParams.EXPECTED_OUTPUT
+    ],
+    threshold=0.85,
+    model="gpt-4"
+)</code></pre>
+            </div>
+
+            <h4>4. G-Eval: Expected Result Quality</h4>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Evaluates the quality and specificity of expected results.</p>
+                <pre><code>expected_result_metric = GEval(
+    name="ExpectedResultQuality",
+    criteria="""
+    Evaluate the quality of expected results in the test cases.
+    
+    High-quality expected results must:
+    1. Be specific and measurable (not vague like "works correctly")
+    2. Include exact values, messages, or states where applicable
+    3. Be verifiable by a tester without ambiguity
+    4. Match the scope of the test step being verified
+    
+    Examples of GOOD expected results:
+    - "Error message 'Invalid email format' is displayed"
+    - "User is redirected to /dashboard within 2 seconds"
+    - "Order status changes to 'Confirmed'"
+    
+    Examples of BAD expected results:
+    - "System works correctly"
+    - "Page loads properly"
+    - "User sees appropriate message"
+    """,
+    evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
+    threshold=0.90,
+    model="gpt-4"
+)</code></pre>
+            </div>
+
+            <h4>5. G-Eval: Test Independence</h4>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Checks that test cases can be executed independently.</p>
+                <pre><code>independence_metric = GEval(
+    name="TestIndependence",
+    criteria="""
+    Evaluate if each test case can be executed independently.
+    
+    An independent test case:
+    1. Has all necessary preconditions defined
+    2. Includes its own test data (not relying on other tests)
+    3. Does not depend on the outcome of another test case
+    4. Can be run in any order within the suite
+    5. Has proper setup and cleanup defined
+    
+    Look for:
+    - References to "previous test" or "after TC-XXX"
+    - Missing preconditions that assume prior test execution
+    - Shared test data without explicit setup
+    """,
+    evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
+    threshold=0.90,
+    model="gpt-4"
+)</code></pre>
+            </div>
+
+            <h4>6. G-Eval: Test Step Clarity</h4>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Evaluates the clarity and executability of test steps.</p>
+                <pre><code>step_clarity_metric = GEval(
+    name="TestStepClarity",
+    criteria="""
+    Evaluate the clarity and executability of test steps.
+    
+    Clear test steps must:
+    1. Start with a specific action verb (Click, Enter, Navigate, Verify, etc.)
+    2. Identify the exact UI element or system component
+    3. Specify any input values needed
+    4. Be atomic (one action per step)
+    5. Be sequentially logical
+    
+    Examples of GOOD steps:
+    - "Click the 'Submit' button"
+    - "Enter 'test@email.com' in the Email field"
+    - "Verify the confirmation dialog appears"
+    
+    Examples of BAD steps:
+    - "Fill in the form"
+    - "Do the login process"
+    - "Check everything works"
+    """,
+    evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
+    threshold=0.95,
+    model="gpt-4"
+)</code></pre>
+            </div>
+        </section>
+
+        <section id="nltk">
+            <h2>NLTK Configuration for Test Case Design</h2>
+
+            <h3>Installation and Setup</h3>
+            <pre><code>pip install nltk</code></pre>
+
+            <h3>NLTK Analysis Modules</h3>
+
+            <h4>1. Action Verb Analyzer</h4>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Analyzes test steps for proper action verb usage.</p>
+                <p><strong>Strong Action Verbs:</strong></p>
+                <ul>
+                    <li><strong>Navigation:</strong> navigate, go, open, access, visit, browse, launch</li>
+                    <li><strong>Input:</strong> enter, input, type, fill, select, choose, pick, upload, attach, drag, drop</li>
+                    <li><strong>Click:</strong> click, tap, press, submit, push, hit</li>
+                    <li><strong>Verification:</strong> verify, check, confirm, validate, ensure, assert, observe, note, inspect, review</li>
+                    <li><strong>Wait:</strong> wait, pause, hold</li>
+                    <li><strong>Data:</strong> save, store, retrieve, fetch, load, download, export, import, copy, paste, delete, remove, clear</li>
+                    <li><strong>State:</strong> enable, disable, activate, deactivate, toggle, expand, collapse, show, hide, display</li>
+                    <li><strong>Scroll/View:</strong> scroll, swipe, zoom, resize, maximize, minimize</li>
+                    <li><strong>Auth:</strong> login, logout, signin, signout, authenticate</li>
+                </ul>
+                <p><strong>Weak Verbs to Avoid:</strong> do, make, handle, process, perform, execute, run, use, try, test, work</p>
+            </div>
+
+            <h4>2. Expected Result Analyzer</h4>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Analyzes expected results for specificity and verifiability.</p>
+                <p><strong>Vague Terms to Flag:</strong></p>
+                <ul>
+                    <li>correctly, properly, appropriately, successfully</li>
+                    <li>as expected, works, working, functions, good</li>
+                    <li>right, appropriate, suitable, adequate, normal</li>
+                    <li>should work, should display, should show, should appear</li>
+                </ul>
+                <p><strong>Specific Indicators (Good):</strong></p>
+                <ul>
+                    <li>Numbers and specific values</li>
+                    <li>Quoted strings (error messages, labels)</li>
+                    <li>Specific states (enabled/disabled, visible/hidden)</li>
+                    <li>Specific elements (button, field, dropdown)</li>
+                    <li>Specific locations (redirected to, navigates to)</li>
+                    <li>Specific timing (within 2 seconds, immediately)</li>
+                </ul>
+            </div>
+
+            <h4>3. Test Case Completeness Analyzer</h4>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Verifies that all required sections are present in test cases.</p>
+                <p><strong>Required Sections (Standard Format):</strong></p>
+                <ul>
+                    <li>Test Case ID</li>
+                    <li>Title/Description</li>
+                    <li>Test Steps</li>
+                    <li>Expected Results</li>
+                </ul>
+                <p><strong>Optional but Recommended:</strong></p>
+                <ul>
+                    <li>Preconditions</li>
+                    <li>Test Data</li>
+                    <li>Postconditions</li>
+                    <li>Priority/Severity</li>
+                    <li>Requirement Traceability</li>
+                </ul>
+            </div>
+
+            <h4>4. Terminology Consistency Checker</h4>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Checks for consistent terminology usage across test cases.</p>
+                <p><strong>What it checks:</strong></p>
+                <ul>
+                    <li>Consistent naming of UI elements</li>
+                    <li>Consistent use of technical terms</li>
+                    <li>Consistent formatting and capitalization</li>
+                    <li>Domain-specific terminology usage</li>
+                </ul>
+            </div>
+
+            <h4>5. Readability Analysis</h4>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Evaluates the readability of test case descriptions and steps.</p>
+                <p><strong>Metrics used:</strong></p>
+                <ul>
+                    <li>Average sentence length</li>
+                    <li>Complex word usage</li>
+                    <li>Overall readability score</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="pipeline">
+            <h2>Combined Evaluation Pipeline</h2>
+
+            <h3>Main Evaluator Architecture</h3>
+            <div class="mermaid">
+graph TB
+    A[Input: Requirements +<br/>Generated Test Cases] --> B[TestCaseEvaluator]
+    
+    B --> C{Run All Evaluations}
+    
+    C --> D[DeepEval Metrics]
+    D --> D1[Faithfulness: 0.95]
+    D --> D2[Coverage: 0.88]
+    D --> D3[Independence: 0.92]
+    
+    C --> E[NLTK Analysis]
+    E --> E1[Action Verbs: 0.98]
+    E --> E2[Result Specificity: 0.91]
+    E --> E3[Completeness: 0.95]
+    
+    C --> F[Custom Metrics]
+    F --> F1[Traceability: 1.00]
+    F --> F2[Format: 0.96]
+    F --> F3[Coverage Analysis]
+    
+    D1 --> G[Calculate Weighted Score]
+    D2 --> G
+    D3 --> G
+    E1 --> G
+    E2 --> G
+    E3 --> G
+    F1 --> G
+    F2 --> G
+    F3 --> G
+    
+    G --> H[Overall Score: 0.93]
+    H --> I{Pass Threshold?}
+    I -->|Yes| J[PASS ✓]
+    I -->|No| K[FAIL ✗]
+    
+    J --> L[Generate Report]
+    K --> L
+    L --> M[Recommendations]
+    
+    style B fill:#2563eb,color:#fff
+    style G fill:#7c3aed,color:#fff
+    style J fill:#10b981,color:#fff
+    style K fill:#ef4444,color:#fff
+    style L fill:#06b6d4,color:#fff
+            </div>
+
+            <h3>Evaluation Configuration</h3>
+            <pre><code>from dataclasses import dataclass
+
+@dataclass
+class TestCaseEvaluationConfig:
+    """Configuration for test case evaluation."""
+    faithfulness_threshold: float = 0.90
+    relevancy_threshold: float = 0.85
+    coverage_threshold: float = 0.85
+    executability_threshold: float = 0.95
+    format_threshold: float = 0.95
+    specificity_threshold: float = 0.90
+    model: str = "gpt-4"
+    test_case_format: str = "standard"  # standard, gherkin, bdd</code></pre>
+
+            <h3>Running the Evaluator</h3>
+            <pre><code>from evaluator.test_case_evaluator import TestCaseEvaluator, TestCaseEvaluationConfig
+
+# Initialize evaluator
+config = TestCaseEvaluationConfig()
+evaluator = TestCaseEvaluator(config)
+
+# Run evaluation
+result = evaluator.evaluate(
+    requirement_text="User Story: As a user, I want to login...",
+    generated_test_cases="Test Case TC-001: Verify login...",
+    expected_test_cases="Expected TC-001: ...",  # Optional
+    requirement_id="REQ-AUTH-001"
+)
+
+# Check results
+print(f"Overall Score: {result.overall_score:.3f}")
+print(f"Passed: {result.passed}")
+print(f"Faithfulness: {result.faithfulness_score:.3f}")
+print(f"Coverage: {result.coverage_score:.3f}")
+print(f"Executability: {result.executability_score:.3f}")</code></pre>
+        </section>
+
+        <section id="patterns">
+            <h2>Test Case Design Patterns and Templates</h2>
+
+            <h3>Standard Test Case Template</h3>
+            <pre><code>test_case_template:
+  id: "TC-[MODULE]-[NUMBER]"
+  title: "[Brief descriptive title]"
+  requirement_id: "REQ-[ID]"
+  
+  metadata:
+    priority: "High|Medium|Low"
+    type: "Functional|Integration|E2E|Regression"
+    category: "Positive|Negative|Boundary"
+    automated: true|false
+    
+  preconditions:
+    - "Condition 1 that must be true before test"
+    - "Condition 2"
+    
+  test_data:
+    input_field_1: "value"
+    input_field_2: "value"
+    
+  steps:
+    - step: 1
+      action: "Navigate to login page"
+    - step: 2
+      action: "Enter username"
+      data: "testuser@example.com"
+      
+  expected_results:
+    - "Specific, measurable result 1"
+    - "Specific, measurable result 2"
+    
+  postconditions:
+    - "State after test completion"</code></pre>
+
+            <h3>Gherkin/BDD Template</h3>
+            <pre><code>Feature: [Feature Name]
+  As a [role]
+  I want [goal]
+  So that [benefit]
+
+  Background:
+    Given [common precondition]
+    And [another common precondition]
+
+  @positive @smoke
+  Scenario: [Scenario Title - Happy Path]
+    Given [initial context]
+    When [action taken]
+    And [additional action]
+    Then [expected outcome]
+    And [additional verification]
+
+  @negative @validation
+  Scenario: [Scenario Title - Error Case]
+    Given [initial context]
+    When [invalid action]
+    Then [error handling occurs]
+    And [appropriate message is displayed]
+
+  @boundary
+  Scenario Outline: [Scenario with Multiple Data Sets]
+    Given [context with &lt;variable&gt;]
+    When [action with &lt;variable&gt;]
+    Then [outcome based on &lt;variable&gt;]
+    
+    Examples:
+      | variable | expected |
+      | value1   | result1  |
+      | value2   | result2  |</code></pre>
+        </section>
+
+        <section id="scoring">
+            <h2>Scoring and Thresholds</h2>
+
+            <h3>Threshold Guidelines</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Minimum</th>
+                        <th>Target</th>
+                        <th>Excellent</th>
+                        <th>Critical?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Faithfulness</strong></td>
+                        <td>0.85</td>
+                        <td>0.92</td>
+                        <td>0.98+</td>
+                        <td><span class="score-indicator score-excellent">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Coverage Completeness</strong></td>
+                        <td>0.80</td>
+                        <td>0.88</td>
+                        <td>0.95+</td>
+                        <td><span class="score-indicator score-excellent">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Executability</strong></td>
+                        <td>0.90</td>
+                        <td>0.95</td>
+                        <td>0.99+</td>
+                        <td><span class="score-indicator score-excellent">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Format Compliance</strong></td>
+                        <td>0.90</td>
+                        <td>0.97</td>
+                        <td>1.00</td>
+                        <td><span class="score-indicator score-excellent">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Traceability</strong></td>
+                        <td>0.95</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td><span class="score-indicator score-excellent">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Result Specificity</strong></td>
+                        <td>0.85</td>
+                        <td>0.92</td>
+                        <td>0.98+</td>
+                        <td><span class="score-indicator score-good">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Action Verb Clarity</strong></td>
+                        <td>0.90</td>
+                        <td>0.95</td>
+                        <td>0.99+</td>
+                        <td><span class="score-indicator score-good">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Terminology</strong></td>
+                        <td>0.80</td>
+                        <td>0.90</td>
+                        <td>0.95+</td>
+                        <td><span class="score-indicator score-good">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test Independence</strong></td>
+                        <td>0.85</td>
+                        <td>0.92</td>
+                        <td>0.98+</td>
+                        <td><span class="score-indicator score-good">No</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scenario Diversity</strong></td>
+                        <td>0.70</td>
+                        <td>0.85</td>
+                        <td>0.95+</td>
+                        <td><span class="score-indicator score-good">No</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Score Interpretation</h3>
+            <div class="feature-grid">
+                <div class="feature-card" style="border-left: 4px solid var(--success-color);">
+                    <h4>0.92 - 1.00: EXCELLENT</h4>
+                    <p class="score-excellent score-indicator">Production-ready test cases</p>
+                    <p>Minimal to no improvements needed</p>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--accent-color);">
+                    <h4>0.85 - 0.91: GOOD</h4>
+                    <p class="score-good score-indicator">Minor improvements suggested</p>
+                    <p>Can be used with minor refinements</p>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--warning-color);">
+                    <h4>0.75 - 0.84: ACCEPTABLE</h4>
+                    <p class="score-acceptable score-indicator">Some gaps in coverage or clarity</p>
+                    <p>Review and address recommendations</p>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--danger-color);">
+                    <h4>0.65 - 0.74: NEEDS IMPROVEMENT</h4>
+                    <p class="score-needs-improvement score-indicator">Significant issues present</p>
+                    <p>Major revisions needed before use</p>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid #000;">
+                    <h4>Below 0.65: FAILING</h4>
+                    <p style="background: #000; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block;">Major problems</p>
+                    <p>Not suitable for execution - regenerate test cases</p>
+                </div>
+            </div>
+
+            <h3>Pass/Fail Decision Matrix</h3>
+            <div class="mermaid">
+graph TD
+    A[All Critical Metrics Pass?<br/>Faithfulness ≥0.90<br/>Coverage ≥0.85<br/>Executability ≥0.95<br/>Format ≥0.95<br/>Traceability =1.0] --> B{Yes}
+    A --> C{No}
+    
+    B --> D[Overall Score ≥0.80?]
+    C --> E[FAIL]
+    
+    D --> F{Yes}
+    D --> G{No}
+    
+    F --> H[PASS ✓]
+    G --> I[CONDITIONAL<br/>Review needed]
+    
+    style A fill:#2563eb,color:#fff
+    style H fill:#10b981,color:#fff
+    style E fill:#ef4444,color:#fff
+    style I fill:#f59e0b,color:#000
+            </div>
+        </section>
+
+        <section id="implementation">
+            <h2>Implementation Guide</h2>
+
+            <h3>Step-by-Step Implementation</h3>
+
+            <h4>Step 1: Environment Setup</h4>
+            <pre><code># Create project directory
+mkdir test-case-eval
+cd test-case-eval
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install deepeval nltk pyyaml pytest python-dotenv</code></pre>
+
+            <h4>Step 2: Initialize Project Structure</h4>
+            <pre><code># Create directory structure
+mkdir -p config metrics/nltk_metrics evaluator test_data templates tests reports
+touch config/__init__.py metrics/__init__.py metrics/nltk_metrics/__init__.py
+touch evaluator/__init__.py tests/__init__.py</code></pre>
+
+            <h4>Step 3: Create Requirements File</h4>
+            <pre><code># requirements.txt
+deepeval>=0.20.0
+nltk>=3.8.0
+pyyaml>=6.0
+pytest>=7.0.0
+python-dotenv>=1.0.0</code></pre>
+
+            <h4>Step 4: Create Main Entry Point</h4>
+            <pre><code># main.py
+import argparse
+from pathlib import Path
+from datetime import datetime
+
+from config.nltk_setup import setup_nltk
+from evaluator.test_case_evaluator import TestCaseEvaluator, TestCaseEvaluationConfig
+from test_data.loader import load_evaluation_samples
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Test Case Design Prompt Evaluator"
+    )
+    parser.add_argument("--samples-dir", default="test_data")
+    parser.add_argument("--output", default="reports/report.json")
+    parser.add_argument("--format", default="standard", choices=["standard", "gherkin", "bdd"])
+    parser.add_argument("--strict", action="store_true")
+    
+    args = parser.parse_args()
+    
+    # Initialize NLTK
+    print("Initializing NLTK resources...")
+    setup_nltk()
+    
+    # Configure evaluator
+    config = TestCaseEvaluationConfig(
+        faithfulness_threshold=0.92 if args.strict else 0.90,
+        test_case_format=args.format
+    )
+    
+    evaluator = TestCaseEvaluator(config)
+    
+    # Load evaluation samples
+    samples = load_evaluation_samples(args.samples_dir)
+    print(f"Loaded {len(samples)} evaluation samples")
+    
+    # Run evaluations
+    results = []
+    for sample in samples:
+        print(f"Evaluating: {sample['id']} - {sample['name']}")
+        result = evaluator.evaluate(
+            requirement_text=sample["requirement"]["text"],
+            generated_test_cases=sample["generated"],
+            expected_test_cases=sample.get("expected"),
+            requirement_id=sample["id"]
+        )
+        results.append(result)
+        print(f"  Score: {result.overall_score:.3f} - {'PASS' if result.passed else 'FAIL'}")
+    
+    # Generate report
+    report = evaluator.generate_report(results, args.output)
+    
+    # Print summary
+    print("\n" + "="*60)
+    print("EVALUATION SUMMARY")
+    print("="*60)
+    print(f"Total Evaluations: {report['summary']['total_evaluations']}")
+    print(f"Passed: {report['summary']['passed']}")
+    print(f"Failed: {report['summary']['failed']}")
+    print(f"Pass Rate: {report['summary']['pass_rate']}%")
+    print(f"Average Score: {report['summary']['average_score']}")
+    print(f"\nReport saved to: {args.output}")
+    
+    return 0 if report['summary']['pass_rate'] >= 80 else 1
+
+if __name__ == "__main__":
+    exit(main())</code></pre>
+
+            <h4>Step 5: Create pytest Integration</h4>
+            <pre><code># tests/test_testcase_evaluation.py
+import pytest
+from evaluator.test_case_evaluator import TestCaseEvaluator, TestCaseEvaluationConfig
+from test_data.loader import load_evaluation_samples
+
+SAMPLES = load_evaluation_samples("test_data")
+
+@pytest.fixture
+def evaluator():
+    config = TestCaseEvaluationConfig()
+    return TestCaseEvaluator(config)
+
+@pytest.mark.parametrize("sample", SAMPLES, ids=lambda s: s.get("id", "unknown"))
+def test_generated_test_cases(evaluator, sample):
+    result = evaluator.evaluate(
+        requirement_text=sample["requirement"]["text"],
+        generated_test_cases=sample["generated"],
+        expected_test_cases=sample.get("expected"),
+        requirement_id=sample["id"]
+    )
+    
+    # Assert critical metrics
+    assert result.faithfulness_score >= 0.90, \
+        f"Faithfulness too low: {result.faithfulness_score}"
+    
+    assert result.coverage_score >= 0.85, \
+        f"Coverage too low: {result.coverage_score}"
+    
+    assert result.executability_score >= 0.95, \
+        f"Executability too low: {result.executability_score}"
+    
+    assert result.passed, \
+        f"Evaluation failed with score {result.overall_score}"</code></pre>
+        </section>
+
+        <section id="structure">
+            <h2>Project Structure</h2>
+
+            <h3>Complete Directory Structure</h3>
+            <pre><code>test-case-eval/
+│
+├── config/
+│   ├── __init__.py
+│   ├── deepeval_config.py          # DeepEval metric configurations
+│   ├── nltk_setup.py               # NLTK initialization
+│   └── thresholds.py               # Threshold configurations
+│
+├── metrics/
+│   ├── __init__.py
+│   └── nltk_metrics/
+│       ├── __init__.py
+│       ├── action_verb_analyzer.py
+│       ├── expected_result_analyzer.py
+│       ├── completeness_analyzer.py
+│       └── terminology_checker.py
+│
+├── evaluator/
+│   ├── __init__.py
+│   ├── test_case_evaluator.py      # Main evaluator class
+│   ├── test_case_parser.py         # Test case parsing utilities
+│   └── report_generator.py         # Report generation
+│
+├── test_data/
+│   ├── __init__.py
+│   ├── loader.py                   # Sample data loading
+│   ├── evaluation_samples.yaml     # Evaluation samples
+│   └── golden_test_cases/          # Reference test cases
+│       └── sample_test_cases.yaml
+│
+├── templates/
+│   ├── standard_test_case.yaml     # Standard format template
+│   └── gherkin_template.feature    # Gherkin format template
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_testcase_evaluation.py # pytest tests
+│   ├── test_metrics.py             # Unit tests for metrics
+│   └── conftest.py                 # pytest fixtures
+│
+├── reports/
+│   ├── .gitkeep
+│   └── templates/
+│       └── report_template.html
+│
+├── scripts/
+│   ├── run_evaluation.sh           # Shell script for CI/CD
+│   └── generate_samples.py         # Utility scripts
+│
+├── .env.example
+├── .gitignore
+├── main.py                         # Main entry point
+├── requirements.txt
+├── setup.py
+└── README.md</code></pre>
+        </section>
+
+        <section id="workflow">
+            <h2>Execution Workflow</h2>
+
+            <h3>Development Workflow</h3>
+            <div class="mermaid">
+graph TB
+    A[1. PREPARE REQUIREMENTS] --> A1[Gather Requirements<br/>Structure in YAML/JSON<br/>Include acceptance criteria]
+    
+    A1 --> B[2. GENERATE TEST CASES]
+    B --> B1[Run LLM Prompt<br/>Feed requirements<br/>Collect generated test cases]
+    
+    B1 --> C[3. EVALUATE GENERATED OUTPUT]
+    C --> C1[Run Evaluator<br/>python main.py --samples-dir test_data]
+    
+    C1 --> D[4. REVIEW RESULTS]
+    D --> D1[Check Report<br/>Review scores and recommendations<br/>Identify areas for improvement]
+    
+    D1 --> E{Results<br/>Satisfactory?}
+    E -->|No| F[5. ITERATE ON PROMPT]
+    F --> F1[Refine Prompt<br/>Adjust based on feedback<br/>Re-run evaluation]
+    F1 --> B
+    
+    E -->|Yes| G[6. DEPLOY]
+    G --> G1[Use test cases in production<br/>Update prompt library]
+    
+    style A fill:#2563eb,color:#fff
+    style B fill:#2563eb,color:#fff
+    style C fill:#7c3aed,color:#fff
+    style D fill:#06b6d4,color:#fff
+    style F fill:#f59e0b,color:#000
+    style G fill:#10b981,color:#fff
+            </div>
+
+            <h3>Commands Reference</h3>
+            <pre><code># Initialize environment (first time)
+python -m config.nltk_setup
+
+# Run evaluation with default settings
+python main.py
+
+# Run with strict thresholds (for production)
+python main.py --strict
+
+# Run for specific test case format
+python main.py --format gherkin
+
+# Run pytest integration
+pytest tests/ -v
+
+# Run with coverage report
+pytest tests/ -v --cov=evaluator --cov-report=html
+
+# Generate detailed report
+python main.py --output reports/detailed_$(date +%Y%m%d).json</code></pre>
+
+            <h3>CI/CD Integration</h3>
+            <pre><code># .github/workflows/test-case-eval.yml
+name: Test Case Evaluation
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          python -m config.nltk_setup
+      
+      - name: Run evaluation
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python main.py --strict --output reports/ci_report.json
+      
+      - name: Upload report
+        uses: actions/upload-artifact@v3
+        with:
+          name: evaluation-report
+          path: reports/ci_report.json
+      
+      - name: Check results
+        run: |
+          if [ $? -ne 0 ]; then
+            echo "Evaluation failed - check report for details"
+            exit 1
+          fi</code></pre>
+        </section>
+
+        <section id="summary">
+            <h2>Summary</h2>
+
+            <p>This guide provides a comprehensive framework for evaluating LLM prompts that generate test cases from IT requirements.</p>
+
+            <h3>Key Components</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>DeepEval</strong></td>
+                        <td>Semantic evaluation (faithfulness, coverage, independence)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>NLTK</strong></td>
+                        <td>Linguistic analysis (action verbs, clarity, terminology)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Custom Metrics</strong></td>
+                        <td>Domain-specific (traceability, format, diversity)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test Case Parser</strong></td>
+                        <td>Extract and structure generated test cases</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Combined Pipeline</strong></td>
+                        <td>Weighted scoring and comprehensive reporting</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Metrics Summary</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Metrics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Critical</strong></td>
+                        <td>Faithfulness, Coverage, Executability, Format, Traceability</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Important</strong></td>
+                        <td>Result Specificity, Action Clarity, Independence, Terminology</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Quality</strong></td>
+                        <td>Scenario Diversity, Test Data Quality</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Next Steps</h3>
+            <div class="success-box">
+                <h4>Implementation Checklist</h4>
+                <ol>
+                    <li>✅ Creating the complete project structure</li>
+                    <li>✅ Implementing all metric classes (NLTK analyzers)</li>
+                    <li>✅ Building the DeepEval integration with G-Eval metrics</li>
+                    <li>✅ Creating the test case parser</li>
+                    <li>✅ Building the combined evaluator</li>
+                    <li>✅ Creating sample evaluation data</li>
+                    <li>✅ Setting up pytest integration</li>
+                    <li>✅ Creating CI/CD pipeline configuration</li>
+                </ol>
+            </div>
+
+            <div class="info-box">
+                <h4>Ready to Proceed with Implementation?</h4>
+                <p>This comprehensive guide provides everything needed to build a robust test case evaluation system. Follow the implementation steps to create your evaluation pipeline and start measuring the quality of your LLM-generated test cases.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Test Case Design Prompt Evaluation Guide | Document Version: 1.0</p>
+        <p>Created: January 2026 | Last Updated: January 2026</p>
+    </footer>
+</div></div></div>
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#2563eb',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#1e40af',
+                lineColor: '#475569',
+                secondaryColor: '#7c3aed',
+                tertiaryColor: '#06b6d4'
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Highlight active section in navigation
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('nav a');
+
+        function highlightActiveSection() {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 100)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', highlightActiveSection);
+        highlightActiveSection(); // Call once on load
+    </script>
+</body>
+</html>

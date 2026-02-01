@@ -1,0 +1,2338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Test Script Prompt Evaluation Guide</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #7c3aed;
+            --accent-color: #06b6d4;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #1e293b;
+            --light-bg: #f8fafc;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --code-bg: #f1f5f9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--light-bg);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        nav {
+            background: white;
+            border-bottom: 2px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 0.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        nav li {
+            margin: 0.25rem;
+        }
+
+        nav a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        nav a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            background: white;
+            margin-bottom: 2rem;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem 0;
+        }
+
+        h4 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--danger-color);
+        }
+
+        pre {
+            background: var(--dark-bg);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: var(--light-bg);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+            border-left: 4px solid var(--accent-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-left: 4px solid var(--warning-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-left: 4px solid var(--success-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .danger-box {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border-left: 4px solid var(--danger-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .feature-card h4 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+        }
+
+        .mermaid {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border: 1px solid var(--border-color);
+        }
+
+        footer {
+            background: var(--dark-bg);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.75rem;
+            }
+
+            header p {
+                font-size: 1rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+
+            nav li {
+                width: 100%;
+            }
+
+            section {
+                padding: 1.5rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        .score-indicator {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+
+        .score-excellent {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .score-good {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .score-acceptable {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .score-needs-improvement {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .framework-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .framework-playwright {
+            background: #2563eb;
+            color: white;
+        }
+
+        .framework-selenium {
+            background: #10b981;
+            color: white;
+        }
+
+        .framework-cypress {
+            background: #06b6d4;
+            color: white;
+        }
+
+        .framework-robot {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 200px); /* Adjust based on header height */
+        }
+
+        aside {
+            width: 250px;
+            background: #f8f9fa;
+            padding: 1rem;
+            position: fixed;
+            top: 200px; /* Below header */
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border-color);
+        }
+
+        aside h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        aside ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        aside li {
+            margin: 0.5rem 0;
+        }
+
+        aside a {
+            color: var(--text-primary);
+            text-decoration: none;
+            display: block;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        aside a:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        aside a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 250px;
+        }
+
+        @media (max-width: 768px) {
+            aside {
+                display: none; /* Hide sidebar on mobile, or make it toggle */
+            }
+            .content {
+                margin-left: 0;
+            }
+        }
+
+        /* Sidebar override: place sidebar in the page flow and blend visually */
+        .page-container, .container {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            justify-content: center; /* center the main layout */
+        }
+
+        /* Left card (sidebar) */
+        aside {
+            width: 300px;
+            background: #ffffff;
+            padding: 1rem;
+            position: -webkit-sticky; /* Safari */
+            position: sticky;
+            top: 120px; /* keeps the card below the header while scrolling */
+            margin-top: 0;
+            align-self: flex-start;
+            height: fit-content;
+            overflow: visible;
+            z-index: 5;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+        }
+
+        aside h3 { margin-bottom: 0.75rem; color: var(--text-primary); }
+
+        /* Content column which holds the article card */
+        .content {
+            flex: 1 1 0;
+            max-width: 1200px;
+            margin-left: 0 !important;
+            margin-top: 2rem;
+        }
+
+        /* Article card that visually matches the site: centered, white, rounded */
+        .article-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.75rem;
+            box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 1100px) {
+            .page-container { padding: 0 1rem; }
+        }
+
+        @media (max-width: 768px) {
+            aside { display: none; }
+            .content { max-width: 100%; }
+            .article-card { padding: 1rem; border-radius: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Prompt Evaluation Guide - Automated Test Script Generation</h1>
+        <p>Automated test script generation specific prompt evaluation guide</p>
+    </header>
+
+    <div class="page-container">
+        <aside>
+            <h3>Prompt Evaluation Guides</h3>
+            <ul>
+                <li><a href="llm-prompt-evaluation-guide.html">Overview</a></li>
+                <li><a href="requirement-analysis-prompt-evaluation-guide.html">Requirement Analysis Guide</a></li>
+                <li><a href="test-case-design-prompt-evaluation-guide.html">Test Case Design Guide</a></li>
+                <li><a href="automated-test-script-prompt-evaluation-guide.html" class="active">Automated Test Script Guide</a></li>
+                <li><a href="unified-evaluation-system-v2.html">Solution</a></li>
+                <li><a href="code-architecture.html">Code Architecture</a></li>
+            </ul>
+        </aside>
+        <div class="content"><div class="article-card">
+            <nav>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#understanding">Understanding Prompts</a></li>
+            <li><a href="#frameworks">Framework Considerations</a></li>
+            <li><a href="#metrics">Recommended Metrics</a></li>
+            <li><a href="#architecture">Architecture</a></li>
+            <li><a href="#deepeval">DeepEval Config</a></li>
+            <li><a href="#nltk">NLTK Config</a></li>
+            <li><a href="#validators">Framework Validators</a></li>
+            <li><a href="#pipeline">Combined Pipeline</a></li>
+            <li><a href="#quality">Code Quality</a></li>
+            <li><a href="#scoring">Scoring & Thresholds</a></li>
+            <li><a href="#implementation">Implementation</a></li>
+            <li><a href="#structure">Project Structure</a></li>
+            <li><a href="#workflow">Execution Workflow</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="overview">
+            <h2>Overview</h2>
+            
+            <h3>Purpose</h3>
+            <p>This guide provides a comprehensive framework for evaluating LLM prompts that generate <strong>automated test scripts</strong> from test case designs and requirements. Unlike manual test cases, automated test scripts must be syntactically correct, follow framework-specific conventions, and be directly executable.</p>
+
+            <h3>The Challenge</h3>
+            <p>Automated test script generation introduces unique challenges not present in test case generation:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Challenge</th>
+                        <th>Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Syntax Correctness</strong></td>
+                        <td>Scripts must compile/parse without errors</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Framework Compliance</strong></td>
+                        <td>Must follow Playwright, Selenium, Cypress, etc. conventions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Selector Accuracy</strong></td>
+                        <td>Element selectors must be valid and maintainable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Assertion Correctness</strong></td>
+                        <td>Assertions must properly verify expected outcomes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Code Quality</strong></td>
+                        <td>Must follow coding standards and best practices</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Maintainability</strong></td>
+                        <td>Should use Page Object Model, proper abstractions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Error Handling</strong></td>
+                        <td>Must include proper waits, retries, error handling</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test Data Management</strong></td>
+                        <td>Data should be externalized and parameterized</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Supported Frameworks</h3>
+            <p>This evaluation framework supports multiple test automation frameworks:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4><span class="framework-badge framework-playwright">Playwright</span></h4>
+                    <p><strong>Languages:</strong> TypeScript, JavaScript, Python, Java</p>
+                    <p>Modern browser automation with auto-waiting and built-in test runner.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4><span class="framework-badge framework-selenium">Selenium</span></h4>
+                    <p><strong>Languages:</strong> Java, Python, C#, JavaScript</p>
+                    <p>Industry standard WebDriver protocol for browser automation.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4><span class="framework-badge framework-cypress">Cypress</span></h4>
+                    <p><strong>Languages:</strong> JavaScript, TypeScript</p>
+                    <p>Modern testing framework with time-travel debugging and automatic waiting.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4><span class="framework-badge" style="background: #f59e0b; color: white;">pytest</span></h4>
+                    <p><strong>Languages:</strong> Python</p>
+                    <p>Popular Python testing framework with fixtures and plugins.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4><span class="framework-badge" style="background: #8b5cf6; color: white;">WebDriverIO</span></h4>
+                    <p><strong>Languages:</strong> JavaScript, TypeScript</p>
+                    <p>Next-gen WebDriver test automation framework for Node.js.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4><span class="framework-badge" style="background: #ec4899; color: white;">Appium</span></h4>
+                    <p><strong>Languages:</strong> Java, Python, JavaScript</p>
+                    <p>Mobile automation framework for iOS and Android.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4><span class="framework-badge framework-robot">Robot Framework</span></h4>
+                    <p><strong>Languages:</strong> Robot DSL, Python</p>
+                    <p>Keyword-driven test automation framework with tabular syntax.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4><span class="framework-badge" style="background: #14b8a6; color: white;">TestCafe</span></h4>
+                    <p><strong>Languages:</strong> JavaScript, TypeScript</p>
+                    <p>Node.js end-to-end testing framework with no WebDriver required.</p>
+                </div>
+            </div>
+
+            <h3>What You'll Build</h3>
+            <div class="mermaid">
+graph TB
+    A[AUTOMATED TEST SCRIPT<br/>EVALUATION SYSTEM] --> B[DeepEval<br/>Metrics]
+    A --> C[NLTK/Code<br/>Analysis]
+    A --> D[Framework<br/>Validators]
+    
+    B --> B1[• Faithfulness<br/>• Completeness<br/>• G-Eval for Code Quality<br/>• G-Eval for Assertions]
+    C --> C1[• Comment Quality<br/>• Naming Convention<br/>• Code Structure]
+    D --> D1[• Playwright<br/>• Selenium<br/>• Cypress<br/>• pytest<br/>• WebDriverIO<br/>• Robot]
+    
+    B1 --> E[Combined Score<br/>& Report]
+    C1 --> E
+    D1 --> E
+    
+    style A fill:#2563eb,color:#fff
+    style E fill:#10b981,color:#fff
+    style B fill:#7c3aed,color:#fff
+    style C fill:#7c3aed,color:#fff
+    style D fill:#7c3aed,color:#fff
+            </div>
+        </section>
+
+        <section id="understanding">
+            <h2>Understanding Test Script Generation Prompts</h2>
+
+            <h3>Types of Test Script Generation Tasks</h3>
+            <p>Your prompts may ask the LLM to perform various script generation tasks:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>1. Full Test Script Generation</h4>
+                    <p><strong>Input:</strong> Test case + Requirements + Framework specification</p>
+                    <p><strong>Output:</strong> Complete, executable test script</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>2. Page Object Generation</h4>
+                    <p><strong>Input:</strong> Page/component description + Selectors</p>
+                    <p><strong>Output:</strong> Page Object class with methods</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>3. Test Data Factory Generation</h4>
+                    <p><strong>Input:</strong> Data requirements + Schemas</p>
+                    <p><strong>Output:</strong> Test data generation utilities</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>4. Test Utility/Helper Generation</h4>
+                    <p><strong>Input:</strong> Common operations description</p>
+                    <p><strong>Output:</strong> Reusable utility functions</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>5. API Test Script Generation</h4>
+                    <p><strong>Input:</strong> API specification (OpenAPI/Swagger) + Test cases</p>
+                    <p><strong>Output:</strong> API test scripts</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>6. E2E Test Script Generation</h4>
+                    <p><strong>Input:</strong> User journey + Multiple test cases</p>
+                    <p><strong>Output:</strong> End-to-end test suite</p>
+                </div>
+            </div>
+
+            <h3>Test Script Anatomy (What Must Be Evaluated)</h3>
+            <div class="info-box">
+                <h4>AUTOMATED TEST SCRIPT ANATOMY</h4>
+                <pre><code>// Test: TC-LOGIN-001 - Verify successful login
+// Requirement: REQ-AUTH-001                      [TRACEABILITY]
+
+IMPORTS & DEPENDENCIES                            [STRUCTURE]
+  import { test, expect } from '@playwright/test';
+  import { LoginPage } from '../pages/LoginPage';
+
+TEST CONFIGURATION                                [SETUP]
+  test.describe('Login Functionality', () => {
+    test.beforeEach(async ({ page }) => {
+      // Setup code
+    });
+
+TEST DATA                                         [DATA]
+  const testData = {
+    validUser: { email: 'test@example.com', password: 'Pass123!' }
+  };
+
+TEST IMPLEMENTATION                               [EXECUTION]
+  test('should login with valid credentials', async ({ page }) => {
+    // Arrange
+    const loginPage = new LoginPage(page);
+    await loginPage.navigate();
+    
+    // Act
+    await loginPage.login(testData.validUser);
+    
+    // Assert
+    await expect(page).toHaveURL('/dashboard');
+  });
+
+ASSERTIONS                                        [VERIFICATION]
+  • URL verification
+  • Element visibility checks
+  • Text content validation
+  • State verification
+
+ERROR HANDLING & CLEANUP                          [ROBUSTNESS]
+  test.afterEach(async ({ page }) => {
+    // Cleanup code
+  });</code></pre>
+            </div>
+        </section>
+
+        <section id="frameworks">
+            <h2>Framework-Specific Considerations</h2>
+
+            <h3>Playwright (TypeScript/JavaScript)</h3>
+            <div class="info-box">
+                <pre><code>// Expected patterns for Playwright
+import { test, expect, Page } from '@playwright/test';
+
+// Proper async/await usage
+test('example test', async ({ page }) => {
+    await page.goto('https://example.com');
+    await page.locator('#username').fill('user');
+    await page.locator('#password').fill('pass');
+    await page.locator('button[type="submit"]').click();
+    await expect(page).toHaveURL('/dashboard');
+});
+
+// Page Object Model
+class LoginPage {
+    readonly page: Page;
+    readonly usernameInput = () => this.page.locator('#username');
+    readonly passwordInput = () => this.page.locator('#password');
+    readonly submitButton = () => this.page.locator('button[type="submit"]');
+    
+    constructor(page: Page) {
+        this.page = page;
+    }
+    
+    async login(username: string, password: string) {
+        await this.usernameInput().fill(username);
+        await this.passwordInput().fill(password);
+        await this.submitButton().click();
+    }
+}</code></pre>
+                <p><strong>Key Evaluation Points for Playwright:</strong></p>
+                <ul>
+                    <li>Proper use of <code>async/await</code></li>
+                    <li>Correct locator strategies (<code>locator()</code>, <code>getByRole()</code>, <code>getByText()</code>)</li>
+                    <li>Built-in auto-waiting (no explicit waits needed)</li>
+                    <li>Proper assertion methods (<code>expect(locator).toBeVisible()</code>)</li>
+                    <li>Test isolation (each test gets fresh context)</li>
+                </ul>
+            </div>
+
+            <h3>Selenium (Python)</h3>
+            <div class="info-box">
+                <pre><code># Expected patterns for Selenium Python
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import pytest
+
+class TestLogin:
+    @pytest.fixture(autouse=True)
+    def setup(self, driver):
+        self.driver = driver
+        self.wait = WebDriverWait(driver, 10)
+    
+    def test_successful_login(self):
+        # Arrange
+        self.driver.get("https://example.com/login")
+        
+        # Act
+        username_field = self.wait.until(
+            EC.presence_of_element_located((By.ID, "username"))
+        )
+        username_field.send_keys("testuser")
+        
+        password_field = self.driver.find_element(By.ID, "password")
+        password_field.send_keys("password123")
+        
+        submit_button = self.driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+        submit_button.click()
+        
+        # Assert
+        self.wait.until(EC.url_contains("/dashboard"))
+        assert "/dashboard" in self.driver.current_url</code></pre>
+                <p><strong>Key Evaluation Points for Selenium:</strong></p>
+                <ul>
+                    <li>Proper WebDriver initialization and teardown</li>
+                    <li>Explicit waits (not <code>time.sleep()</code>)</li>
+                    <li>Correct locator strategies (By.ID, By.CSS_SELECTOR, By.XPATH)</li>
+                    <li>Exception handling for element interactions</li>
+                    <li>Proper driver cleanup</li>
+                </ul>
+            </div>
+
+            <h3>Cypress (JavaScript/TypeScript)</h3>
+            <div class="info-box">
+                <pre><code>// Expected patterns for Cypress
+describe('Login Functionality', () => {
+    beforeEach(() => {
+        cy.visit('/login');
+    });
+    
+    it('should login with valid credentials', () => {
+        // Arrange & Act
+        cy.get('#username').type('testuser');
+        cy.get('#password').type('password123');
+        cy.get('button[type="submit"]').click();
+        
+        // Assert
+        cy.url().should('include', '/dashboard');
+        cy.get('.welcome-message').should('be.visible');
+    });
+    
+    it('should show error for invalid credentials', () => {
+        cy.get('#username').type('invaliduser');
+        cy.get('#password').type('wrongpass');
+        cy.get('button[type="submit"]').click();
+        
+        cy.get('.error-message').should('be.visible')
+            .and('contain', 'Invalid credentials');
+    });
+});</code></pre>
+                <p><strong>Key Evaluation Points for Cypress:</strong></p>
+                <ul>
+                    <li>Chaining syntax (<code>.should()</code>, <code>.and()</code>)</li>
+                    <li>Built-in retry-ability (no explicit waits)</li>
+                    <li>Proper use of <code>cy.</code> commands</li>
+                    <li>Correct assertion patterns</li>
+                    <li>Command chain structure</li>
+                </ul>
+            </div>
+
+            <h3>Robot Framework</h3>
+            <div class="info-box">
+                <pre><code>*** Settings ***
+Library    SeleniumLibrary
+Library    Collections
+Resource   ../resources/keywords.robot
+Suite Setup    Open Browser To Login Page
+Suite Teardown    Close Browser
+
+*** Variables ***
+${LOGIN_URL}    https://example.com/login
+${VALID_USER}    testuser
+${VALID_PASS}    password123
+
+*** Test Cases ***
+Successful Login With Valid Credentials
+    [Documentation]    TC-LOGIN-001: Verify user can login with valid credentials
+    [Tags]    smoke    login    positive
+    Given User Is On Login Page
+    When User Enters Username    ${VALID_USER}
+    And User Enters Password    ${VALID_PASS}
+    And User Clicks Login Button
+    Then User Should Be Redirected To Dashboard
+    And Welcome Message Should Be Displayed
+
+*** Keywords ***
+User Is On Login Page
+    Go To    ${LOGIN_URL}
+    Wait Until Page Contains Element    id=username
+
+User Enters Username
+    [Arguments]    ${username}
+    Input Text    id=username    ${username}
+
+User Enters Password
+    [Arguments]    ${password}
+    Input Password    id=password    ${password}</code></pre>
+                <p><strong>Key Evaluation Points for Robot Framework:</strong></p>
+                <ul>
+                    <li>Proper Settings, Variables, Test Cases, Keywords sections</li>
+                    <li>Keyword-driven approach</li>
+                    <li>Given-When-Then structure (BDD style)</li>
+                    <li>Proper documentation and tags</li>
+                    <li>Resource file usage</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="metrics">
+            <h2>Recommended Metrics for Test Script Evaluation</h2>
+
+            <h3>Metric Selection Framework</h3>
+            <p>For test script evaluation, we need metrics across multiple dimensions:</p>
+
+            <div class="mermaid">
+graph LR
+    A[SYNTAX<br/>CORRECTNESS] --> A1[Does code<br/>parse/compile?]
+    B[FRAMEWORK<br/>COMPLIANCE] --> B1[Follows framework<br/>patterns?]
+    C[FUNCTIONAL<br/>CORRECTNESS] --> C1[Tests the right<br/>behavior?]
+    D[CODE<br/>QUALITY] --> D1[Clean,<br/>maintainable code?]
+    
+    E[SELECTOR<br/>QUALITY] --> E1[Valid, maintainable<br/>selectors?]
+    F[ASSERTION<br/>QUALITY] --> F1[Correct assertions<br/>present?]
+    G[ERROR<br/>HANDLING] --> G1[Proper waits,<br/>retries?]
+    H[TEST<br/>DATA] --> H1[Appropriate test<br/>data handling?]
+    
+    style A fill:#2563eb,color:#fff
+    style B fill:#2563eb,color:#fff
+    style C fill:#2563eb,color:#fff
+    style D fill:#2563eb,color:#fff
+    style E fill:#7c3aed,color:#fff
+    style F fill:#7c3aed,color:#fff
+    style G fill:#7c3aed,color:#fff
+    style H fill:#7c3aed,color:#fff
+            </div>
+
+            <h3>Primary Metrics (Must-Have)</h3>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>1. Syntax Correctness</h4>
+                    <p><strong>Tool:</strong> Custom Parser</p>
+                    <p><strong>Purpose:</strong> Validates that the generated code is syntactically correct.</p>
+                    <p><strong>Threshold:</strong> = 1.0 (must be syntactically correct)</p>
+                    <div class="danger-box">
+                        <p><strong>Why it's critical:</strong> Code with syntax errors cannot be executed at all.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h4>2. Framework Compliance</h4>
+                    <p><strong>Tool:</strong> Custom Validator</p>
+                    <p><strong>Purpose:</strong> Ensures code follows framework-specific patterns.</p>
+                    <p><strong>Threshold:</strong> ≥ 0.90</p>
+                    <div class="warning-box">
+                        <p><strong>Why it's critical:</strong> Non-compliant code won't integrate with test runners.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h4>3. Test Case Faithfulness</h4>
+                    <p><strong>Tool:</strong> DeepEval</p>
+                    <p><strong>Purpose:</strong> Ensures generated script implements the test case correctly.</p>
+                    <p><strong>Threshold:</strong> ≥ 0.95</p>
+                    <div class="info-box">
+                        <p><strong>Why it's critical:</strong> Scripts must test what the test case specifies.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h4>4. Assertion Completeness</h4>
+                    <p><strong>Tool:</strong> Custom + G-Eval</p>
+                    <p><strong>Purpose:</strong> Validates that proper assertions exist for all expected outcomes.</p>
+                    <p><strong>Threshold:</strong> ≥ 0.90</p>
+                    <div class="danger-box">
+                        <p><strong>Why it's critical:</strong> Tests without proper assertions always pass.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h4>5. Selector Quality</h4>
+                    <p><strong>Tool:</strong> Custom</p>
+                    <p><strong>Purpose:</strong> Evaluates the quality and maintainability of element selectors.</p>
+                    <p><strong>Threshold:</strong> ≥ 0.85</p>
+                    <div class="warning-box">
+                        <p><strong>Why it's critical:</strong> Poor selectors cause flaky tests.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Secondary Metrics (Recommended)</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Tool</th>
+                        <th>Purpose</th>
+                        <th>Threshold</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Wait Strategy Correctness</strong></td>
+                        <td>Custom</td>
+                        <td>Ensures proper synchronization/wait patterns</td>
+                        <td>≥ 0.95</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Code Structure Quality</strong></td>
+                        <td>NLTK + Custom</td>
+                        <td>Evaluates code organization and maintainability</td>
+                        <td>≥ 0.80</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Comment Quality</strong></td>
+                        <td>NLTK</td>
+                        <td>Checks for meaningful comments and documentation</td>
+                        <td>≥ 0.70</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Error Handling Quality</strong></td>
+                        <td>Custom</td>
+                        <td>Validates proper error handling and recovery</td>
+                        <td>≥ 0.75</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Naming Convention Compliance</strong></td>
+                        <td>NLTK + Custom</td>
+                        <td>Ensures consistent and descriptive naming</td>
+                        <td>≥ 0.85</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Metric Summary Table</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Tool</th>
+                        <th>Weight</th>
+                        <th>Threshold</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Syntax Correctness</td>
+                        <td>Parser</td>
+                        <td>15%</td>
+                        <td>= 1.00</td>
+                        <td><span class="score-indicator score-excellent">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td>Framework Compliance</td>
+                        <td>Custom</td>
+                        <td>15%</td>
+                        <td>≥ 0.90</td>
+                        <td><span class="score-indicator score-excellent">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td>Test Case Faithfulness</td>
+                        <td>DeepEval</td>
+                        <td>15%</td>
+                        <td>≥ 0.95</td>
+                        <td><span class="score-indicator score-excellent">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td>Assertion Completeness</td>
+                        <td>Custom/G-Eval</td>
+                        <td>12%</td>
+                        <td>≥ 0.90</td>
+                        <td><span class="score-indicator score-excellent">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td>Selector Quality</td>
+                        <td>Custom</td>
+                        <td>10%</td>
+                        <td>≥ 0.85</td>
+                        <td><span class="score-indicator score-excellent">Critical</span></td>
+                    </tr>
+                    <tr>
+                        <td>Wait Strategy</td>
+                        <td>Custom</td>
+                        <td>8%</td>
+                        <td>≥ 0.95</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                    <tr>
+                        <td>Code Structure</td>
+                        <td>Custom</td>
+                        <td>8%</td>
+                        <td>≥ 0.80</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                    <tr>
+                        <td>Comment Quality</td>
+                        <td>NLTK</td>
+                        <td>5%</td>
+                        <td>≥ 0.70</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                    <tr>
+                        <td>Error Handling</td>
+                        <td>Custom</td>
+                        <td>6%</td>
+                        <td>≥ 0.75</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                    <tr>
+                        <td>Naming Conventions</td>
+                        <td>NLTK/Custom</td>
+                        <td>6%</td>
+                        <td>≥ 0.85</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="architecture">
+            <h2>Evaluation Framework Architecture</h2>
+
+            <h3>System Architecture</h3>
+            <div class="mermaid">
+graph TB
+    subgraph INPUT["INPUT LAYER"]
+        A1[Test Case Design]
+        A2[Requirements Document]
+        A3[Framework Specification]
+    end
+    
+    A1 --> B[Generated Script<br/>LLM Output]
+    A2 --> B
+    A3 --> B
+    
+    B --> C{SYNTAX VALIDATION LAYER}
+    
+    C --> D1[Python Parser AST]
+    C --> D2[JavaScript/TS Parser]
+    C --> D3[Java Parser]
+    
+    D1 --> E{PASS?}
+    D2 --> E
+    D3 --> E
+    
+    E -->|Yes| F[FRAMEWORK VALIDATION LAYER]
+    E -->|No| X[Return Error]
+    
+    F --> G1[Playwright Validator]
+    F --> G2[Selenium Validator]
+    F --> G3[Cypress Validator]
+    F --> G4[Robot Validator]
+    
+    G1 --> H[EVALUATION ENGINE]
+    G2 --> H
+    G3 --> H
+    G4 --> H
+    
+    H --> I[DeepEval Module<br/>Faithfulness, Assertions,<br/>Code Quality, Error Handling]
+    H --> J[Code Analysis Module<br/>Selectors, Waits,<br/>Assertions, Structure]
+    H --> K[NLTK Module<br/>Comments, Naming,<br/>Documentation]
+    
+    I --> L[OUTPUT LAYER]
+    J --> L
+    K --> L
+    
+    L --> M1[Detailed Report]
+    L --> M2[Code Quality Dashboard]
+    L --> M3[Framework Compliance Report]
+    
+    style INPUT fill:#e0f2fe
+    style C fill:#7c3aed,color:#fff
+    style F fill:#7c3aed,color:#fff
+    style H fill:#2563eb,color:#fff
+    style L fill:#10b981,color:#fff
+    style X fill:#ef4444,color:#fff
+            </div>
+        </section>
+
+        <section id="deepeval">
+            <h2>DeepEval Configuration for Test Script Generation</h2>
+
+            <h3>Metric Configuration</h3>
+
+            <h4>1. Faithfulness Metric</h4>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Ensures generated script implements the test case correctly.</p>
+                <pre><code>from deepeval.metrics import FaithfulnessMetric
+
+faithfulness_metric = FaithfulnessMetric(
+    threshold=0.95,
+    model="gpt-4",
+    include_reason=True
+)</code></pre>
+            </div>
+
+            <h4>2. G-Eval: Assertion Quality</h4>
+            <div class="info-box">
+                <pre><code>from deepeval.metrics import GEval
+from deepeval.test_case import LLMTestCaseParams
+
+assertion_quality_metric = GEval(
+    name="AssertionQuality",
+    criteria="""
+    Evaluate the quality and completeness of assertions in the test script.
+    
+    High-quality assertions must:
+    1. Verify all expected outcomes from the test case
+    2. Use appropriate assertion methods for the framework
+    3. Have descriptive assertion messages
+    4. Assert specific values, not just presence
+    5. Include both positive and negative verifications where applicable
+    
+    Score 1.0 for comprehensive, specific assertions.
+    Score 0.0 for missing or weak assertions.
+    """,
+    evaluation_params=[
+        LLMTestCaseParams.INPUT,
+        LLMTestCaseParams.ACTUAL_OUTPUT
+    ],
+    threshold=0.90,
+    model="gpt-4"
+)</code></pre>
+            </div>
+
+            <h4>3. G-Eval: Code Quality</h4>
+            <div class="info-box">
+                <pre><code>code_quality_metric = GEval(
+    name="CodeQuality",
+    criteria="""
+    Evaluate the overall code quality of the generated test script.
+    
+    Consider:
+    1. Clean code principles (readable, maintainable)
+    2. Proper separation of concerns (Page Objects, utilities)
+    3. DRY principle (no unnecessary duplication)
+    4. Appropriate abstraction level
+    5. Consistent coding style
+    6. Meaningful variable and function names
+    
+    Score 1.0 for excellent code quality.
+    Score 0.0 for poor, unmaintainable code.
+    """,
+    evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
+    threshold=0.80,
+    model="gpt-4"
+)</code></pre>
+            </div>
+
+            <h4>4. G-Eval: Wait Strategy</h4>
+            <div class="info-box">
+                <pre><code>wait_strategy_metric = GEval(
+    name="WaitStrategy",
+    criteria="""
+    Evaluate the synchronization/wait strategy in the test script.
+    
+    Good wait strategies:
+    1. Use explicit waits with proper conditions
+    2. No hard-coded sleeps (time.sleep, Thread.sleep)
+    3. Appropriate timeout values
+    4. Wait for specific conditions (visibility, clickable)
+    5. Leverage framework's built-in waiting
+    
+    Bad patterns to flag:
+    - time.sleep(), Thread.sleep(), setTimeout with fixed delay
+    - Missing waits before critical interactions
+    - Excessive waits that slow tests
+    
+    Score 1.0 for optimal wait strategy.
+    Score 0.0 for hard-coded sleeps or missing waits.
+    """,
+    evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
+    threshold=0.95,
+    model="gpt-4"
+)</code></pre>
+            </div>
+
+            <h4>5. G-Eval: Selector Quality</h4>
+            <div class="info-box">
+                <pre><code>selector_quality_metric = GEval(
+    name="SelectorQuality",
+    criteria="""
+    Evaluate the quality of element selectors in the test script.
+    
+    Good selectors (prefer in order):
+    1. data-testid, data-test, data-cy attributes
+    2. ARIA labels and roles (getByRole, getByLabel)
+    3. Semantic HTML (button, input[type], form)
+    4. Stable CSS classes (not auto-generated)
+    5. IDs (if stable and meaningful)
+    
+    Bad selectors to flag:
+    - XPath with index: //div[3]/span[2]
+    - Auto-generated classes: .MuiButton-root-123
+    - Fragile paths: body > div > div > div > button
+    
+    Score 1.0 for robust, maintainable selectors.
+    Score 0.0 for fragile selectors.
+    """,
+    evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
+    threshold=0.85,
+    model="gpt-4"
+)</code></pre>
+            </div>
+        </section>
+
+        <section id="nltk">
+            <h2>NLTK Configuration for Test Script Generation</h2>
+
+            <h3>Comment and Documentation Analyzer</h3>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Analyzes comment quality in test scripts.</p>
+                <pre><code>import re
+from nltk.tokenize import word_tokenize, sent_tokenize
+from typing import Dict, List
+
+class CommentAnalyzer:
+    """Analyzes comment quality in test scripts."""
+    
+    # Comment patterns for different languages
+    COMMENT_PATTERNS = {
+        "python": {
+            "single": r'#.*$',
+            "multi": r'"""[\s\S]*?"""|\'\'\'[\s\S]*?\'\'\''
+        },
+        "javascript": {
+            "single": r'//.*$',
+            "multi": r'/\*[\s\S]*?\*/'
+        }
+    }
+    
+    # Keywords that indicate good comments
+    MEANINGFUL_KEYWORDS = [
+        'test', 'verify', 'check', 'ensure', 'validate',
+        'step', 'arrange', 'act', 'assert',
+        'setup', 'teardown', 'cleanup', 'precondition',
+        'note', 'important', 'warning', 'deprecated'
+    ]
+    
+    def analyze_comment_quality(self, code: str) -> Dict:
+        """Analyze quality of comments in code."""
+        # Implementation details...
+        pass</code></pre>
+            </div>
+
+            <h3>Naming Convention Analyzer</h3>
+            <div class="info-box">
+                <p><strong>Purpose:</strong> Analyzes naming conventions in test scripts.</p>
+                <pre><code>from enum import Enum
+
+class NamingStyle(Enum):
+    CAMEL_CASE = "camelCase"
+    PASCAL_CASE = "PascalCase"
+    SNAKE_CASE = "snake_case"
+    SCREAMING_SNAKE = "SCREAMING_SNAKE_CASE"
+    KEBAB_CASE = "kebab-case"
+
+class NamingConventionAnalyzer:
+    """Analyzes naming conventions in test scripts."""
+    
+    # Expected conventions by language
+    LANGUAGE_CONVENTIONS = {
+        "python": {
+            "function": NamingStyle.SNAKE_CASE,
+            "class": NamingStyle.PASCAL_CASE,
+            "variable": NamingStyle.SNAKE_CASE,
+            "constant": NamingStyle.SCREAMING_SNAKE
+        },
+        "javascript": {
+            "function": NamingStyle.CAMEL_CASE,
+            "class": NamingStyle.PASCAL_CASE,
+            "variable": NamingStyle.CAMEL_CASE,
+            "constant": NamingStyle.SCREAMING_SNAKE
+        }
+    }
+    
+    def analyze_naming(self, code: str) -> Dict:
+        """Analyze naming conventions in code."""
+        # Implementation details...
+        pass</code></pre>
+            </div>
+        </section>
+
+        <section id="validators">
+            <h2>Framework-Specific Validators</h2>
+
+            <h3>Base Validator Class</h3>
+            <div class="info-box">
+                <pre><code>from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Any
+
+@dataclass
+class ValidationResult:
+    """Result of framework validation."""
+    is_valid: bool
+    score: float
+    errors: List[str]
+    warnings: List[str]
+    details: Dict[str, Any]
+
+class BaseFrameworkValidator(ABC):
+    """Base class for framework-specific validators."""
+    
+    def __init__(self):
+        self.required_imports = []
+        self.required_patterns = []
+        self.forbidden_patterns = []
+        self.best_practice_patterns = []
+    
+    @abstractmethod
+    def validate(self, code: str) -> ValidationResult:
+        """Validate the code against framework requirements."""
+        pass
+    
+    @abstractmethod
+    def get_framework_name(self) -> str:
+        """Return the framework name."""
+        pass</code></pre>
+            </div>
+
+            <h3>Playwright Validator</h3>
+            <div class="info-box">
+                <pre><code>class PlaywrightValidator(BaseFrameworkValidator):
+    """Validator for Playwright test scripts."""
+    
+    def __init__(self, language: str = "typescript"):
+        super().__init__()
+        self.language = language
+        self._setup_patterns()
+    
+    def _setup_patterns(self):
+        """Setup Playwright-specific patterns."""
+        self.required_imports = [
+            r'from @playwright/test import.*test',
+            r'from @playwright/test import.*expect',
+        ]
+        
+        self.required_patterns = [
+            r'test\s*\(',  # Test declaration
+            r'async\s*\(',  # Async usage
+            r'await\s+',    # Await usage
+        ]
+        
+        self.forbidden_patterns = [
+            r'time\.sleep\(',
+            r'Thread\.sleep\(',
+            r'setTimeout\(\s*\d+\s*\)',  # Numeric setTimeout
+        ]
+        
+        self.best_practice_patterns = [
+            r'page\.locator\(',
+            r'page\.getByRole\(',
+            r'page\.getByTestId\(',
+            r'expect\(.*\)\.toBe',
+        ]</code></pre>
+            </div>
+
+            <h3>Selenium Python Validator</h3>
+            <div class="info-box">
+                <pre><code>class SeleniumPythonValidator(BaseFrameworkValidator):
+    """Validator for Selenium Python test scripts."""
+    
+    def __init__(self):
+        super().__init__()
+        self._setup_patterns()
+    
+    def _setup_patterns(self):
+        """Setup Selenium Python-specific patterns."""
+        self.required_imports = [
+            r'from selenium import webdriver',
+            r'from selenium\.webdriver\.common\.by import By',
+        ]
+        
+        self.required_patterns = [
+            r'WebDriverWait\(',
+            r'expected_conditions',
+            r'driver\.',
+        ]
+        
+        self.forbidden_patterns = [
+            r'time\.sleep\(',  # Should use WebDriverWait instead
+        ]
+        
+        self.best_practice_patterns = [
+            r'WebDriverWait.*until\(',
+            r'By\.(ID|CSS_SELECTOR|XPATH)',
+            r'@pytest\.fixture',
+            r'driver\.quit\(',
+        ]</code></pre>
+            </div>
+
+            <h3>Cypress Validator</h3>
+            <div class="info-box">
+                <pre><code>class CypressValidator(BaseFrameworkValidator):
+    """Validator for Cypress test scripts."""
+    
+    def __init__(self):
+        super().__init__()
+        self._setup_patterns()
+    
+    def _setup_patterns(self):
+        """Setup Cypress-specific patterns."""
+        self.required_patterns = [
+            r'describe\s*\(',
+            r'it\s*\(',
+            r'cy\.',
+        ]
+        
+        self.forbidden_patterns = [
+            r'async\s*\(',   # Cypress doesn't use async/await
+            r'await\s+',
+            r'setTimeout\(',
+            r'setInterval\(',
+        ]
+        
+        self.best_practice_patterns = [
+            r'cy\.get\(',
+            r'\.should\(',
+            r'\.and\(',
+            r'beforeEach\(',
+        ]</code></pre>
+            </div>
+
+            <h3>Validator Factory</h3>
+            <div class="info-box">
+                <pre><code>class ValidatorFactory:
+    """Factory for creating framework-specific validators."""
+    
+    _validators = {
+        "playwright": PlaywrightValidator,
+        "selenium-python": SeleniumPythonValidator,
+        "selenium-java": SeleniumJavaValidator,
+        "cypress": CypressValidator,
+        "webdriverio": WebDriverIOValidator,
+        "robot": RobotValidator,
+    }
+    
+    @classmethod
+    def get_validator(cls, framework: str) -> Optional[BaseFrameworkValidator]:
+        """Get validator for specified framework."""
+        validator_class = cls._validators.get(framework.lower())
+        if validator_class:
+            return validator_class()
+        return None
+    
+    @classmethod
+    def list_supported_frameworks(cls) -> list:
+        """Return list of supported frameworks."""
+        return list(cls._validators.keys())
+    
+    @classmethod
+    def detect_framework(cls, code: str) -> Optional[str]:
+        """Detect framework from code."""
+        # Implementation to detect framework from imports/patterns
+        pass</code></pre>
+            </div>
+        </section>
+
+        <section id="pipeline">
+            <h2>Combined Evaluation Pipeline</h2>
+
+            <h3>Main Evaluator Architecture</h3>
+            <div class="mermaid">
+graph TB
+    A[Input: Test Case +<br/>Generated Script] --> B[TestScriptEvaluator]
+    
+    B --> C{Syntax Valid?}
+    C -->|No| X[FAIL: Syntax Error]
+    C -->|Yes| D[Framework Validation]
+    
+    D --> E{Run All Evaluations}
+    
+    E --> F[DeepEval Metrics]
+    F --> F1[Faithfulness: 0.96]
+    F --> F2[Assertions: 0.92]
+    F --> F3[Code Quality: 0.88]
+    
+    E --> G[Code Analysis]
+    G --> G1[Selectors: 0.89]
+    G --> G2[Waits: 0.95]
+    G --> G3[Structure: 0.85]
+    
+    E --> H[NLTK Analysis]
+    H --> H1[Comments: 0.75]
+    H --> H2[Naming: 0.91]
+    
+    F1 --> I[Calculate Weighted Score]
+    F2 --> I
+    F3 --> I
+    G1 --> I
+    G2 --> I
+    G3 --> I
+    H1 --> I
+    H2 --> I
+    
+    I --> J[Overall Score: 0.91]
+    J --> K{Pass Threshold?}
+    K -->|Yes| L[PASS ✓]
+    K -->|No| M[FAIL ✗]
+    
+    L --> N[Generate Report]
+    M --> N
+    N --> O[Recommendations]
+    
+    style B fill:#2563eb,color:#fff
+    style I fill:#7c3aed,color:#fff
+    style L fill:#10b981,color:#fff
+    style M fill:#ef4444,color:#fff
+    style X fill:#ef4444,color:#fff
+    style N fill:#06b6d4,color:#fff
+            </div>
+
+            <h3>Evaluation Configuration</h3>
+            <pre><code>from dataclasses import dataclass
+
+@dataclass
+class TestScriptEvaluationConfig:
+    """Configuration for test script evaluation."""
+    framework: str = "playwright"
+    language: str = "typescript"
+    faithfulness_threshold: float = 0.95
+    syntax_required: bool = True
+    framework_compliance_threshold: float = 0.90
+    code_quality_threshold: float = 0.80
+    model: str = "gpt-4"</code></pre>
+
+            <h3>Running the Evaluator</h3>
+            <pre><code>from evaluator.test_script_evaluator import TestScriptEvaluator, TestScriptEvaluationConfig
+
+# Initialize evaluator
+config = TestScriptEvaluationConfig(
+    framework="playwright",
+    language="typescript"
+)
+evaluator = TestScriptEvaluator(config)
+
+# Run evaluation
+result = evaluator.evaluate(
+    test_case_text="Test Case: Verify login with valid credentials...",
+    generated_script="import { test, expect } from '@playwright/test'...",
+    expected_script="...",  # Optional
+    requirement_text="REQ-AUTH-001: User authentication..."
+)
+
+# Check results
+print(f"Overall Score: {result.overall_score:.3f}")
+print(f"Passed: {result.passed}")
+print(f"Syntax Valid: {result.syntax_valid}")
+print(f"Framework Score: {result.framework_compliance_score:.3f}")
+print(f"Faithfulness: {result.faithfulness_score:.3f}")</code></pre>
+        </section>
+
+        <section id="quality">
+            <h2>Code Quality Analysis</h2>
+
+            <h3>Selector Quality Analysis</h3>
+            <div class="info-box">
+                <h4>Good Selectors (Prefer in Order):</h4>
+                <ol>
+                    <li><strong>Test IDs:</strong> <code>data-testid</code>, <code>data-test</code>, <code>data-cy</code></li>
+                    <li><strong>ARIA attributes:</strong> <code>getByRole</code>, <code>getByLabel</code>, <code>aria-label</code></li>
+                    <li><strong>Semantic HTML:</strong> <code>button</code>, <code>input[type="text"]</code>, <code>form</code></li>
+                    <li><strong>Stable CSS classes:</strong> Non-generated, meaningful class names</li>
+                    <li><strong>IDs:</strong> If stable and meaningful</li>
+                </ol>
+            </div>
+
+            <div class="danger-box">
+                <h4>Bad Selectors (Avoid):</h4>
+                <ul>
+                    <li><strong>XPath with indices:</strong> <code>//div[3]/span[2]</code></li>
+                    <li><strong>Auto-generated classes:</strong> <code>.MuiButton-root-123</code></li>
+                    <li><strong>Fragile paths:</strong> <code>body > div > div > div > button</code></li>
+                    <li><strong>Text-based (i18n issues):</strong> <code>getByText('Submit')</code> in non-English apps</li>
+                </ul>
+            </div>
+
+            <h3>Wait Strategy Analysis</h3>
+            <div class="success-box">
+                <h4>Good Wait Strategies:</h4>
+                <ul>
+                    <li>Explicit waits with conditions (WebDriverWait)</li>
+                    <li>Framework built-in auto-waiting (Playwright, Cypress)</li>
+                    <li>Wait for specific states (visible, clickable, etc.)</li>
+                    <li>Reasonable timeout values (10-30 seconds)</li>
+                </ul>
+            </div>
+
+            <div class="danger-box">
+                <h4>Bad Wait Patterns (Must Fix):</h4>
+                <ul>
+                    <li><code>time.sleep(5)</code> - Hard-coded sleep</li>
+                    <li><code>Thread.sleep(1000)</code> - Hard-coded sleep</li>
+                    <li><code>setTimeout(5000)</code> - Hard-coded delay</li>
+                    <li><code>cy.wait(5000)</code> - Numeric wait in Cypress</li>
+                </ul>
+            </div>
+
+            <h3>Assertion Patterns</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Framework</th>
+                        <th>Good Assertions</th>
+                        <th>Weak Assertions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Playwright</strong></td>
+                        <td><code>await expect(locator).toBeVisible()</code><br/><code>await expect(page).toHaveURL('/dashboard')</code></td>
+                        <td><code>assertTrue(element !== null)</code><br/><code>expect(text).toBeTruthy()</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Selenium</strong></td>
+                        <td><code>assert element.is_displayed()</code><br/><code>assert '/dashboard' in driver.current_url</code></td>
+                        <td><code>assert True</code><br/><code>assert element</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cypress</strong></td>
+                        <td><code>cy.get('.msg').should('be.visible')</code><br/><code>cy.url().should('include', '/dashboard')</code></td>
+                        <td><code>cy.get('.msg')</code> (no assertion)<br/><code>expect(true).to.be.true</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="scoring">
+            <h2>Scoring and Thresholds</h2>
+
+            <h3>Threshold Guidelines</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Minimum</th>
+                        <th>Target</th>
+                        <th>Excellent</th>
+                        <th>Critical?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Syntax Correctness</strong></td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td>1.00</td>
+                        <td><span class="score-indicator score-excellent">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Framework Compliance</strong></td>
+                        <td>0.85</td>
+                        <td>0.92</td>
+                        <td>0.98+</td>
+                        <td><span class="score-indicator score-excellent">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Test Case Faithfulness</strong></td>
+                        <td>0.90</td>
+                        <td>0.95</td>
+                        <td>0.99+</td>
+                        <td><span class="score-indicator score-excellent">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Assertion Completeness</strong></td>
+                        <td>0.85</td>
+                        <td>0.92</td>
+                        <td>0.98+</td>
+                        <td><span class="score-indicator score-excellent">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Selector Quality</strong></td>
+                        <td>0.80</td>
+                        <td>0.88</td>
+                        <td>0.95+</td>
+                        <td><span class="score-indicator score-excellent">Yes</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Wait Strategy</strong></td>
+                        <td>0.90</td>
+                        <td>0.95</td>
+                        <td>1.00</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Code Quality</strong></td>
+                        <td>0.75</td>
+                        <td>0.85</td>
+                        <td>0.95+</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Error Handling</strong></td>
+                        <td>0.70</td>
+                        <td>0.80</td>
+                        <td>0.90+</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Comment Quality</strong></td>
+                        <td>0.60</td>
+                        <td>0.75</td>
+                        <td>0.85+</td>
+                        <td><span class="score-indicator score-acceptable">Nice-to-have</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Naming Conventions</strong></td>
+                        <td>0.80</td>
+                        <td>0.90</td>
+                        <td>0.95+</td>
+                        <td><span class="score-indicator score-good">Important</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Framework-Specific Threshold Adjustments</h3>
+            <div class="info-box">
+                <h4>PLAYWRIGHT</h4>
+                <ul>
+                    <li>Higher threshold for selector quality (0.90) - has getByRole, getByTestId</li>
+                    <li>Lower threshold for waits (auto-waiting built-in)</li>
+                    <li>Higher threshold for assertion variety (rich assertion library)</li>
+                </ul>
+            </div>
+
+            <div class="success-box">
+                <h4>SELENIUM</h4>
+                <ul>
+                    <li>Higher threshold for explicit waits (no auto-waiting)</li>
+                    <li>Higher threshold for cleanup (driver.quit must be called)</li>
+                    <li>Standard selector threshold</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h4>CYPRESS</h4>
+                <ul>
+                    <li>Strict threshold for async patterns (no async/await allowed)</li>
+                    <li>Higher threshold for chaining (must maintain command chains)</li>
+                    <li>Lower threshold for waits (built-in retry-ability)</li>
+                </ul>
+            </div>
+
+            <h3>Score Interpretation</h3>
+            <div class="feature-grid">
+                <div class="feature-card" style="border-left: 4px solid var(--success-color);">
+                    <h4>0.90 - 1.00: EXCELLENT</h4>
+                    <p class="score-excellent score-indicator">Executable, maintainable, production-ready</p>
+                    <p>Ready for code review and integration</p>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--accent-color);">
+                    <h4>0.80 - 0.89: GOOD</h4>
+                    <p class="score-good score-indicator">Executable with minor improvements suggested</p>
+                    <p>Can be used with small refinements</p>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--warning-color);">
+                    <h4>0.70 - 0.79: ACCEPTABLE</h4>
+                    <p class="score-acceptable score-indicator">May execute but has quality issues</p>
+                    <p>Review and address recommendations</p>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--danger-color);">
+                    <h4>0.60 - 0.69: NEEDS WORK</h4>
+                    <p class="score-needs-improvement score-indicator">Likely has execution issues</p>
+                    <p>Significant revisions needed</p>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid #000;">
+                    <h4>Below 0.60: FAILING</h4>
+                    <p style="background: #000; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; display: inline-block;">Probably won't execute correctly</p>
+                    <p>Regenerate or manual rewrite needed</p>
+                </div>
+            </div>
+
+            <div class="danger-box">
+                <h4>⚠️ SYNTAX INVALID = AUTOMATIC FAIL</h4>
+                <p>Regardless of other scores, code with syntax errors automatically fails. Scripts must be parseable before other metrics are evaluated.</p>
+            </div>
+        </section>
+
+        <section id="implementation">
+            <h2>Implementation Guide</h2>
+
+            <h3>Step-by-Step Implementation</h3>
+
+            <h4>Step 1: Environment Setup</h4>
+            <pre><code># Create project directory
+mkdir test-script-eval
+cd test-script-eval
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install deepeval nltk pyyaml pytest python-dotenv</code></pre>
+
+            <h4>Step 2: Create Requirements File</h4>
+            <pre><code># requirements.txt
+deepeval>=0.20.0
+nltk>=3.8.0
+pyyaml>=6.0
+pytest>=7.0.0
+python-dotenv>=1.0.0
+esprima>=4.0.0  # For JavaScript parsing (optional)</code></pre>
+
+            <h4>Step 3: Initialize Project Structure</h4>
+            <pre><code># Create directory structure
+mkdir -p config validators metrics/nltk_metrics evaluator test_data tests reports
+touch config/__init__.py validators/__init__.py metrics/__init__.py
+touch metrics/nltk_metrics/__init__.py evaluator/__init__.py tests/__init__.py</code></pre>
+
+            <h4>Step 4: Create Main Entry Point</h4>
+            <pre><code># main.py
+import argparse
+from evaluator.test_script_evaluator import TestScriptEvaluator, TestScriptEvaluationConfig
+
+def main():
+    parser = argparse.ArgumentParser(description="Test Script Evaluator")
+    parser.add_argument("--framework", default="playwright", 
+                       choices=["playwright", "selenium-python", "cypress"])
+    parser.add_argument("--language", default="typescript")
+    parser.add_argument("--samples-dir", default="test_data")
+    parser.add_argument("--output", default="reports/report.json")
+    parser.add_argument("--strict", action="store_true")
+    
+    args = parser.parse_args()
+    
+    config = TestScriptEvaluationConfig(
+        framework=args.framework,
+        language=args.language
+    )
+    
+    evaluator = TestScriptEvaluator(config)
+    
+    # Load and evaluate samples
+    # Generate report
+    
+    return 0
+
+if __name__ == "__main__":
+    exit(main())</code></pre>
+
+            <h4>Step 5: Run Evaluation</h4>
+            <pre><code># Evaluate Playwright TypeScript scripts
+python main.py --framework playwright --language typescript
+
+# Evaluate Selenium Python scripts  
+python main.py --framework selenium-python --language python
+
+# Evaluate Cypress scripts
+python main.py --framework cypress --language javascript
+
+# Run with strict thresholds
+python main.py --framework playwright --strict</code></pre>
+        </section>
+
+        <section id="structure">
+            <h2>Project Structure</h2>
+
+            <h3>Complete Directory Structure</h3>
+            <pre><code>test-script-eval/
+│
+├── config/
+│   ├── __init__.py
+│   ├── deepeval_config.py          # DeepEval metric configurations
+│   ├── nltk_setup.py               # NLTK initialization
+│   └── thresholds.py               # Threshold configurations by framework
+│
+├── validators/
+│   ├── __init__.py
+│   ├── base_validator.py           # Abstract base validator
+│   ├── validator_factory.py        # Factory for creating validators
+│   ├── playwright_validator.py     # Playwright-specific validation
+│   ├── selenium_python_validator.py # Selenium Python validation
+│   ├── selenium_java_validator.py  # Selenium Java validation
+│   ├── cypress_validator.py        # Cypress validation
+│   ├── webdriverio_validator.py    # WebDriverIO validation
+│   └── robot_validator.py          # Robot Framework validation
+│
+├── metrics/
+│   ├── __init__.py
+│   └── nltk_metrics/
+│       ├── __init__.py
+│       ├── comment_analyzer.py      # Comment quality analysis
+│       ├── naming_analyzer.py       # Naming convention analysis
+│       └── code_structure_analyzer.py  # Code structure analysis
+│
+├── evaluator/
+│   ├── __init__.py
+│   ├── test_script_evaluator.py    # Main evaluator class
+│   ├── syntax_validator.py         # Language-specific syntax validation
+│   └── report_generator.py         # Report generation utilities
+│
+├── test_data/
+│   ├── __init__.py
+│   ├── loader.py                   # Sample data loading
+│   ├── playwright_samples/         # Playwright test samples
+│   ├── selenium_samples/           # Selenium test samples
+│   └── cypress_samples/            # Cypress test samples
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_script_evaluation.py   # pytest integration tests
+│   ├── test_validators.py          # Validator unit tests
+│   └── conftest.py                 # pytest fixtures
+│
+├── reports/
+│   └── .gitkeep
+│
+├── scripts/
+│   ├── run_evaluation.sh           # Shell script for CI/CD
+│   └── benchmark_frameworks.py     # Compare framework validators
+│
+├── main.py                         # Main entry point
+├── requirements.txt
+└── README.md</code></pre>
+        </section>
+
+        <section id="workflow">
+            <h2>Execution Workflow</h2>
+
+            <h3>Development Workflow</h3>
+            <div class="mermaid">
+graph TB
+    A[1. PREPARE INPUTS] --> A1[Test Case + Requirements<br/>Framework Specification]
+    
+    A1 --> B[2. GENERATE SCRIPT]
+    B --> B1[Run LLM Prompt<br/>Collect Generated Script]
+    
+    B1 --> C[3. EVALUATE GENERATED SCRIPT]
+    C --> C1[python main.py --framework playwright]
+    
+    C1 --> D[4. REVIEW RESULTS]
+    D --> D1[Check Syntax Errors<br/>Review Scores<br/>Read Recommendations]
+    
+    D1 --> E{Results<br/>Satisfactory?}
+    E -->|No| F[5. ITERATE ON PROMPT]
+    F --> F1[Refine Prompt<br/>Adjust Examples<br/>Add Constraints]
+    F1 --> B
+    
+    E -->|Yes| G[6. DEPLOY]
+    G --> G1[Integrate into Test Suite<br/>Update Prompt Library<br/>Document Best Practices]
+    
+    style A fill:#2563eb,color:#fff
+    style B fill:#2563eb,color:#fff
+    style C fill:#7c3aed,color:#fff
+    style D fill:#06b6d4,color:#fff
+    style F fill:#f59e0b,color:#000
+    style G fill:#10b981,color:#fff
+            </div>
+
+            <h3>Commands Reference</h3>
+            <pre><code># Initialize environment (first time)
+python -m config.nltk_setup
+
+# Evaluate Playwright TypeScript scripts
+python main.py --framework playwright --language typescript
+
+# Evaluate Selenium Python scripts  
+python main.py --framework selenium-python --language python
+
+# Evaluate Cypress scripts
+python main.py --framework cypress --language javascript
+
+# Run with strict thresholds
+python main.py --framework playwright --strict
+
+# Run pytest integration
+pytest tests/ -v
+
+# Evaluate specific sample directory
+python main.py --samples-dir test_data/playwright_samples</code></pre>
+
+            <h3>CI/CD Integration</h3>
+            <pre><code># .github/workflows/test-script-eval.yml
+name: Test Script Evaluation
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  evaluate-playwright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run evaluation
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python main.py --framework playwright --strict
+  
+  evaluate-selenium:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run evaluation
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python main.py --framework selenium-python --strict</code></pre>
+        </section>
+
+        <section id="summary">
+            <h2>Summary</h2>
+
+            <p>This guide provides a comprehensive framework for evaluating LLM prompts that generate automated test scripts.</p>
+
+            <h3>Key Components</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Syntax Validators</strong></td>
+                        <td>Ensure code is parseable (AST for Python, parsers for JS/TS)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Framework Validators</strong></td>
+                        <td>Playwright, Selenium, Cypress, Robot Framework compliance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DeepEval Metrics</strong></td>
+                        <td>Semantic evaluation (faithfulness, code quality, assertions)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>NLTK Analyzers</strong></td>
+                        <td>Comment quality, naming conventions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Combined Pipeline</strong></td>
+                        <td>Weighted scoring with framework-specific adjustments</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Framework Support Matrix</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Framework</th>
+                        <th>Languages</th>
+                        <th>Validator</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Playwright</strong></td>
+                        <td>TS, JS, Python, Java</td>
+                        <td>✅ Complete</td>
+                        <td><span class="score-indicator score-excellent">Ready</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Selenium</strong></td>
+                        <td>Python, Java, JS, C#</td>
+                        <td>✅ Python</td>
+                        <td><span class="score-indicator score-excellent">Ready</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cypress</strong></td>
+                        <td>JS, TS</td>
+                        <td>✅ Complete</td>
+                        <td><span class="score-indicator score-excellent">Ready</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>WebDriverIO</strong></td>
+                        <td>JS, TS</td>
+                        <td>🔄 Planned</td>
+                        <td><span class="score-indicator score-acceptable">-</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Robot Framework</strong></td>
+                        <td>Robot DSL</td>
+                        <td>🔄 Planned</td>
+                        <td><span class="score-indicator score-acceptable">-</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>pytest</strong></td>
+                        <td>Python</td>
+                        <td>🔄 Planned</td>
+                        <td><span class="score-indicator score-acceptable">-</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Metrics Summary</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Metrics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Critical</strong></td>
+                        <td>Syntax, Framework Compliance, Faithfulness, Assertions, Selectors</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Important</strong></td>
+                        <td>Wait Strategy, Code Quality, Error Handling, Naming</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Quality</strong></td>
+                        <td>Comment Coverage, Documentation</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="success-box">
+                <h4>Implementation Checklist</h4>
+                <ol>
+                    <li>✅ Creating the complete project structure</li>
+                    <li>✅ Implementing syntax validators for Python, JavaScript, TypeScript</li>
+                    <li>✅ Implementing framework validators (Playwright, Selenium, Cypress)</li>
+                    <li>✅ Building DeepEval integration with G-Eval metrics</li>
+                    <li>✅ Creating NLTK analyzers for comments and naming</li>
+                    <li>✅ Building the combined evaluator with weighted scoring</li>
+                    <li>✅ Creating sample evaluation data for each framework</li>
+                    <li>✅ Setting up pytest integration</li>
+                    <li>✅ Creating CI/CD pipeline with matrix builds</li>
+                </ol>
+            </div>
+
+            <div class="info-box">
+                <h4>Ready to Proceed with Implementation?</h4>
+                <p>This comprehensive guide provides everything needed to build a robust test script evaluation system. Follow the implementation steps to create your evaluation pipeline and start measuring the quality of your LLM-generated test scripts across multiple frameworks.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Automated Test Script Prompt Evaluation Guide | Document Version: 1.0</p>
+        <p>Created: January 2026 | Last Updated: January 2026</p>
+        </footer>
+
+    </div></div></div>
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#2563eb',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#1e40af',
+                lineColor: '#475569',
+                secondaryColor: '#7c3aed',
+                tertiaryColor: '#06b6d4'
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Highlight active section in navigation
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('nav a');
+
+        function highlightActiveSection() {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 100)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', highlightActiveSection);
+        highlightActiveSection(); // Call once on load
+    </script>
+</div></div>
+</body>
+</html>

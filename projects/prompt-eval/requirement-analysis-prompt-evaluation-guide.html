@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Evaluation for IT Requirement Analysis - Comprehensive Guide</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #7c3aed;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --code-bg: #f1f5f9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px 20px;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Main Content */
+        main {
+            padding: 40px 0;
+        }
+
+        section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        h3 {
+            color: var(--text-color);
+            font-size: 1.4rem;
+            margin: 25px 0 15px;
+        }
+
+        h4 {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--code-bg);
+        }
+
+        tr:hover {
+            background: #e0e7ff;
+        }
+
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        code {
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+        }
+
+        :not(pre) > code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--danger-color);
+        }
+
+        /* Feature cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 1px solid #bae6fd;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .feature-card h4 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
+
+        /* Mermaid diagrams */
+        .mermaid {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        /* Info boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box.note {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .info-box.warning {
+            background: #fffbeb;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .info-box.success {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: inherit;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-color);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+        }
+
+        footer p {
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            section {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            nav {
+                display: none;
+            }
+
+            section {
+                break-inside: avoid;
+            }
+        }
+
+        .page-container {
+            display: flex;
+            min-height: calc(100vh - 200px);
+        }
+
+        aside {
+            width: 250px;
+            background: #f8f9fa;
+            padding: 1rem;
+            position: fixed;
+            top: 200px;
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border-color);
+        }
+
+        aside h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        aside ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        aside li {
+            margin: 0.5rem 0;
+        }
+
+        aside a {
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        aside a:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        aside a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 250px;
+        }
+
+        @media (max-width: 768px) {
+            aside {
+                display: none;
+            }
+            .content {
+                margin-left: 0;
+            }
+        }
+
+        /* Sidebar override: place sidebar in the page flow and blend visually */
+        .page-container, .container {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        aside {
+            width: 300px;
+            background: #ffffff;
+            padding: 1rem;
+            position: -webkit-sticky;
+            position: sticky;
+            top: 120px;
+            margin-top: 0;
+            align-self: flex-start;
+            height: fit-content;
+            overflow: visible;
+            z-index: 5;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+        }
+
+        aside h3 { margin-bottom: 0.75rem; color: var(--text-color); }
+
+        .content { flex: 1 1 0; max-width: 1200px; margin-left: 0 !important; margin-top: 2rem; }
+
+        .article-card { background: #ffffff; border-radius: 12px; padding: 1.75rem; box-shadow: 0 6px 18px rgba(16,24,40,0.04); font-size: 18px; line-height: 1.8; }
+
+        @media (max-width: 768px) { aside { display: none; } .content { max-width: 100%; } .article-card { padding: 1rem; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="main-content">
+            <h1>Prompt Evaluation Guide - Requirement Analysis</h1>
+            <p class="subtitle">Requirement analysis specific prompt evaluation guide</p>
+        </div>
+    </header>
+    <div class="page-container">
+        <aside>
+            <h3>Prompt Evaluation Guides</h3>
+            <ul>
+                <li><a href="llm-prompt-evaluation-guide.html">Overview</a></li>
+                <li><a href="requirement-analysis-prompt-evaluation-guide.html" class="active">Requirement Analysis Guide</a></li>
+                <li><a href="test-case-design-prompt-evaluation-guide.html">Test Case Design Guide</a></li>
+                <li><a href="automated-test-script-prompt-evaluation-guide.html">Automated Test Script Guide</a></li>
+                <li><a href="unified-evaluation-system-v2.html">Solution</a></li>
+                <li><a href="code-architecture.html">Code Architecture</a></li>
+            </ul>
+        </aside>
+        <div class="content">
+        <nav>
+            <div class="main-content">
+                <ul>
+                    <li><a href="#overview">Overview</a></li>
+                    <li><a href="#understanding">Understanding Prompts</a></li>
+                    <li><a href="#metrics">Recommended Metrics</a></li>
+                    <li><a href="#architecture">Architecture</a></li>
+                    <li><a href="#deepeval">DeepEval Config</a></li>
+                    <li><a href="#nltk">NLTK Config</a></li>
+                    <li><a href="#pipeline">Combined Pipeline</a></li>
+                    <li><a href="#test-cases">Test Case Design</a></li>
+                    <li><a href="#scoring">Scoring & Thresholds</a></li>
+                    <li><a href="#implementation">Implementation</a></li>
+                    <li><a href="#structure">Project Structure</a></li>
+                    <li><a href="#workflow">Execution Workflow</a></li>
+                </ul>
+            </div>
+        </nav>
+
+    <main class="main-content">
+        <!-- Overview -->
+        <section id="overview">
+            <h2>📖 Overview</h2>
+
+            <h3>Purpose</h3>
+            <p>This guide provides a detailed framework for evaluating LLM prompts specifically designed for <strong>IT requirement analysis</strong>. Requirement analysis is a critical phase in software development where ambiguity, incompleteness, or misinterpretation can lead to project failures.</p>
+
+            <h3>Why Requirement Analysis Needs Special Evaluation</h3>
+            <p>Requirement analysis prompts have unique characteristics:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Characteristic</th>
+                        <th>Why It Matters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Structured Output</strong></td>
+                        <td>Requirements must follow specific formats (user stories, use cases, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Technical Accuracy</strong></td>
+                        <td>Must use correct domain terminology</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Completeness</strong></td>
+                        <td>Must capture all aspects (functional, non-functional, constraints)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Traceability</strong></td>
+                        <td>Must maintain links between requirements and sources</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Consistency</strong></td>
+                        <td>Must not contradict other requirements</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Testability</strong></td>
+                        <td>Generated requirements must be verifiable</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>What You'll Build</h3>
+            <div class="mermaid">
+flowchart TB
+    subgraph System["REQUIREMENT ANALYSIS PROMPT EVALUATION SYSTEM"]
+        direction TB
+        
+        subgraph Metrics["Evaluation Metrics"]
+            DE["DeepEval Metrics<br/>• Relevancy<br/>• Faithfulness<br/>• Hallucination<br/>• G-Eval"]
+            NLTK["NLTK Analysis<br/>• Structure<br/>• Terminology<br/>• Readability<br/>• Completeness"]
+            CUSTOM["Custom Metrics<br/>• Requirement Coverage<br/>• Format Compliance"]
+        end
+        
+        COMBINED["Combined Score & Report"]
+    end
+
+    DE --> COMBINED
+    NLTK --> COMBINED
+    CUSTOM --> COMBINED
+
+    style DE fill:#dbeafe,stroke:#2563eb
+    style NLTK fill:#dcfce7,stroke:#16a34a
+    style CUSTOM fill:#f3e8ff,stroke:#9333ea
+    style COMBINED fill:#fef3c7,stroke:#d97706
+            </div>
+        </section>
+
+        <!-- Understanding Requirement Analysis Prompts -->
+        <section id="understanding">
+            <h2>🔍 Understanding Requirement Analysis Prompts</h2>
+
+            <h3>Types of Requirement Analysis Tasks</h3>
+            <p>Your prompts may ask the LLM to perform various requirement analysis tasks:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>1. Requirement Extraction</h4>
+                    <p><strong>Input:</strong> Raw stakeholder interview transcript or document</p>
+                    <p><strong>Output:</strong> Structured list of requirements</p>
+                </div>
+                <div class="feature-card">
+                    <h4>2. Requirement Classification</h4>
+                    <p><strong>Input:</strong> List of requirements</p>
+                    <p><strong>Output:</strong> Categorized requirements (functional, non-functional, constraints)</p>
+                </div>
+                <div class="feature-card">
+                    <h4>3. User Story Generation</h4>
+                    <p><strong>Input:</strong> High-level feature description</p>
+                    <p><strong>Output:</strong> User stories with acceptance criteria</p>
+                </div>
+                <div class="feature-card">
+                    <h4>4. Use Case Elaboration</h4>
+                    <p><strong>Input:</strong> Brief use case description</p>
+                    <p><strong>Output:</strong> Detailed use case with actors, flows, exceptions</p>
+                </div>
+                <div class="feature-card">
+                    <h4>5. Requirement Refinement</h4>
+                    <p><strong>Input:</strong> Vague or ambiguous requirement</p>
+                    <p><strong>Output:</strong> Clear, testable, specific requirement</p>
+                </div>
+                <div class="feature-card">
+                    <h4>6. Gap Analysis</h4>
+                    <p><strong>Input:</strong> Current requirements document</p>
+                    <p><strong>Output:</strong> Identified gaps, missing requirements, inconsistencies</p>
+                </div>
+            </div>
+
+            <h3>Example Prompt Categories</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Example Prompt Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Extraction</strong></td>
+                        <td>"Extract all functional requirements from this meeting transcript"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transformation</strong></td>
+                        <td>"Convert these business requirements into technical specifications"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Validation</strong></td>
+                        <td>"Check these requirements for ambiguity and suggest improvements"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Generation</strong></td>
+                        <td>"Generate user stories for this e-commerce checkout feature"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Analysis</strong></td>
+                        <td>"Identify dependencies between these requirements"</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Recommended Metrics -->
+        <section id="metrics">
+            <h2>📏 Recommended Metrics for Requirement Analysis</h2>
+
+            <h3>Metric Selection Framework</h3>
+            <p>For requirement analysis, we need metrics that evaluate:</p>
+
+            <div class="mermaid">
+flowchart LR
+    subgraph Dimensions["EVALUATION DIMENSIONS"]
+        SEM["SEMANTIC<br/>ACCURACY<br/><br/>Does output<br/>capture the<br/>intended<br/>meaning?"]
+        STRUCT["STRUCTURAL<br/>COMPLIANCE<br/><br/>Does output<br/>follow the<br/>required<br/>format?"]
+        DOM["DOMAIN<br/>CORRECTNESS<br/><br/>Does output<br/>use correct<br/>technical<br/>terms?"]
+        QUAL["QUALITY<br/>ATTRIBUTES<br/><br/>Is output<br/>clear,<br/>complete,<br/>testable?"]
+    end
+
+    style SEM fill:#dbeafe,stroke:#2563eb
+    style STRUCT fill:#dcfce7,stroke:#16a34a
+    style DOM fill:#fef3c7,stroke:#d97706
+    style QUAL fill:#f3e8ff,stroke:#9333ea
+            </div>
+
+            <h3>Primary Metrics (Must-Have)</h3>
+
+            <h4>1. Answer Relevancy (DeepEval)</h4>
+            <p><strong>Purpose:</strong> Measures if the generated requirements address the input context.</p>
+            <pre><code>Relevancy Score = Semantic Similarity(Output, Input Intent)
+Threshold: ≥ 0.75 for requirement analysis</code></pre>
+            <div class="info-box note">
+                <p><strong>Why it's critical:</strong> Irrelevant requirements waste development effort and can derail projects.</p>
+            </div>
+
+            <h4>2. Faithfulness (DeepEval)</h4>
+            <p><strong>Purpose:</strong> Ensures requirements are grounded in provided context (no hallucinated requirements).</p>
+            <pre><code>Faithfulness Score = Supported Claims / Total Claims
+Threshold: ≥ 0.85 for requirement analysis</code></pre>
+            <div class="info-box note">
+                <p><strong>Why it's critical:</strong> Hallucinated requirements lead to building features nobody asked for.</p>
+            </div>
+
+            <h4>3. Completeness (Custom + NLTK)</h4>
+            <p><strong>Purpose:</strong> Checks if all aspects of requirements are captured.</p>
+            <pre><code>Completeness Score = Present Components / Required Components
+Threshold: ≥ 0.90 for requirement analysis</code></pre>
+            <div class="info-box note">
+                <p><strong>Why it's critical:</strong> Incomplete requirements cause scope creep and rework.</p>
+            </div>
+
+            <h4>4. Format Compliance (Custom + NLTK)</h4>
+            <p><strong>Purpose:</strong> Validates structural adherence to requirement templates.</p>
+            <pre><code>Format Score = Matching Patterns / Required Patterns
+Threshold: ≥ 0.95 for requirement analysis</code></pre>
+            <div class="info-box note">
+                <p><strong>Why it's critical:</strong> Non-compliant formats break downstream tools and processes.</p>
+            </div>
+
+            <h3>Secondary Metrics (Recommended)</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>5. Terminology Consistency</h4>
+                    <p>Ensures consistent use of domain terms (NLTK)</p>
+                    <p><strong>Threshold:</strong> ≥ 0.80</p>
+                </div>
+                <div class="feature-card">
+                    <h4>6. Readability</h4>
+                    <p>Ensures requirements are clear and understandable (NLTK)</p>
+                    <p><strong>Target:</strong> Grade level 8-12</p>
+                </div>
+                <div class="feature-card">
+                    <h4>7. Testability</h4>
+                    <p>Checks if requirements can be verified (G-Eval)</p>
+                    <p><strong>Threshold:</strong> ≥ 0.85</p>
+                </div>
+                <div class="feature-card">
+                    <h4>8. Non-Ambiguity</h4>
+                    <p>Detects ambiguous language (NLTK + G-Eval)</p>
+                    <p><strong>Threshold:</strong> ≥ 0.90</p>
+                </div>
+            </div>
+
+            <h3>Metric Summary Table</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Tool</th>
+                        <th>Weight</th>
+                        <th>Threshold</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Answer Relevancy</td>
+                        <td>DeepEval</td>
+                        <td>20%</td>
+                        <td>≥ 0.75</td>
+                        <td>Critical</td>
+                    </tr>
+                    <tr>
+                        <td>Faithfulness</td>
+                        <td>DeepEval</td>
+                        <td>25%</td>
+                        <td>≥ 0.85</td>
+                        <td>Critical</td>
+                    </tr>
+                    <tr>
+                        <td>Completeness</td>
+                        <td>Custom/NLTK</td>
+                        <td>20%</td>
+                        <td>≥ 0.90</td>
+                        <td>Critical</td>
+                    </tr>
+                    <tr>
+                        <td>Format Compliance</td>
+                        <td>Custom/NLTK</td>
+                        <td>15%</td>
+                        <td>≥ 0.95</td>
+                        <td>Critical</td>
+                    </tr>
+                    <tr>
+                        <td>Terminology</td>
+                        <td>NLTK</td>
+                        <td>5%</td>
+                        <td>≥ 0.80</td>
+                        <td>Important</td>
+                    </tr>
+                    <tr>
+                        <td>Readability</td>
+                        <td>NLTK</td>
+                        <td>5%</td>
+                        <td>Grade 8-12</td>
+                        <td>Important</td>
+                    </tr>
+                    <tr>
+                        <td>Testability</td>
+                        <td>G-Eval</td>
+                        <td>5%</td>
+                        <td>≥ 0.85</td>
+                        <td>Important</td>
+                    </tr>
+                    <tr>
+                        <td>Non-Ambiguity</td>
+                        <td>NLTK/G-Eval</td>
+                        <td>5%</td>
+                        <td>≥ 0.90</td>
+                        <td>Important</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Evaluation Framework Architecture -->
+        <section id="architecture">
+            <h2>🏗️ Evaluation Framework Architecture</h2>
+
+            <h3>System Architecture</h3>
+            <div class="mermaid">
+flowchart TB
+    subgraph Input["INPUT LAYER"]
+        TC["Test Cases<br/>(JSON/YAML)"]
+        GD["Golden<br/>Datasets"]
+        RT["Requirement<br/>Templates"]
+    end
+
+    subgraph Engine["EVALUATION ENGINE"]
+        subgraph DeepEval["DEEPEVAL MODULE"]
+            DM1["AnswerRelevancyMetric"]
+            DM2["FaithfulnessMetric"]
+            DM3["HallucinationMetric"]
+            DM4["GEval (Testability)"]
+        end
+
+        subgraph NLTK["NLTK MODULE"]
+            NM1["Tokenization & POS"]
+            NM2["Terminology Extraction"]
+            NM3["Readability Analysis"]
+            NM4["Ambiguity Detection"]
+            NM5["Structure Validation"]
+        end
+
+        subgraph Custom["CUSTOM METRICS MODULE"]
+            CM1["Format Compliance"]
+            CM2["Completeness Validator"]
+            CM3["Pattern Matcher"]
+            CM4["Glossary Validator"]
+        end
+    end
+
+    subgraph Aggregation["AGGREGATION LAYER"]
+        NORM["Score<br/>Normalization"]
+        WEIGHT["Weighted<br/>Combination"]
+        PASS["Pass/Fail<br/>Determination"]
+    end
+
+    subgraph Output["OUTPUT LAYER"]
+        REPORT["Detailed<br/>Report"]
+        DASH["Summary<br/>Dashboard"]
+        CICD["CI/CD<br/>Results"]
+    end
+
+    Input --> DeepEval
+    Input --> NLTK
+    Input --> Custom
+
+    DeepEval --> Aggregation
+    NLTK --> Aggregation
+    Custom --> Aggregation
+
+    Aggregation --> Output
+
+    style DeepEval fill:#dbeafe,stroke:#2563eb
+    style NLTK fill:#dcfce7,stroke:#16a34a
+    style Custom fill:#f3e8ff,stroke:#9333ea
+    style Aggregation fill:#fef3c7,stroke:#d97706
+            </div>
+
+            <h3>Data Flow</h3>
+            <div class="mermaid">
+flowchart TD
+    LOAD["1. Load Test Case"]
+    EXEC["2. Execute Prompt<br/>(get LLM output)"]
+    DE["3. Run DeepEval Metrics"]
+    NL["4. Run NLTK Analysis"]
+    CU["5. Run Custom Metrics"]
+    AGG["6. Aggregate Scores"]
+    GEN["7. Generate Report"]
+    DET["8. Determine Pass/Fail"]
+
+    LOAD --> EXEC
+    EXEC --> DE
+    EXEC --> NL
+    EXEC --> CU
+    DE --> AGG
+    NL --> AGG
+    CU --> AGG
+    AGG --> GEN
+    GEN --> DET
+
+    style LOAD fill:#dbeafe,stroke:#2563eb
+    style DE fill:#dbeafe,stroke:#2563eb
+    style NL fill:#dcfce7,stroke:#16a34a
+    style CU fill:#f3e8ff,stroke:#9333ea
+    style AGG fill:#fef3c7,stroke:#d97706
+            </div>
+        </section>
+
+        <!-- DeepEval Configuration -->
+        <section id="deepeval">
+            <h2>⚙️ DeepEval Configuration for Requirement Analysis</h2>
+
+            <h3>Installation and Setup</h3>
+            <pre><code>pip install deepeval</code></pre>
+
+            <h3>Metric Configuration</h3>
+            <pre><code># config/deepeval_config.py
+
+from deepeval.metrics import (
+    AnswerRelevancyMetric,
+    FaithfulnessMetric,
+    HallucinationMetric,
+    GEval
+)
+from deepeval.test_case import LLMTestCaseParams
+
+# 1. Answer Relevancy Configuration
+answer_relevancy_metric = AnswerRelevancyMetric(
+    threshold=0.75,
+    model="gpt-4",  # or your preferred model
+    include_reason=True
+)
+
+# 2. Faithfulness Configuration
+faithfulness_metric = FaithfulnessMetric(
+    threshold=0.85,
+    model="gpt-4",
+    include_reason=True
+)
+
+# 3. Hallucination Configuration
+hallucination_metric = HallucinationMetric(
+    threshold=0.15,  # Maximum allowed hallucination rate
+    model="gpt-4",
+    include_reason=True
+)
+
+# 4. G-Eval for Testability (Custom)
+testability_metric = GEval(
+    name="Testability",
+    criteria="""
+    Evaluate if the generated requirements are testable.
+    
+    A testable requirement MUST:
+    1. Have measurable success criteria
+    2. Avoid vague terms (fast, user-friendly, easy, etc.)
+    3. Include specific numbers, thresholds, or conditions when applicable
+    4. Be verifiable through testing or inspection
+    
+    Score 1.0 if fully testable, 0.0 if completely untestable.
+    """,
+    evaluation_params=[
+        LLMTestCaseParams.INPUT,
+        LLMTestCaseParams.ACTUAL_OUTPUT
+    ],
+    threshold=0.85,
+    model="gpt-4"
+)</code></pre>
+
+            <h3>Test Case Structure for DeepEval</h3>
+            <pre><code># test_cases/requirement_test_cases.py
+
+from deepeval.test_case import LLMTestCase
+
+def create_requirement_test_case(
+    input_context: str,
+    actual_output: str,
+    expected_output: str = None,
+    retrieval_context: list = None,
+    requirement_type: str = "user_story"
+):
+    """
+    Create a test case for requirement analysis evaluation.
+    
+    Args:
+        input_context: The input provided to the LLM (stakeholder input, etc.)
+        actual_output: The LLM's generated requirements
+        expected_output: Golden/reference requirements (optional)
+        retrieval_context: Source documents used for RAG (optional)
+        requirement_type: Type of requirement (user_story, use_case, etc.)
+    """
+    return LLMTestCase(
+        input=input_context,
+        actual_output=actual_output,
+        expected_output=expected_output,
+        retrieval_context=retrieval_context,
+        additional_metadata={
+            "requirement_type": requirement_type,
+            "evaluation_timestamp": datetime.now().isoformat()
+        }
+    )</code></pre>
+        </section>
+
+        <!-- NLTK Configuration -->
+        <section id="nltk">
+            <h2>🔧 NLTK Configuration for Requirement Analysis</h2>
+
+            <h3>Installation and Setup</h3>
+            <pre><code>pip install nltk</code></pre>
+
+            <pre><code># config/nltk_setup.py
+
+import nltk
+
+# Download required NLTK resources
+def setup_nltk():
+    resources = [
+        'punkt',           # Tokenization
+        'averaged_perceptron_tagger',  # POS tagging
+        'stopwords',       # Stop words
+        'wordnet',         # Lexical database
+        'omw-1.4',         # Open Multilingual WordNet
+        'maxent_ne_chunker',  # Named entity recognition
+        'words'            # Word lists
+    ]
+    
+    for resource in resources:
+        try:
+            nltk.download(resource, quiet=True)
+        except Exception as e:
+            print(f"Failed to download {resource}: {e}")
+
+setup_nltk()</code></pre>
+
+            <h3>NLTK Analysis Modules</h3>
+
+            <h4>1. Structure Validator</h4>
+            <p>Validates structural compliance of requirements against patterns like user stories and use cases.</p>
+            <pre><code># User Story Pattern: As a [role], I want [goal] so that [benefit]
+USER_STORY_PATTERN = re.compile(
+    r"[Aa]s\s+(?:a|an)\s+(.+?),\s*[Ii]\s+want\s+(.+?)\s+(?:so\s+that|in\s+order\s+to)\s+(.+)",
+    re.IGNORECASE | re.DOTALL
+)
+
+# Use Case Components
+USE_CASE_COMPONENTS = [
+    'name', 'actor', 'precondition', 'main flow', 
+    'postcondition', 'alternative flow', 'exception'
+]
+
+# Requirement ID Pattern: REQ-XXX-NNN
+REQUIREMENT_ID_PATTERN = re.compile(r"(REQ|FR|NFR|BR|SR)-\w+-\d+", re.IGNORECASE)</code></pre>
+
+            <h4>2. Terminology Analyzer</h4>
+            <p>Analyzes terminology consistency in requirements, checking for inconsistent use of domain terms.</p>
+            <pre><code># Default IT requirement terms
+default_glossary = {
+    "user": ["customer", "client", "end-user", "end user"],
+    "authenticate": ["login", "sign in", "log in"],
+    "system": ["application", "platform", "software"],
+    "database": ["data store", "repository", "data layer"]
+}</code></pre>
+
+            <h4>3. Ambiguity Detector</h4>
+            <p>Detects ambiguous language that should be avoided in requirements.</p>
+            <pre><code># Ambiguous words to flag
+AMBIGUOUS_WORDS = {
+    "quantifiers": ["some", "several", "many", "few", "various"],
+    "modals": ["may", "might", "could", "possibly", "perhaps"],
+    "vague_adjectives": ["fast", "slow", "good", "bad", "easy", 
+                         "user-friendly", "intuitive"],
+    "weak_verbs": ["should", "would", "can"]
+}</code></pre>
+
+            <h4>4. Readability Analyzer</h4>
+            <p>Calculates Flesch-Kincaid readability scores to ensure requirements are appropriately complex.</p>
+            <pre><code># Flesch Reading Ease (0-100, higher = easier)
+reading_ease = 206.835 - (1.015 * avg_sentence_length) - (84.6 * avg_syllables_per_word)
+
+# Flesch-Kincaid Grade Level
+grade_level = (0.39 * avg_sentence_length) + (11.8 * avg_syllables_per_word) - 15.59
+
+# Target for technical requirements: Grade 8-12</code></pre>
+
+            <h4>5. Completeness Checker</h4>
+            <p>Checks if requirements contain all required components based on their type.</p>
+            <pre><code>REQUIREMENT_TEMPLATES = {
+    "user_story": {
+        "required": ["role", "goal", "benefit"],
+        "optional": ["acceptance_criteria", "priority", "story_points"]
+    },
+    "use_case": {
+        "required": ["name", "actor", "precondition", "main_flow", "postcondition"],
+        "optional": ["alternative_flow", "exception_flow"]
+    },
+    "functional_requirement": {
+        "required": ["id", "description", "priority"],
+        "optional": ["rationale", "source", "verification_method"]
+    }
+}</code></pre>
+        </section>
+
+        <!-- Combined Evaluation Pipeline -->
+        <section id="pipeline">
+            <h2>🔗 Combined Evaluation Pipeline</h2>
+
+            <h3>Main Evaluator Class</h3>
+            <pre><code>@dataclass
+class EvaluationConfig:
+    """Configuration for evaluation."""
+    requirement_type: str = "user_story"
+    relevancy_threshold: float = 0.75
+    faithfulness_threshold: float = 0.85
+    completeness_threshold: float = 0.90
+    format_threshold: float = 0.95
+    ambiguity_threshold: float = 0.90
+    model: str = "gpt-4"
+    domain_glossary: Optional[Dict] = None
+
+
+class RequirementEvaluator:
+    """
+    Combined evaluator using DeepEval and NLTK for requirement analysis.
+    """
+    
+    def __init__(self, config: EvaluationConfig = None):
+        self.config = config or EvaluationConfig()
+        
+        # Initialize DeepEval metrics
+        self._init_deepeval_metrics()
+        
+        # Initialize NLTK analyzers
+        self._init_nltk_analyzers()
+        
+        # Metric weights for combined score
+        self.weights = {
+            "relevancy": 0.20,
+            "faithfulness": 0.25,
+            "completeness": 0.20,
+            "format": 0.15,
+            "terminology": 0.05,
+            "readability": 0.05,
+            "testability": 0.05,
+            "ambiguity": 0.05
+        }
+    
+    def evaluate(
+        self,
+        input_text: str,
+        actual_output: str,
+        expected_output: str = None,
+        context: List[str] = None,
+        test_case_id: str = None
+    ) -> EvaluationResult:
+        """
+        Run full evaluation pipeline.
+        """
+        # Create DeepEval test case
+        deepeval_test_case = LLMTestCase(
+            input=input_text,
+            actual_output=actual_output,
+            expected_output=expected_output,
+            retrieval_context=context
+        )
+        
+        # Run DeepEval metrics
+        deepeval_scores = self._run_deepeval_metrics(deepeval_test_case)
+        
+        # Run NLTK metrics
+        nltk_scores = self._run_nltk_metrics(actual_output)
+        
+        # Run custom metrics
+        custom_scores = self._run_custom_metrics(actual_output)
+        
+        # Calculate combined score
+        overall_score = self._calculate_combined_score(
+            deepeval_scores, nltk_scores, custom_scores
+        )
+        
+        # Determine pass/fail
+        passed = self._determine_pass_fail(
+            deepeval_scores, nltk_scores, custom_scores
+        )
+        
+        return EvaluationResult(
+            test_case_id=test_case_id,
+            timestamp=datetime.now().isoformat(),
+            overall_score=overall_score,
+            passed=passed,
+            deepeval_scores=deepeval_scores,
+            nltk_scores=nltk_scores,
+            custom_scores=custom_scores
+        )</code></pre>
+        </section>
+
+        <!-- Test Case Design -->
+        <section id="test-cases">
+            <h2>🧪 Test Case Design</h2>
+
+            <h3>Test Case Schema</h3>
+            <pre><code>from dataclasses import dataclass
+from typing import List, Optional, Dict
+from enum import Enum
+
+class RequirementType(Enum):
+    USER_STORY = "user_story"
+    USE_CASE = "use_case"
+    FUNCTIONAL = "functional_requirement"
+    NON_FUNCTIONAL = "non_functional_requirement"
+    ACCEPTANCE_CRITERIA = "acceptance_criteria"
+
+@dataclass
+class TestCase:
+    """Schema for requirement analysis test cases."""
+    
+    id: str
+    name: str
+    description: str
+    requirement_type: RequirementType
+    
+    # Input to the LLM
+    input_text: str
+    
+    # Context/source documents (for RAG)
+    context: Optional[List[str]] = None
+    
+    # Expected output (golden reference)
+    expected_output: Optional[str] = None
+    
+    # Actual LLM output (populated after execution)
+    actual_output: Optional[str] = None
+    
+    # Metadata
+    tags: List[str] = None
+    priority: str = "medium"  # low, medium, high, critical</code></pre>
+
+            <h3>Sample Test Cases</h3>
+            <pre><code># test_cases/user_story_tests.yaml
+
+test_cases:
+  - id: "US-001"
+    name: "Basic User Story Generation"
+    description: "Test generation of user story from feature description"
+    requirement_type: "user_story"
+    input_text: "Create a user story for login functionality"
+    expected_output: |
+      As a registered user,
+      I want to log into the system using my email and password,
+      So that I can access my personalized dashboard.
+    priority: "high"
+
+  - id: "UC-001"
+    name: "Use Case Generation"
+    description: "Test generation of detailed use case"
+    requirement_type: "use_case"
+    input_text: "Create a use case for password reset"
+    expected_output: |
+      Name: Reset Password
+      Actor: User
+      Precondition: User has a registered account
+      Main Flow:
+        1. User requests password reset
+        2. System sends reset link to email
+        3. User clicks link and enters new password
+        4. System validates and updates password
+      Postcondition: User password is updated
+    priority: "critical"</code></pre>
+        </section>
+
+        <!-- Scoring and Thresholds -->
+        <section id="scoring">
+            <h2>📊 Scoring and Thresholds</h2>
+
+            <h3>Threshold Guidelines</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Minimum</th>
+                        <th>Target</th>
+                        <th>Excellent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Answer Relevancy</strong></td>
+                        <td>0.70</td>
+                        <td>0.80</td>
+                        <td>0.90+</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Faithfulness</strong></td>
+                        <td>0.80</td>
+                        <td>0.90</td>
+                        <td>0.95+</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Completeness</strong></td>
+                        <td>0.85</td>
+                        <td>0.95</td>
+                        <td>1.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Format Compliance</strong></td>
+                        <td>0.90</td>
+                        <td>0.98</td>
+                        <td>1.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Terminology</strong></td>
+                        <td>0.75</td>
+                        <td>0.85</td>
+                        <td>0.95+</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Readability</strong></td>
+                        <td>Grade 8</td>
+                        <td>Grade 10</td>
+                        <td>Grade 10-12</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Testability</strong></td>
+                        <td>0.80</td>
+                        <td>0.90</td>
+                        <td>0.95+</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Non-Ambiguity</strong></td>
+                        <td>0.85</td>
+                        <td>0.92</td>
+                        <td>0.98+</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Score Interpretation</h3>
+            <div class="info-box success">
+                <h4>0.90 - 1.00: EXCELLENT</h4>
+                <p>Ready for production; minimal review needed</p>
+            </div>
+
+            <div class="info-box success">
+                <h4>0.80 - 0.89: GOOD</h4>
+                <p>Minor improvements suggested; safe to use</p>
+            </div>
+
+            <div class="info-box note">
+                <h4>0.70 - 0.79: ACCEPTABLE</h4>
+                <p>Needs review; some issues to address</p>
+            </div>
+
+            <div class="info-box warning">
+                <h4>0.60 - 0.69: NEEDS WORK</h4>
+                <p>Significant issues; requires revision</p>
+            </div>
+
+            <div class="info-box warning">
+                <h4>Below 0.60: FAILING</h4>
+                <p>Major problems; not suitable for use</p>
+            </div>
+
+            <h3>Pass/Fail Criteria</h3>
+            <pre><code># Strict Mode (Production)
+pass_criteria_strict = {
+    "relevancy": 0.80,
+    "faithfulness": 0.90,
+    "completeness": 0.95,
+    "format": 0.98,
+    "combined_minimum": 0.85
+}
+
+# Standard Mode (Development)
+pass_criteria_standard = {
+    "relevancy": 0.75,
+    "faithfulness": 0.85,
+    "completeness": 0.90,
+    "format": 0.95,
+    "combined_minimum": 0.80
+}
+
+# Lenient Mode (Experimentation)
+pass_criteria_lenient = {
+    "relevancy": 0.70,
+    "faithfulness": 0.80,
+    "completeness": 0.85,
+    "format": 0.90,
+    "combined_minimum": 0.75
+}</code></pre>
+        </section>
+
+        <!-- Implementation Guide -->
+        <section id="implementation">
+            <h2>🚀 Implementation Guide</h2>
+
+            <h3>Step-by-Step Implementation</h3>
+
+            <h4>Step 1: Environment Setup</h4>
+            <pre><code># Create project directory
+mkdir requirement-eval
+cd requirement-eval
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install deepeval nltk pyyaml pytest</code></pre>
+
+            <h4>Step 2: Project Structure Setup</h4>
+            <pre><code>requirement-eval/
+├── config/
+│   ├── __init__.py
+│   ├── deepeval_config.py
+│   └── nltk_setup.py
+├── metrics/
+│   ├── __init__.py
+│   └── nltk_metrics/
+│       ├── __init__.py
+│       ├── structure_validator.py
+│       ├── terminology_analyzer.py
+│       ├── ambiguity_detector.py
+│       ├── readability_analyzer.py
+│       └── completeness_checker.py
+├── evaluator/
+│   ├── __init__.py
+│   └── requirement_evaluator.py
+├── test_cases/
+│   ├── __init__.py
+│   ├── schema.py
+│   ├── loader.py
+│   └── user_story_tests.yaml
+├── tests/
+│   ├── __init__.py
+│   └── test_evaluation.py
+├── reports/
+│   └── .gitkeep
+├── main.py
+├── requirements.txt
+└── README.md</code></pre>
+
+            <h4>Step 3: Create Configuration Files</h4>
+            <pre><code># requirements.txt
+deepeval>=0.20.0
+nltk>=3.8.0
+pyyaml>=6.0
+pytest>=7.0.0
+python-dotenv>=1.0.0</code></pre>
+
+            <h4>Step 4: Initialize NLTK Resources</h4>
+            <pre><code># config/nltk_setup.py
+import nltk
+
+def initialize_nltk():
+    """Download all required NLTK resources."""
+    resources = [
+        'punkt',
+        'averaged_perceptron_tagger',
+        'stopwords',
+        'wordnet',
+        'omw-1.4'
+    ]
+    
+    for resource in resources:
+        nltk.download(resource, quiet=True)
+    
+    print("NLTK resources initialized successfully.")
+
+if __name__ == "__main__":
+    initialize_nltk()</code></pre>
+
+            <h4>Step 5: Create Main Entry Point</h4>
+            <pre><code># main.py
+
+import argparse
+from pathlib import Path
+from evaluator.requirement_evaluator import RequirementEvaluator, EvaluationConfig
+from test_cases.loader import load_all_test_cases
+from config.nltk_setup import initialize_nltk
+
+def main():
+    parser = argparse.ArgumentParser(description="Requirement Analysis Prompt Evaluator")
+    parser.add_argument("--test-dir", default="test_cases", help="Directory with test cases")
+    parser.add_argument("--output", default="reports/evaluation_report.json", help="Output report path")
+    parser.add_argument("--requirement-type", default="user_story", help="Type of requirements")
+    parser.add_argument("--strict", action="store_true", help="Use strict thresholds")
+    
+    args = parser.parse_args()
+    
+    # Initialize NLTK
+    initialize_nltk()
+    
+    # Configure evaluator
+    config = EvaluationConfig(
+        requirement_type=args.requirement_type,
+        relevancy_threshold=0.80 if args.strict else 0.75,
+        faithfulness_threshold=0.90 if args.strict else 0.85,
+        completeness_threshold=0.95 if args.strict else 0.90,
+        format_threshold=0.98 if args.strict else 0.95
+    )
+    
+    evaluator = RequirementEvaluator(config)
+    
+    # Load test cases
+    test_cases = load_all_test_cases(args.test_dir)
+    print(f"Loaded {len(test_cases)} test cases")
+    
+    # Run evaluation
+    results = evaluator.evaluate_batch(test_cases)
+    
+    # Generate report
+    report = evaluator.generate_report(results, args.output)
+    
+    # Print summary
+    print("\n" + "="*60)
+    print("EVALUATION SUMMARY")
+    print("="*60)
+    print(f"Total Test Cases: {report['summary']['total_test_cases']}")
+    print(f"Passed: {report['summary']['passed']}")
+    print(f"Failed: {report['summary']['failed']}")
+    print(f"Pass Rate: {report['summary']['pass_rate']}%")
+    print(f"Average Score: {report['summary']['average_overall_score']}")
+    print(f"\nReport saved to: {args.output}")
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+            <h4>Step 6: Create pytest Integration</h4>
+            <pre><code># tests/test_evaluation.py
+
+import pytest
+from deepeval import assert_test
+from deepeval.test_case import LLMTestCase
+from evaluator.requirement_evaluator import RequirementEvaluator, EvaluationConfig
+from test_cases.loader import load_all_test_cases
+
+# Load test cases
+TEST_CASES = load_all_test_cases("test_cases")
+
+@pytest.fixture
+def evaluator():
+    """Create evaluator instance."""
+    config = EvaluationConfig(requirement_type="user_story")
+    return RequirementEvaluator(config)
+
+@pytest.mark.parametrize("test_case", TEST_CASES, ids=lambda tc: tc.get("id", "unknown"))
+def test_requirement_quality(evaluator, test_case):
+    """Test each requirement against quality metrics."""
+    result = evaluator.evaluate(
+        input_text=test_case["input_text"],
+        actual_output=test_case["actual_output"],
+        expected_output=test_case.get("expected_output"),
+        context=test_case.get("context"),
+        test_case_id=test_case["id"]
+    )
+    
+    assert result.passed, f"Test case {test_case['id']} failed with score {result.overall_score}"
+    assert result.overall_score >= 0.75, f"Score too low: {result.overall_score}"</code></pre>
+        </section>
+
+        <!-- Project Structure -->
+        <section id="structure">
+            <h2>📁 Project Structure</h2>
+
+            <h3>Complete Directory Structure</h3>
+            <pre><code>requirement-eval/
+│
+├── config/
+│   ├── __init__.py
+│   ├── deepeval_config.py      # DeepEval metric configurations
+│   ├── nltk_setup.py           # NLTK initialization
+│   └── thresholds.py           # Threshold configurations
+│
+├── metrics/
+│   ├── __init__.py
+│   ├── nltk_metrics/
+│   │   ├── __init__.py
+│   │   ├── structure_validator.py
+│   │   ├── terminology_analyzer.py
+│   │   ├── ambiguity_detector.py
+│   │   ├── readability_analyzer.py
+│   │   └── completeness_checker.py
+│   └── custom_metrics/
+│       ├── __init__.py
+│       └── domain_specific.py
+│
+├── evaluator/
+│   ├── __init__.py
+│   ├── requirement_evaluator.py  # Main evaluator class
+│   └── report_generator.py       # Report generation utilities
+│
+├── test_cases/
+│   ├── __init__.py
+│   ├── schema.py                 # Test case schema definitions
+│   ├── loader.py                 # Test case loading utilities
+│   ├── user_story_tests.yaml     # User story test cases
+│   ├── use_case_tests.yaml       # Use case test cases
+│   └── golden_datasets/          # Reference/golden datasets
+│       └── requirements.json
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_evaluation.py        # pytest integration
+│   ├── test_metrics.py           # Unit tests for metrics
+│   └── conftest.py               # pytest fixtures
+│
+├── reports/
+│   ├── .gitkeep
+│   └── templates/
+│       └── report_template.html  # HTML report template
+│
+├── scripts/
+│   ├── run_evaluation.sh         # Shell script for CI/CD
+│   └── generate_test_cases.py    # Utility to generate test cases
+│
+├── .env.example                  # Environment variables template
+├── .gitignore
+├── main.py                       # Main entry point
+├── requirements.txt              # Python dependencies
+├── setup.py                      # Package setup
+└── README.md                     # Project documentation</code></pre>
+        </section>
+
+        <!-- Execution Workflow -->
+        <section id="workflow">
+            <h2>⚡ Execution Workflow</h2>
+
+            <h3>Daily Development Workflow</h3>
+            <div class="mermaid">
+flowchart LR
+    subgraph Morning
+        M1["Update Test<br/>Cases"]
+        M2["Run Quick<br/>Evaluation"]
+        M3["Review<br/>Failures"]
+        M1 --> M2 --> M3
+    end
+
+    subgraph Development
+        D1["Modify<br/>Prompts"]
+        D2["Run Targeted<br/>Tests"]
+        D3["Iterate Until<br/>Pass"]
+        D1 --> D2 --> D3
+    end
+
+    subgraph Commit["Before Commit"]
+        C1["Run Full<br/>Evaluation"]
+        C2["Generate<br/>Report"]
+        C3["Review &<br/>Commit"]
+        C1 --> C2 --> C3
+    end
+
+    Morning --> Development
+    Development --> Commit
+
+    style Morning fill:#dbeafe,stroke:#2563eb
+    style Development fill:#dcfce7,stroke:#16a34a
+    style Commit fill:#fef3c7,stroke:#d97706
+            </div>
+
+            <h3>Commands</h3>
+            <pre><code># Initialize project (first time)
+python -m config.nltk_setup
+
+# Run quick evaluation (single test case)
+python main.py --test-dir test_cases/quick --output reports/quick.json
+
+# Run full evaluation suite
+python main.py --test-dir test_cases --output reports/full_report.json
+
+# Run with strict thresholds (for production)
+python main.py --strict --output reports/production_check.json
+
+# Run pytest integration
+pytest tests/ -v --tb=short
+
+# Run DeepEval tests
+deepeval test run tests/test_evaluation.py</code></pre>
+
+            <h3>CI/CD Integration</h3>
+            <pre><code># .github/workflows/evaluate.yml
+
+name: Prompt Evaluation
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        python -m config.nltk_setup
+    
+    - name: Run evaluation
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      run: |
+        python main.py --strict --output reports/ci_report.json
+    
+    - name: Upload report
+      uses: actions/upload-artifact@v3
+      with:
+        name: evaluation-report
+        path: reports/ci_report.json</code></pre>
+        </section>
+
+        <!-- Summary -->
+        <section id="summary">
+            <h2>📝 Summary</h2>
+
+            <p>This guide provides a comprehensive framework for evaluating LLM prompts used in IT requirement analysis. The key components are:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>DeepEval</strong></td>
+                        <td>Semantic evaluation (relevancy, faithfulness, testability)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>NLTK</strong></td>
+                        <td>Linguistic analysis (structure, terminology, readability, ambiguity)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Custom Metrics</strong></td>
+                        <td>Domain-specific checks (format compliance, completeness)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Combined Pipeline</strong></td>
+                        <td>Weighted scoring and comprehensive reporting</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Next Steps</h3>
+            <p>Once this documentation is reviewed and approved, the implementation will include:</p>
+            <ol>
+                <li>✅ Creating the project structure</li>
+                <li>✅ Implementing all metric classes</li>
+                <li>✅ Building the combined evaluator</li>
+                <li>✅ Creating sample test cases</li>
+                <li>✅ Setting up pytest integration</li>
+                <li>✅ Creating CI/CD pipeline configuration</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <div class="main-content">
+            <p><strong>Prompt Evaluation for IT Requirement Analysis</strong></p>
+            <p>Document Version: 1.0</p>
+            <p>Created: January 2026</p>
+        </div>
+    </footer>
+</div></div></div>
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Highlight current section in navigation
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.background = '';
+                link.style.color = '';
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.style.background = '#2563eb';
+                    link.style.color = 'white';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

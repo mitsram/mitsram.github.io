@@ -1,0 +1,3606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS QE - Unified Architecture</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .layer-card {
+            transition: all 0.3s ease;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .layer-header {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .layer-content {
+            background-color: #1f2937;
+            padding: 16px;
+            display: grid;
+            gap: 16px;
+        }
+        
+        .component-card {
+            background-color: #374151;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #4b5563;
+            transition: background-color 0.3s ease;
+        }
+        
+        .component-card:hover {
+            background-color: #4b5563;
+        }
+        
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 32px;
+        }
+        
+        .stack-card {
+            padding: 16px;
+            border-radius: 8px;
+            color: white;
+        }
+        
+        .data-flow-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .flow-from, .flow-to {
+            padding: 8px 16px;
+            border-radius: 8px;
+            min-width: 150px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .flow-connector {
+            flex-grow: 1;
+            border-top: 2px dashed #4b5563;
+            position: relative;
+            height: 2px;
+        }
+        
+        .flow-label {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1f2937;
+            padding: 0 8px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        
+        .deployment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        
+        .deployment-card {
+            padding: 16px;
+            border-radius: 8px;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .layer-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .tech-stack {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-flow-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .flow-connector {
+                width: 100%;
+                border-top: none;
+                border-left: 2px dashed #4b5563;
+                height: 40px;
+                margin-left: 75px;
+            }
+            
+            .flow-label {
+                top: 50%;
+                left: 0;
+                transform: translateY(-50%);
+                white-space: nowrap;
+            }
+            
+            .flow-from, .flow-to {
+                margin-left: 20px;
+            }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, #60a5fa 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+        }
+
+        .toc {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .toc h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #60a5fa;
+        }
+
+        .toc-list {
+            list-style: none;
+            space-y: 8px;
+        }
+
+        .toc-list li {
+            margin-bottom: 12px;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .toc-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .toc-list a {
+            color: #60a5fa;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .toc-list a:hover {
+            color: #a855f7;
+            text-decoration: underline;
+        }
+
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #374151, transparent);
+            margin: 48px 0;
+        }
+
+        .doc-section {
+            scroll-margin-top: 100px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #374151;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .diagram-container {
+            background-color: #0f172a;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+            overflow-x: auto;
+        }
+
+        .diagram {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #a1aeb8;
+            white-space: pre;
+            margin: 0;
+        }
+
+        .diagram-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 24px 0;
+        }
+
+        .doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 8px;
+        }
+
+        .doc-table thead {
+            background-color: #111827;
+        }
+
+        .doc-table th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #60a5fa;
+            border-bottom: 2px solid #374151;
+        }
+
+        .doc-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #374151;
+            color: #d1d5db;
+        }
+
+        .doc-table tr:hover {
+            background-color: #374151;
+        }
+
+        .callout {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 24px 0;
+            border-left: 4px solid;
+        }
+
+        .callout-info {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+        }
+
+        .callout-info .callout-title {
+            color: #3b82f6;
+        }
+
+        .callout-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            border-left-color: #f59e0b;
+        }
+
+        .callout-warning .callout-title {
+            color: #f59e0b;
+        }
+
+        .callout-success {
+            background-color: rgba(34, 197, 94, 0.1);
+            border-left-color: #22c55e;
+        }
+
+        .callout-success .callout-title {
+            color: #22c55e;
+        }
+
+        .callout-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .callout-content {
+            color: #d1d5db;
+            font-size: 14px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .doc-box {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .doc-box h4 {
+            margin-top: 0;
+            color: #60a5fa;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        .breadcrumb a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .metric-card {
+            background-color: #0f172a;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .mermaid {
+            background-color: #0f172a;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+    <script>
+        // Initialize Mermaid with custom theme
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#3b82f6',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#60a5fa',
+                lineColor: '#60a5fa',
+                secondaryColor: '#8b5cf6',
+                tertiaryColor: '#10b981',
+                background: '#0f172a',
+                mainBkg: '#1e293b',
+                secondBkg: '#334155',
+                border1: '#475569',
+                border2: '#64748b',
+                note: '#fbbf24',
+                noteBkgColor: '#7c3aed',
+                noteTextColor: '#fff',
+                textColor: '#e2e8f0',
+                fontSize: '14px'
+            },
+            flowchart: {
+                curve: 'basis',
+                padding: 20,
+                nodeSpacing: 80,
+                rankSpacing: 80
+            },
+            sequence: {
+                diagramMarginX: 50,
+                diagramMarginY: 10,
+                boxMargin: 10,
+                boxTextMargin: 5,
+                noteMargin: 10,
+                messageMargin: 35
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Documentation Header -->
+        <div class="text-center mb-12 py-8">
+            <h1 class="text-5xl font-bold mb-4 gradient-text">
+                NEXUS QE Architecture
+            </h1>
+            <p class="text-gray-400 text-xl mb-2">Enterprise AI-Powered Quality Engineering Platform</p>
+            <p class="text-gray-500 text-sm">Complete Technical Documentation v1.0</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 Table of Contents</h3>
+            <ul class="toc-list">
+                <li><a href="#overview">1. Executive Overview</a></li>
+                <li><a href="#system-architecture">2. System Architecture</a></li>
+                <li><a href="#data-flow">3. Data Flow Architecture</a></li>
+                <li><a href="#network-arch">4. Network Architecture</a></li>
+                <li><a href="#communication">5. Component Communication Patterns</a></li>
+                <li><a href="#security">6. Security Architecture</a></li>
+                <li><a href="#scalability">7. Scalability Design</a></li>
+                <li><a href="#disaster-recovery">8. Disaster Recovery Strategy</a></li>
+                <li><a href="#ai-serving">9. AI Model Serving Architecture</a></li>
+                <li><a href="#observability">10. Monitoring & Observability</a></li>
+                <li><a href="#deployment">11. Deployment Pipeline</a></li>
+                <li><a href="#cost">12. Cost Optimization</a></li>
+                <li><a href="#deployment-options">13. Deployment Options</a></li>
+            </ul>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 1: Executive Overview -->
+        <div class="doc-section" id="overview">
+            <div class="section-header">
+                <h2><i class="fas fa-rocket text-blue-400"></i> 1. Executive Overview</h2>
+            </div>
+            
+            <div class="callout callout-info">
+                <div class="callout-title">What is NEXUS QE?</div>
+                <div class="callout-content">
+                    NEXUS QE is an enterprise-grade, AI-powered quality engineering platform that revolutionizes software testing through intelligent automation, multi-modal analysis, and distributed execution at scale. The architecture supports millions of tests per day across multiple cloud regions with sub-50ms API response times.
+                </div>
+            </div>
+
+            <h3 class="text-xl font-semibold mt-6 mb-4 text-white">Key Metrics</h3>
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="metric-value">99.99%</div>
+                    <div class="metric-label">Uptime SLA</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">&lt;50ms</div>
+                    <div class="metric-label">API Response</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">&lt;5 min</div>
+                    <div class="metric-label">RTO (DR)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">&lt;1 min</div>
+                    <div class="metric-label">RPO (DR)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">8 Agents</div>
+                    <div class="metric-label">AI Specialized</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">Multi-Region</div>
+                    <div class="metric-label">Active-Active</div>
+                </div>
+            </div>
+
+            <div class="grid-2 mt-8">
+                <div class="doc-box">
+                    <h4>🎯 Core Capabilities</h4>
+                    <ul class="text-sm text-gray-300 space-y-2">
+                        <li>✓ AI-Powered Test Generation</li>
+                        <li>✓ Self-Healing Tests</li>
+                        <li>✓ Visual Testing</li>
+                        <li>✓ Performance Analytics</li>
+                        <li>✓ Security Testing</li>
+                        <li>✓ LLM/RAG Validation</li>
+                    </ul>
+                </div>
+                <div class="doc-box">
+                    <h4>🏗️ Infrastructure</h4>
+                    <ul class="text-sm text-gray-300 space-y-2">
+                        <li>✓ Multi-Cloud Support</li>
+                        <li>✓ Kubernetes Native</li>
+                        <li>✓ Serverless Ready</li>
+                        <li>✓ Global CDN</li>
+                        <li>✓ Zero-Trust Security</li>
+                        <li>✓ Real-time Monitoring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 2: System Architecture -->
+        <div class="doc-section" id="system-architecture">
+            <div class="section-header">
+                <h2><i class="fas fa-sitemap text-purple-400"></i> 2. System Architecture</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                NEXUS QE follows a layered microservices architecture with clear separation of concerns. Each layer is independently scalable and provides specific functionality.
+            </p>
+
+            <!-- Architecture Layers -->
+            <div id="layers-container" class="space-y-4 mb-8">
+                <!-- Layers will be dynamically inserted here -->
+            </div>
+
+            <div class="callout callout-success">
+                <div class="callout-title">Architecture Principles</div>
+                <div class="callout-content">
+                    <ul class="space-y-2">
+                        <li>✓ <strong>Microservices:</strong> Independent, loosely coupled services</li>
+                        <li>✓ <strong>Stateless:</strong> Horizontal scalability without state affinity</li>
+                        <li>✓ <strong>Event-Driven:</strong> Async processing for decoupling</li>
+                        <li>✓ <strong>Resilient:</strong> Graceful degradation and circuit breakers</li>
+                        <li>✓ <strong>Observable:</strong> Comprehensive logging, tracing, and metrics</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 3: Data Flow Architecture -->
+        <div class="doc-section" id="data-flow">
+            <div class="section-header">
+                <h2><i class="fas fa-stream text-cyan-400"></i> 3. Data Flow Architecture</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                The complete journey of a user request through the system, from initial input to final results delivery.
+            </p>
+
+            <div class="diagram-container">
+                <div class="diagram-title">Complete Data Flow Pipeline</div>
+                <div class="mermaid">
+graph TB
+    subgraph User["👤 USER INTERACTION"]
+        U1["Web Dashboard<br/>IDE Plugin<br/>CLI Tool<br/>Mobile App"]
+    end
+    
+    subgraph Gateway["🛡️ API GATEWAY LAYER"]
+        G1["API Gateway<br/>(Kong)"]
+        G2["Authentication<br/>OAuth 2.0 + JWT"]
+        G3["Rate Limiting<br/>Request Validation"]
+    end
+    
+    subgraph Orchestration["⚙️ ORCHESTRATION"]
+        O1["Workflow Engine<br/>(Temporal)"]
+        O2["Agent Coordinator<br/>(LangChain + MCP)"]
+    end
+    
+    subgraph Agents["🤖 AI AGENTS"]
+        A1["Test Generation"]
+        A2["Self-Healing"]
+        A3["Visual Testing"]
+        A4["Predictive Analytics"]
+        A5["Security Testing"]
+        A6["Performance"]
+    end
+    
+    subgraph Execution["🚀 TEST EXECUTION"]
+        E1["Playwright<br/>(Web)"]
+        E2["Appium<br/>(Mobile)"]
+        E3["REST Assured<br/>(API)"]
+        E4["k6<br/>(Performance)"]
+    end
+    
+    subgraph Processing["📊 PROCESSING"]
+        P1["Result Aggregation"]
+        P2["Metrics Calculation"]
+        P3["Report Generation"]
+    end
+    
+    subgraph Storage["💾 DATA STORAGE"]
+        S1[("PostgreSQL<br/>Metadata")]
+        S2[("S3<br/>Artifacts")]
+        S3[("Redis<br/>Cache")]
+        S4[("Kafka<br/>Events")]
+        S5[("Pinecone<br/>Vectors")]
+    end
+    
+    subgraph Observability["📈 OBSERVABILITY"]
+        OB1["Metrics<br/>Publishing"]
+        OB2["Distributed<br/>Tracing"]
+        OB3["Alert<br/>Generation"]
+    end
+    
+    U1 -->|"HTTPS/WSS"| G1
+    G1 --> G2
+    G2 --> G3
+    G3 -->|"gRPC"| O1
+    O1 -->|"Task Queue"| O2
+    O2 -.->|"MCP Protocol"| A1
+    O2 -.->|"MCP Protocol"| A2
+    O2 -.->|"MCP Protocol"| A3
+    O2 -.->|"MCP Protocol"| A4
+    O2 -.->|"MCP Protocol"| A5
+    O2 -.->|"MCP Protocol"| A6
+    A1 & A2 & A3 & A4 & A5 & A6 -->|"Test Scripts"| E1 & E2 & E3 & E4
+    E1 & E2 & E3 & E4 --> P1
+    P1 --> P2
+    P2 --> P3
+    P3 --> S1 & S2 & S3 & S4 & S5
+    P3 --> OB1
+    OB1 --> OB2
+    OB2 --> OB3
+    OB3 -->|"Real-time Updates"| U1
+    
+    style User fill:#1e40af
+    style Gateway fill:#7c3aed
+    style Orchestration fill:#059669
+    style Agents fill:#dc2626
+    style Execution fill:#ea580c
+    style Processing fill:#0891b2
+    style Storage fill:#4f46e5
+    style Observability fill:#65a30d
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold mb-4 text-white">Data Flow Steps</h3>
+                <div class="table-responsive">
+                    <table class="doc-table">
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>Component</th>
+                                <th>Protocol</th>
+                                <th>Function</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>API Gateway</td>
+                                <td>HTTPS/WebSocket</td>
+                                <td>Authenticate & route requests</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Workflow Engine</td>
+                                <td>gRPC</td>
+                                <td>Orchestrate task execution</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Agent Coordinator</td>
+                                <td>Task Queue</td>
+                                <td>Distribute work to agents</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>AI Agents</td>
+                                <td>MCP Protocol</td>
+                                <td>Execute specialized tasks</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Test Execution</td>
+                                <td>Protocol Native</td>
+                                <td>Run actual tests</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>Data Layer</td>
+                                <td>SQL/HTTP/gRPC</td>
+                                <td>Persist results & metrics</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>Observability</td>
+                                <td>HTTP/gRPC</td>
+                                <td>Collect monitoring data</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 4: Network Architecture -->
+        <div class="doc-section" id="network-arch">
+            <div class="section-header">
+                <h2><i class="fas fa-network-wired text-blue-400"></i> 4. Network Architecture</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                Multi-layered network design with defense-in-depth, global CDN distribution, and high availability across availability zones.
+            </p>
+
+            <div class="diagram-container">
+                <div class="diagram-title">Network Layer Stack (Multi-AZ)</div>
+                <div class="mermaid">
+graph TB
+    subgraph CDN["🌍 GLOBAL CDN LAYER"]
+        CF["Cloudflare + CloudFront<br/>• DDoS Protection (L3-7)<br/>• Content Caching (80% hit)<br/>• SSL/TLS Termination<br/>• Geo Load Balancing"]
+    end
+    
+    subgraph LB["🔄 LOAD BALANCER (Multi-AZ)"]
+        ALB["AWS ALB / Azure LB<br/>• SSL/TLS (TLS 1.3)<br/>• L7 Load Balancing<br/>• Health Checks (30s)<br/>• Cross-AZ Distribution"]
+    end
+    
+    subgraph Gateway["🛡️ API GATEWAY CLUSTER"]
+        Kong["Kong API Gateway<br/>• Authentication & Authorization<br/>• Rate Limiting (sliding window)<br/>• Request/Response Transform<br/>• CORS Handling<br/>• API Versioning"]
+    end
+    
+    subgraph K8s["📦 KUBERNETES CLUSTER (Multi-AZ)"]
+        CP["Control Plane<br/>(Managed)"]
+        
+        subgraph Pods["Pod Types"]
+            WP["Web Pods<br/>Stateless<br/>Min:3 Max:50"]
+            AP["Agent Pods<br/>GPU-enabled<br/>Min:2 Max:20"]
+            EP["Exec Pods<br/>Stateful<br/>Min:5 Max:100"]
+            WRP["Worker Pods<br/>General<br/>Min:10 Max:100"]
+        end
+        
+        SM["Service Mesh<br/>(Istio)"]
+        
+        CP --> Pods
+        Pods --> SM
+    end
+    
+    subgraph Data["💾 DATA LAYER (Distributed)"]
+        DB[("PostgreSQL<br/>RDS Multi-AZ")]
+        Cache[("Redis<br/>Cluster")]
+        Queue[("Kafka<br/>Multi-broker")]
+        Search[("Pinecone<br/>Cloud")]
+        Storage[("S3/EBS<br/>Multi-region")]
+        Analytics[("Snowflake<br/>Enterprise")]
+    end
+    
+    CF -->|"HTTPS"| ALB
+    ALB -->|"HTTPS"| Kong
+    Kong -->|"HTTP/gRPC"| CP
+    SM -.->|"Queries"| DB & Cache & Queue & Search & Storage & Analytics
+    
+    style CDN fill:#1e40af
+    style LB fill:#7c3aed
+    style Gateway fill:#dc2626
+    style K8s fill:#059669
+    style Data fill:#ea580c
+                </div>
+                <pre class="diagram" style="display:none;">
+┌──────────────────────────────────────────────────────────────┐
+│              🌍 GLOBAL CDN LAYER                             │
+│         Cloudflare + CloudFront                             │
+│   • DDoS Protection (Layer 3-7)                             │
+│   • Content Caching (80% hit rate)                          │
+│   • SSL/TLS Termination                                    │
+│   • Geographic Load Balancing                              │
+└──────────────────────────────────────────────────────────────┘
+                            ▼
+┌──────────────────────────────────────────────────────────────┐
+│              🔄 LOAD BALANCER (Multi-AZ)                    │
+│         AWS ALB / Azure LB                                  │
+│   • SSL/TLS Termination (TLS 1.3)                          │
+│   • Layer 7 (HTTP) Load Balancing                          │
+│   • Health Checks (30s interval)                           │
+│   • Cross-AZ Traffic Distribution                          │
+└──────────────────────────────────────────────────────────────┘
+                            ▼
+┌──────────────────────────────────────────────────────────────┐
+│              🛡️ API GATEWAY CLUSTER (Kong)                   │
+│   • Authentication & Authorization                         │
+│   • Rate Limiting (sliding window)                         │
+│   • Request/Response Transformation                        │
+│   • CORS Handling                                          │
+│   • API Versioning                                         │
+│   • Request Logging & Analytics                           │
+└──────────────────────────────────────────────────────────────┘
+                            ▼
+┌──────────────────────────────────────────────────────────────┐
+│         📦 KUBERNETES CLUSTER (Multi-AZ)                     │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │ Control Plane (Managed)                            │    │
+│  │ • API Server                                       │    │
+│  │ • Scheduler                                        │    │
+│  │ • Controller Manager                               │    │
+│  └────────────────────────────────────────────────────┘    │
+│                         ▼                                   │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │  Web     │  │ Agent    │  │  Exec    │  │ Worker   │   │
+│  │  Pods    │  │  Pods    │  │  Pods    │  │  Pods    │   │
+│  │(State)   │  │(GPU)     │  │(Stateful)│  │(General) │   │
+│  │x3 min    │  │x2 min    │  │x5 min    │  │x10 min   │   │
+│  │x50 max   │  │x20 max   │  │x100 max  │  │x100 max  │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+│                                                              │
+│  Service Mesh: Istio                                        │
+│  • Traffic Management                                       │
+│  • Security Policies                                        │
+│  • Observability                                            │
+└──────────────────────────────────────────────────────────────┘
+                            ▼
+┌──────────────────────────────────────────────────────────────┐
+│            💾 DATA LAYER (Distributed)                       │
+│                                                              │
+│  Primary DB          Cache            Queue                │
+│  PostgreSQL          Redis             Kafka               │
+│  (RDS Multi-AZ)      (Cluster)         (Multi-broker)      │
+│                                                              │
+│  Search              Storage           Analytics           │
+│  Pinecone            S3/EBS            Snowflake           │
+│  (Cloud)             (Multi-region)    (Enterprise)        │
+└──────────────────────────────────────────────────────────────┘
+
+NETWORK CHARACTERISTICS:
+├─ Latency: &lt;10ms within AZ, &lt;50ms cross-AZ
+├─ Bandwidth: 1 Gbps+ per node
+├─ VPC Endpoints: Private connectivity to AWS services
+├─ VPN/Direct Connect: On-premises connectivity
+└─ NAT Gateways: Outbound internet access (redundant)
+                </pre>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 5: Communication Patterns -->
+        <div class="doc-section" id="communication">
+            <div class="section-header">
+                <h2><i class="fas fa-exchange-alt text-cyan-400"></i> 5. Component Communication Patterns</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                NEXUS QE uses multiple communication protocols optimized for different use cases.
+            </p>
+
+            <div class="grid-2">
+                <div class="doc-box">
+                    <h4>🔄 Synchronous Communication</h4>
+                    <ul class="text-sm text-gray-300 space-y-3">
+                        <li>
+                            <strong>gRPC</strong><br/>
+                            <span class="text-gray-400">High-performance RPC for internal microservices</span>
+                        </li>
+                        <li>
+                            <strong>REST/GraphQL</strong><br/>
+                            <span class="text-gray-400">External API access and client communication</span>
+                        </li>
+                        <li>
+                            <strong>WebSocket</strong><br/>
+                            <span class="text-gray-400">Real-time bidirectional communication</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="doc-box">
+                    <h4>⏳ Asynchronous Communication</h4>
+                    <ul class="text-sm text-gray-300 space-y-3">
+                        <li>
+                            <strong>Apache Kafka</strong><br/>
+                            <span class="text-gray-400">Event streaming for audit & analytics</span>
+                        </li>
+                        <li>
+                            <strong>RabbitMQ</strong><br/>
+                            <span class="text-gray-400">Task queues for agent work distribution</span>
+                        </li>
+                        <li>
+                            <strong>Redis Pub/Sub</strong><br/>
+                            <span class="text-gray-400">Real-time notifications</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="diagram-container mt-8">
+                <div class="diagram-title">Communication Protocol Matrix</div>
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th>Protocol</th>
+                            <th>Type</th>
+                            <th>Latency</th>
+                            <th>Use Case</th>
+                            <th>Throughput</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>gRPC</strong></td>
+                            <td>Synchronous</td>
+                            <td>&lt;10ms</td>
+                            <td>Microservice-to-Microservice</td>
+                            <td>100K+ req/s</td>
+                        </tr>
+                        <tr>
+                            <td><strong>REST</strong></td>
+                            <td>Synchronous</td>
+                            <td>&lt;50ms</td>
+                            <td>External APIs</td>
+                            <td>50K+ req/s</td>
+                        </tr>
+                        <tr>
+                            <td><strong>GraphQL</strong></td>
+                            <td>Synchronous</td>
+                            <td>&lt;100ms</td>
+                            <td>Client Queries</td>
+                            <td>10K+ req/s</td>
+                        </tr>
+                        <tr>
+                            <td><strong>WebSocket</strong></td>
+                            <td>Async Bidirectional</td>
+                            <td>&lt;50ms</td>
+                            <td>Real-time Updates</td>
+                            <td>100K+ concurrent</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kafka</strong></td>
+                            <td>Async Streaming</td>
+                            <td>&lt;100ms</td>
+                            <td>Event Streaming</td>
+                            <td>1M+ events/s</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RabbitMQ</strong></td>
+                            <td>Async Queue</td>
+                            <td>&lt;50ms</td>
+                            <td>Task Distribution</td>
+                            <td>50K+ msg/s</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Communication Patterns Section moved before original sections-->
+        <!-- Deployment Options -->
+        <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-2xl font-bold mb-4">Deployment Options</h2>
+            <div class="deployment-options">
+                <div class="deployment-card bg-gradient-to-br from-blue-600 to-blue-700">
+                    <h3 class="font-bold mb-2">☁️ SaaS (Cloud)</h3>
+                    <p class="text-sm mb-2">Fully managed by NEXUS QE</p>
+                    <ul class="text-xs space-y-1">
+                        <li>• Fastest deployment</li>
+                        <li>• Auto-updates</li>
+                        <li>• Pay-as-you-go</li>
+                        <li>• 99.99% uptime</li>
+                    </ul>
+                </div>
+                <div class="deployment-card bg-gradient-to-br from-purple-600 to-purple-700">
+                    <h3 class="font-bold mb-2">🏢 Private Cloud</h3>
+                    <p class="text-sm mb-2">Your AWS/Azure/GCP</p>
+                    <ul class="text-xs space-y-1">
+                        <li>• Data sovereignty</li>
+                        <li>• Custom configs</li>
+                        <li>• VPC isolation</li>
+                        <li>• Managed service</li>
+                    </ul>
+                </div>
+                <div class="deployment-card bg-gradient-to-br from-green-600 to-green-700">
+                    <h3 class="font-bold mb-2">🔒 On-Premises</h3>
+                    <p class="text-sm mb-2">Your data center</p>
+                    <ul class="text-xs space-y-1">
+                        <li>• Complete control</li>
+                        <li>• Air-gapped option</li>
+                        <li>• Compliance ready</li>
+                        <li>• Professional services</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architecture Layers -->
+        <div id="layers-container" class="space-y-4">
+            <!-- Layers will be dynamically inserted here -->
+        </div>
+
+        <!-- Data Flow Diagram -->
+        <div class="mt-8 border border-gray-700 rounded-lg p-6 bg-gray-800">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-chart-line text-green-400"></i>
+                Data Flow Architecture
+            </h2>
+            <div id="data-flows-container" class="space-y-3">
+                <!-- Data flows will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Data Flow Diagram -->
+        <div class="mt-8 border border-gray-700 rounded-lg p-6 bg-gray-800">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-chart-line text-green-400"></i>
+                Data Flow Visualization
+            </h2>
+            <div id="data-flows-container" class="space-y-3">
+                <!-- Data flows will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 6: Security Architecture -->
+        <div class="doc-section" id="security">
+            <div class="section-header">
+                <h2><i class="fas fa-shield-alt text-red-400"></i> 6. Security Architecture</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                Defense-in-depth security strategy with multiple layers of protection, from edge to data layer.
+            </p>
+
+            <div class="diagram-container">
+                <div class="diagram-title">Security Architecture (5-Layer Model)</div>
+                <div class="mermaid">
+graph TB
+    subgraph L1["🛡️ LAYER 1: EDGE SECURITY"]
+        E1["DDoS Protection<br/>(Cloudflare)<br/>Rate: 1M+ req/s"]
+        E2["WAF Rules<br/>(OWASP Top 10)<br/>SQL Injection, XSS"]
+        E3["Geo-blocking &<br/>Rate Limiting"]
+        E4["SSL/TLS Encryption<br/>(TLS 1.3)"]
+    end
+    
+    subgraph L2["🔒 LAYER 2: NETWORK SECURITY"]
+        N1["VPC Isolation<br/>Private Networks"]
+        N2["Security Groups<br/>Firewall Rules"]
+        N3["Private Subnets<br/>Database Protection"]
+        N4["VPN/Direct Connect<br/>Secure Connectivity"]
+    end
+    
+    subgraph L3["🔑 LAYER 3: APPLICATION SECURITY"]
+        A1["OAuth 2.0 +<br/>OpenID Connect"]
+        A2["JWT Token<br/>Validation"]
+        A3["API Key<br/>Management"]
+        A4["RBAC<br/>Access Control"]
+    end
+    
+    subgraph L4["💾 LAYER 4: DATA SECURITY"]
+        D1["Encryption at Rest<br/>(AES-256)"]
+        D2["Encryption in Transit<br/>(TLS 1.3)"]
+        D3["Database Encryption<br/>(AWS/Azure KMS)"]
+        D4["Secrets Management<br/>(HashiCorp Vault)"]
+    end
+    
+    subgraph L5["📊 LAYER 5: MONITORING & RESPONSE"]
+        M1["SIEM Integration<br/>Security Events"]
+        M2["Threat Detection<br/>Anomaly Detection"]
+        M3["Audit Logging<br/>(Immutable)"]
+        M4["Incident Response<br/>Runbooks"]
+    end
+    
+    Internet["🌐 Internet Traffic"] --> L1
+    L1 --> L2
+    L2 --> L3
+    L3 --> L4
+    L4 --> L5
+    L5 -.->|"Monitoring"| L1 & L2 & L3 & L4
+    
+    style L1 fill:#dc2626
+    style L2 fill:#ea580c
+    style L3 fill:#d97706
+    style L4 fill:#059669
+    style L5 fill:#0891b2
+    style Internet fill:#475569
+                </div>
+                <pre class="diagram" style="display:none;">
+┌────────────────────────────────────────────────────────────────┐
+│         LAYER 1: EDGE SECURITY                                │
+├────────────────────────────────────────────────────────────────┤
+│ • DDoS Protection (Cloudflare)      | Rate: 1M+ req/s        │
+│ • WAF Rules (OWASP Top 10)          | SQL Injection, XSS      │
+│ • Geo-blocking & Rate Limiting      | Regional Restrictions   │
+│ • SSL/TLS Encryption (TLS 1.3)      | Forward Secrecy        │
+└────────────────────────────────────────────────────────────────┘
+                            ▼
+┌────────────────────────────────────────────────────────────────┐
+│         LAYER 2: NETWORK SECURITY                             │
+├────────────────────────────────────────────────────────────────┤
+│ • VPC Isolation                     | Private Networks        │
+│ • Security Groups (Firewall)        | Inbound/Outbound Rules  │
+│ • Private Subnets                   | Database Protection     │
+│ • VPN/Direct Connect                | Secure Connectivity     │
+│ • Network ACLs                      | Stateless Rules         │
+└────────────────────────────────────────────────────────────────┘
+                            ▼
+┌────────────────────────────────────────────────────────────────┐
+│         LAYER 3: APPLICATION SECURITY                         │
+├────────────────────────────────────────────────────────────────┤
+│ • OAuth 2.0 + OpenID Connect        | Standard Protocols      │
+│ • JWT Token Validation              | Signature Verification  │
+│ • API Key Management                | Rotation Policy         │
+│ • RBAC (Role-Based Access Control)  | Fine-grained Control    │
+│ • Request Authentication            | Multi-factor Option     │
+└────────────────────────────────────────────────────────────────┘
+                            ▼
+┌────────────────────────────────────────────────────────────────┐
+│         LAYER 4: DATA SECURITY                                │
+├────────────────────────────────────────────────────────────────┤
+│ • Encryption at Rest (AES-256)      | All Data                │
+│ • Encryption in Transit (TLS 1.3)   | All Connections         │
+│ • Database Encryption                | AWS KMS / Azure KMS     │
+│ • Key Management Service             | Automatic Rotation      │
+│ • Data Masking                       | PII Protection          │
+│ • Secrets Management (Vault)        | Credential Storage      │
+└────────────────────────────────────────────────────────────────┘
+                            ▼
+┌────────────────────────────────────────────────────────────────┐
+│         LAYER 5: MONITORING & RESPONSE                        │
+├────────────────────────────────────────────────────────────────┤
+│ • SIEM Integration                  | Security Event Logs     │
+│ • Threat Detection                  | Anomaly Detection       │
+│ • Audit Logging (immutable)         | Compliance Trails       │
+│ • Incident Response Plan            | Runbooks Ready          │
+│ • Penetration Testing               | Regular (Quarterly)     │
+└────────────────────────────────────────────────────────────────┘
+
+SECURITY POSTURE SUMMARY:
+├─ SOC 2 Type II Compliant
+├─ GDPR Ready (Data Residency)
+├─ HIPAA Compatible (Encryption)
+├─ PCI-DSS Compliant (Payment Data)
+└─ Regular Penetration Testing
+                </pre>
+            </div>
+
+            <div class="grid-2 mt-8">
+                <div class="doc-box">
+                    <h4>🔐 Compliance Certifications</h4>
+                    <ul class="text-sm text-gray-300 space-y-1">
+                        <li>✓ SOC 2 Type II</li>
+                        <li>✓ GDPR Compliant</li>
+                        <li>✓ HIPAA Ready</li>
+                        <li>✓ PCI-DSS</li>
+                        <li>✓ ISO 27001</li>
+                        <li>✓ EU AI Act Ready</li>
+                    </ul>
+                </div>
+                <div class="doc-box">
+                    <h4>🛡️ Security Features</h4>
+                    <ul class="text-sm text-gray-300 space-y-1">
+                        <li>✓ Zero-Trust Architecture</li>
+                        <li>✓ End-to-End Encryption</li>
+                        <li>✓ Regular Security Audits</li>
+                        <li>✓ Vulnerability Scanning</li>
+                        <li>✓ 24/7 Security Monitoring</li>
+                        <li>✓ Incident Response Team</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 7: Scalability Design -->
+        <div class="doc-section" id="scalability">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-line text-green-400"></i> 7. Scalability Design</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                Horizontal scaling architecture supporting 1000+ concurrent engineers with dynamic resource allocation.
+            </p>
+
+            <div class="diagram-container">
+                <div class="diagram-title">Auto-Scaling Strategy by Component</div>
+                <pre class="diagram">
+COMPONENT SCALING CONFIGURATION:
+
+┌─────────────────────────────────────────────────────────────┐
+│ API GATEWAY (Kong)                                          │
+├─────────────────────────────────────────────────────────────┤
+│ Scaling Trigger:        CPU > 70% OR Memory > 80%           │
+│ Scale-up Time:          30 seconds                          │
+│ Scale-down Time:        5 minutes (cooldown)                │
+│ Min Replicas:           3 (HA guarantee)                    │
+│ Max Replicas:           50 (cost limit)                     │
+│ Target Metrics:         Latency &lt;100ms, throughput 10K+req/s  │
+│ Cost Impact:            $0.50/instance/hour (spot)          │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ AI AGENTS (GPU-enabled)                                     │
+├─────────────────────────────────────────────────────────────┤
+│ Scaling Trigger:        Queue Depth > 100 OR GPU Util > 85%│
+│ Scale-up Time:          2 minutes (GPU provisioning)        │
+│ Min GPU Nodes:          2 (always on)                       │
+│ Max GPU Nodes:          20 (model limit)                    │
+│ GPU Types:              H100 (70B), A100 (40B), RTX 4090   │
+│ Cost Impact:            $5-12/hour per GPU instance         │
+│ Processing Capacity:    100+ parallel agents                │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ TEST EXECUTION (On-demand)                                  │
+├─────────────────────────────────────────────────────────────┤
+│ Scaling Trigger:        Job Queue > 500 OR Latency > 2s    │
+│ Scale-up Time:          15 seconds (spot instances)         │
+│ Min Nodes:              5 (warm pool)                       │
+│ Max Nodes:              100 (infrastructure limit)          │
+│ Node Types:             Spot (70%) + On-demand (30%)        │
+│ Cost Impact:            $1-2/hour per node (spot)           │
+│ Test Throughput:        10,000+ concurrent tests            │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ DATABASES & CACHE                                           │
+├─────────────────────────────────────────────────────────────┤
+│ PostgreSQL:             Read Replicas: 5                    │
+│                         Write Master: 1 (primary)           │
+│                         Sharding: By tenant_id              │
+│                         Failover: Auto (90s RTO)            │
+│                                                             │
+│ Redis:                  Cluster Mode: 6 shards             │
+│                         Replicas: 2 per shard              │
+│                         Eviction: LRU (max memory)         │
+│                         Persistence: AOF + RDB             │
+│                                                             │
+│ Capacity Planning:      +20% headroom for peaks            │
+└─────────────────────────────────────────────────────────────┘
+
+LOAD PROFILE (per 1000 engineers):
+├─ Peak Concurrent Users: 200
+├─ API Requests/sec: 5,000
+├─ Concurrent Tests: 1,000+
+├─ Database Connections: 300
+├─ Message Queue Throughput: 50K msg/s
+└─ Cache Hit Rate Target: 80%
+                </pre>
+            </div>
+
+            <div class="callout callout-info mt-8">
+                <div class="callout-title">Scaling Benefits</div>
+                <div class="callout-content">
+                    <ul class="space-y-2">
+                        <li>✓ <strong>Linear Scalability:</strong> Performance scales with resources</li>
+                        <li>✓ <strong>Cost Efficiency:</strong> Pay only for used resources (spot instances 70%)</li>
+                        <li>✓ <strong>Elasticity:</strong> Automatic scale-up/down based on demand</li>
+                        <li>✓ <strong>Zero-Downtime:</strong> Graceful rolling updates</li>
+                        <li>✓ <strong>Load Balancing:</strong> Intelligent distribution across nodes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 8: Disaster Recovery -->
+        <div class="doc-section" id="disaster-recovery">
+            <div class="section-header">
+                <h2><i class="fas fa-life-ring text-orange-400"></i> 8. Disaster Recovery Strategy</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                Multi-region active-active deployment with automatic failover and near-zero data loss.
+            </p>
+
+            <div class="diagram-container">
+                <div class="diagram-title">Multi-Region DR Architecture</div>
+                <div class="mermaid">
+graph LR
+    subgraph Primary["🌟 PRIMARY REGION (us-east-1)"]
+        P1["Full Stack<br/>Deployment"]
+        P2["Web Services<br/>API Gateway<br/>AI Agents"]
+        P3[("Master DB<br/>(Write)")]
+        P4["Test Execution<br/>All Services"]
+    end
+    
+    subgraph Replication["🔄 REPLICATION"]
+        R1["Database<br/>Continuous<br/>Sync"]
+        R2["Cache<br/>Real-time<br/>Sync"]
+        R3["Queue<br/>Event<br/>Streaming"]
+        R4["Artifacts<br/>Cross-region<br/>Async"]
+    end
+    
+    subgraph Secondary["⚡ SECONDARY REGION (eu-west-1)"]
+        S1["Full Stack<br/>Deployment"]
+        S2["Identical<br/>Services<br/>(Warm Standby)"]
+        S3[("Replica DB<br/>(Read/Promote)")]
+        S4["Test Execution<br/>Ready"]
+    end
+    
+    subgraph Monitor["📊 MONITORING & FAILOVER"]
+        M1["Health Checks<br/>Every 30s"]
+        M2["Auto Failover<br/>< 5 min RTO"]
+        M3["Traffic Split<br/>60% / 40%"]
+    end
+    
+    P1 --> P2
+    P2 --> P3
+    P2 --> P4
+    P3 -->|"Continuous"| R1
+    P4 -->|"Real-time"| R2 & R3 & R4
+    R1 & R2 & R3 & R4 --> S3
+    R1 & R2 & R3 & R4 --> S2
+    S1 --> S2
+    S2 --> S3
+    S2 --> S4
+    
+    M1 -.->|"Monitor"| P1 & S1
+    M2 -.->|"Trigger"| S1
+    M3 -.->|"Route"| P1 & S1
+    
+    style Primary fill:#059669,stroke:#10b981,stroke-width:4px
+    style Replication fill:#7c3aed,stroke:#a78bfa,stroke-width:2px
+    style Secondary fill:#0891b2,stroke:#22d3ee,stroke-width:4px
+    style Monitor fill:#ea580c,stroke:#fb923c,stroke-width:2px
+                </div>
+                <pre class="diagram" style="display:none;">
+┌────────────────────────────────────────────────────────────────┐
+│              PRIMARY REGION (us-east-1)                        │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  ┌────────────────────────────────────────────────────────┐   │
+│  │   FULL STACK DEPLOYMENT                               │   │
+│  │   • Web Services                                       │   │
+│  │   • API Gateway                                        │   │
+│  │   • AI Agents (GPU)                                   │   │
+│  │   • Test Execution                                    │   │
+│  │   • All Databases (Master)                            │   │
+│  └────────────────────────────────────────────────────────┘   │
+│                                                                │
+│  Data Replication:                                             │
+│  • Database: Continuous (synchronous)                         │
+│  • Cache: Real-time sync                                      │
+│  • Queue: Event streaming                                     │
+│  • Artifacts: Cross-region (async)                            │
+│                                                                │
+│  Traffic: 60% (Primary for all writes)                        │
+│                                                                │
+│  ┌──────────────────────────────────────────────────────┐    │
+│  │ MONITORING: Health Check Every 30s                  │    │
+│  │ Metrics: CPU, Memory, Network, Database, Queue      │    │
+│  └──────────────────────────────────────────────────────┘    │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+                          ↕️  (Replication)
+┌────────────────────────────────────────────────────────────────┐
+│              SECONDARY REGION (eu-west-1)                      │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  ┌────────────────────────────────────────────────────────┐   │
+│  │   FULL STACK DEPLOYMENT (Warm Standby)                │   │
+│  │   • Identical Services (same specs)                    │   │
+│  │   • Database Read Replicas                             │   │
+│  │   • Synchronized State                                 │   │
+│  │   • Ready for Failover                                 │   │
+│  └────────────────────────────────────────────────────────┘   │
+│                                                                │
+│  Replication Status:                                           │
+│  • Database Lag: &lt;1 second                                   │
+│  • Cache Sync: Real-time                                      │
+│  • Configuration: Automated                                   │
+│                                                                │
+│  Traffic: 40% (Load sharing during normal ops)                │
+│                                                                │
+│  ┌──────────────────────────────────────────────────────┐    │
+│  │ FAILOVER READINESS:                                 │    │
+│  │ • Replica Promotion: Automatic                       │    │
+│  │ • DNS Failover: 10-30s                              │    │
+│  │ • Traffic Reroute: Instant (Route 53)               │    │
+│  └──────────────────────────────────────────────────────┘    │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+
+FAILURE SCENARIOS & RESPONSES:
+
+┌─────────────────────────────────────────────────────────────┐
+│ Scenario: Primary Region Partial Failure                   │
+├─────────────────────────────────────────────────────────────┤
+│ Detection:        10 seconds (health checks)               │
+│ Action:           Circuit breaker + reroute to secondary   │
+│ Impact:           &lt;30 second latency increase              │
+│ Data Loss:        None (async replication)                │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ Scenario: Database Connection Loss                         │
+├─────────────────────────────────────────────────────────────┤
+│ Detection:        Immediate (connection timeout)           │
+│ Action:           Promote read replica                     │
+│ Recovery Time:    &lt;60 seconds (RTO)                       │
+│ Data Loss:        &lt;1 minute (RPO)                         │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ Scenario: Complete Region Failure                          │
+├─────────────────────────────────────────────────────────────┤
+│ Detection:        30 seconds (multi-metric)                │
+│ Action:           Automatic regional failover              │
+│ Recovery Time:    &lt;5 minutes (RTO)                        │
+│ Data Loss:        &lt;1 minute (RPO)                         │
+│ Service State:    100% available (secondary becomes primary)│
+└─────────────────────────────────────────────────────────────┘
+
+DR METRICS SUMMARY:
+├─ RTO (Recovery Time Objective):     &lt; 5 minutes
+├─ RPO (Recovery Point Objective):    &lt; 1 minute
+├─ Failover Type:                     Automatic
+├─ Data Loss:                         Near-zero
+├─ Replication Lag:                   &lt;1 second
+├─ Monitoring:                        24/7 Continuous
+└─ Testing:                           Monthly Drills
+                </pre>
+            </div>
+
+            <div class="metric-grid mt-8">
+                <div class="metric-card">
+                    <div class="metric-value">&lt;5m</div>
+                    <div class="metric-label">RTO</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">&lt;1m</div>
+                    <div class="metric-label">RPO</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">Auto</div>
+                    <div class="metric-label">Failover</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">~0</div>
+                    <div class="metric-label">Data Loss</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">60%/40%</div>
+                    <div class="metric-label">Traffic Split</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">Monthly</div>
+                    <div class="metric-label">DR Drills</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 9: AI Model Serving -->
+        <div class="doc-section" id="ai-serving">
+            <div class="section-header">
+                <h2><i class="fas fa-brain text-purple-400"></i> 9. AI Model Serving Architecture</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                High-performance inference serving with model optimization, caching, and specialized hardware.
+            </p>
+
+            <div class="diagram-container">
+                <div class="diagram-title">AI Model Serving Pipeline</div>
+                <div class="mermaid">
+graph TB
+    LB["⚖️ Load Balancer<br/>(NGINX)<br/>Health checks • SSL • Pooling"]
+    
+    subgraph vLLM["🧠 vLLM INFERENCE CLUSTER"]
+        H1["NVIDIA H100 (80GB)<br/>Claude 3.5 Sonnet (70B)<br/>200 tok/s • 32 concurrent<br/>Quantity: 8x"]
+        A1["NVIDIA A100 (40GB)<br/>GPT-4o (API proxy)<br/>60% cache hit<br/>Quantity: 4x"]
+        R1["RTX 4090 (24GB)<br/>CodeLlama 34B<br/>150 tok/s<br/>Quantity: 2x"]
+    end
+    
+    subgraph Specialized["⚡ SPECIALIZED SERVERS"]
+        Y1["YOLO v8<br/>(TorchServe)<br/>1000 img/s<br/>< 50ms latency"]
+        E1["Embeddings<br/>(TEI - HF)<br/>1000 doc/s<br/>384-1536 dim"]
+        C1["Custom Models<br/>Fine-tuned<br/>Auto-scaling"]
+    end
+    
+    subgraph Cache["💾 MODEL CACHE (Redis)"]
+        C2["Response Cache<br/>24h TTL<br/>60% hit rate"]
+        C3["Embedding Cache<br/>7d TTL<br/>75% hit rate"]
+        C4["Prompt Cache<br/>1h TTL<br/>40% hit rate"]
+    end
+    
+    subgraph Opt["⚙️ OPTIMIZATIONS"]
+        O1["PagedAttention<br/>50% memory reduction"]
+        O2["Continuous Batching<br/>95%+ GPU utilization"]
+        O3["4-bit Quantization<br/>3x faster inference"]
+        O4["Flash Attention<br/>2.5x speedup"]
+    end
+    
+    Request["📥 AI Request"] --> LB
+    LB --> H1 & A1 & R1
+    H1 & A1 & R1 -.->|"Specialized"| Y1 & E1 & C1
+    H1 & A1 & R1 --> Cache
+    Y1 & E1 & C1 --> Cache
+    Cache -->|"Response"| Response["📤 Result"]
+    
+    O1 & O2 & O3 & O4 -.->|"Applied to"| vLLM
+    
+    style vLLM fill:#7c3aed
+    style Specialized fill:#059669
+    style Cache fill:#0891b2
+    style Opt fill:#ea580c
+    style LB fill:#1e40af
+                </div>
+                <pre class="diagram" style="display:none;">
+┌──────────────────────────────────────────────────────────────┐
+│              REQUEST LOAD BALANCER (NGINX)                   │
+│  • Health checks (30s interval)                              │
+│  • Request routing based on model                            │
+│  • SSL/TLS termination                                       │
+│  • Connection pooling                                        │
+└──────────────────────────────────────────────────────────────┘
+                             ▼
+┌──────────────────────────────────────────────────────────────┐
+│         vLLM INFERENCE SERVER CLUSTER                        │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Instance Type              Model Size    Quantity           │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │ NVIDIA H100 (80GB)  │ Claude 3.5 (70B, 4-bit) │  8x  │ │
+│  │                     │ Inference: 200 tok/sec         │ │
+│  │                     │ Concurrency: 32 requests       │ │
+│  ├────────────────────────────────────────────────────────┤ │
+│  │ NVIDIA A100 (40GB)  │ GPT-4o (API proxy)      │  4x  │ │
+│  │                     │ Response Caching: 60%         │ │
+│  │                     │ Latency: &lt;100ms           │ │
+│  ├────────────────────────────────────────────────────────┤ │
+│  │ RTX 4090 (24GB)     │ CodeLlama 34B (quantized)│  2x  │ │
+│  │                     │ Specialized: Code generation   │ │
+│  │                     │ Throughput: 150 tok/sec       │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                                                              │
+│  OPTIMIZATION TECHNIQUES:                                   │
+│  • PagedAttention: Reduce memory by 50%                     │
+│  • Continuous Batching: Maximize GPU utilization (95%+)    │
+│  • Quantization: 4-bit precision (3x faster)               │
+│  • Flash Attention: 2.5x speedup                            │
+│  • KV Cache Optimization: Parallel decoding                 │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+                             ▼
+┌──────────────────────────────────────────────────────────────┐
+│         SPECIALIZED MODEL SERVERS                            │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  • YOLO v8 (TorchServe)                                     │
+│    - Computer Vision / Object Detection                    │
+│    - Throughput: 1000 img/s                                │
+│    - Latency: &lt;50ms                                        │
+│                                                              │
+│  • Embedding Models (TEI - Hugging Face)                   │
+│    - Text/Image Embeddings                                 │
+│    - Dimension: 384-1536                                    │
+│    - Speed: 1000 doc/s                                     │
+│                                                              │
+│  • Custom Fine-tuned Models                                │
+│    - Domain-specific models                                │
+│    - Client-specific training                              │
+│    - Auto-scaling based on queue                           │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+                             ▼
+┌──────────────────────────────────────────────────────────────┐
+│         MODEL CACHE LAYER (Redis Cluster)                   │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Cache Type                TTL         Hit Rate             │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │ Response Cache         24 hours     60%                │ │
+│  │ Embedding Cache        7 days       75%                │ │
+│  │ Prompt Cache           1 hour       40%                │ │
+│  │ Model Weights          Persistent  ~100% (warm load)   │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                                                              │
+│  Cache Management:                                          │
+│  • Eviction Policy: LRU (Least Recently Used)              │
+│  • Max Memory: 256GB per cluster                            │
+│  • Replication: 2 copies per cache entry                   │
+│  • Invalidation: Real-time when data changes              │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+
+PERFORMANCE CHARACTERISTICS:
+
+Model                  Latency    Throughput   Cost/1K tokens
+─────────────────────────────────────────────────────────────
+Claude 3.5 (70B)       200ms      200 tok/s    $0.003
+GPT-4o (API)           100ms      300 tok/s    $0.015
+CodeLlama (34B)        150ms      250 tok/s    $0.001
+YOLO v8                50ms       1000 img/s   $0.0001
+Embeddings             30ms       1000 doc/s   $0.00001
+
+GPU UTILIZATION TARGETS:
+├─ Primary Models:      95%+ (batch processing)
+├─ Batch Processing:    85%+ (flexible scheduling)
+├─ Computer Vision:     80%+ (real-time)
+└─ Development:         40%+ (spare capacity)
+                </pre>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 10: Observability -->
+        <div class="doc-section" id="observability">
+            <div class="section-header">
+                <h2><i class="fas fa-telescope text-cyan-400"></i> 10. Monitoring & Observability</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                Comprehensive monitoring stack based on the four golden signals: latency, traffic, errors, and saturation.
+            </p>
+
+            <div class="diagram-container">
+                <div class="diagram-title">Observability Stack Architecture</div>
+                <div class="mermaid">
+graph TB
+    Apps["📱 APPLICATION SOURCES<br/>Web • API • Agents • Tests<br/>K8s Pods • Services • Jobs"]
+    
+    subgraph Signals["📊 GOLDEN SIGNALS"]
+        L["🕐 LATENCY<br/>Response Time<br/>P50 P95 P99<br/>New Relic APM"]
+        T["📈 TRAFFIC<br/>Requests/sec<br/>Throughput<br/>Prometheus"]
+        E["❌ ERRORS<br/>Error Rate<br/>Exceptions<br/>Sentry"]
+        S["💾 SATURATION<br/>CPU Memory<br/>Disk I/O<br/>K8s Metrics"]
+    end
+    
+    subgraph Trace["🔍 DISTRIBUTED TRACING"]
+        OT["OpenTelemetry<br/>Collector<br/>100K spans/s"]
+        J["Jaeger<br/>Backend<br/>Query UI"]
+        TI["Trace Insights<br/>• Request Flow<br/>• Latency Breakdown<br/>• Service Dependencies"]
+    end
+    
+    subgraph Logs["📝 LOG AGGREGATION (ELK)"]
+        LS["Logstash<br/>Ingestion<br/>100K logs/s"]
+        ES["Elasticsearch<br/>Indexing & Search<br/>Hot: 1mo • Warm: 3mo"]
+        KB["Kibana<br/>Visualization<br/>Analytics"]
+    end
+    
+    subgraph Metrics["📉 METRICS COLLECTION"]
+        P["Prometheus<br/>Scraping<br/>15s interval"]
+        G["Grafana<br/>Dashboards<br/>5+ Custom Views"]
+        AM["AlertManager<br/>Rules Engine<br/>200+ conditions"]
+    end
+    
+    subgraph Alert["🚨 ALERTING & INCIDENT"]
+        PD["PagerDuty<br/>P1-P4 Alerts<br/>24/7 On-call"]
+        OG["Opsgenie<br/>Escalation<br/>Runbooks"]
+        SL["Slack<br/>Notifications<br/>Team Channels"]
+    end
+    
+    Apps --> L & T & E & S
+    Apps --> OT
+    Apps --> LS
+    Apps --> P
+    
+    L & T & E & S --> Metrics
+    
+    OT --> J
+    J --> TI
+    
+    LS --> ES
+    ES --> KB
+    
+    P --> G
+    P --> AM
+    
+    TI & KB & G --> Alert
+    AM --> PD
+    PD --> OG
+    OG & PD --> SL
+    
+    style Signals fill:#1e40af
+    style Trace fill:#7c3aed
+    style Logs fill:#059669
+    style Metrics fill:#d97706
+    style Alert fill:#dc2626
+    style Apps fill:#475569
+                </div>
+                <pre class="diagram" style="display:none;">
+┌──────────────────────────────────────────────────────────────┐
+│              GOLDEN SIGNALS MONITORING                       │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  🕐 LATENCY                 📊 TRAFFIC                      │
+│  ├─ API Response Time       ├─ Requests/sec                │
+│  ├─ Database Query Time     ├─ Event Throughput            │
+│  ├─ P50, P95, P99           ├─ Concurrent Users            │
+│  └─ Tool: New Relic APM     └─ Tool: Prometheus + Grafana  │
+│                                                              │
+│  ❌ ERRORS                  📈 SATURATION                   │
+│  ├─ Error Rate (%)          ├─ CPU Usage                   │
+│  ├─ Exception Tracking      ├─ Memory Usage                │
+│  ├─ Failed Requests         ├─ Disk I/O                    │
+│  └─ Tool: Sentry            └─ Tool: Kubernetes Metrics    │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+                             ▼
+┌──────────────────────────────────────────────────────────────┐
+│         DISTRIBUTED TRACING (Jaeger + OpenTelemetry)        │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Request Flow Visualization:                                │
+│                                                              │
+│  User Request                                               │
+│    ├─ API Gateway (50ms)                                   │
+│    │  ├─ Auth Check (5ms)                                 │
+│    │  └─ Rate Limit Check (2ms)                           │
+│    ├─ GraphQL Resolver (30ms)                              │
+│    │  ├─ Database Query (20ms)                            │
+│    │  └─ Cache Lookup (1ms)                               │
+│    └─ Response Serialization (10ms)                        │
+│                                                              │
+│  Total Trace Time: 150ms (with 3 parallel operations)       │
+│  Spans Tracked: 1000+ per request                          │
+│  Sampling Rate: 10% (for cost efficiency)                  │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+                             ▼
+┌──────────────────────────────────────────────────────────────┐
+│            LOG AGGREGATION (ELK Stack)                       │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Log Sources:                                                │
+│  ├─ Application Logs (structured JSON)                      │
+│  ├─ System Logs (syslog)                                   │
+│  ├─ Audit Logs (security events)                           │
+│  ├─ Infrastructure Logs (K8s, Docker)                      │
+│  └─ LLM Request/Response Logs                              │
+│                                                              │
+│  Log Processing:                                             │
+│  ├─ Ingestion: 100K+ logs/sec                              │
+│  ├─ Indexing: 1 month hot, 3 months warm                   │
+│  ├─ Retention: 1 year (compliance)                         │
+│  └─ Analysis: Full-text search + analytics                │
+│                                                              │
+│  Tools: Elasticsearch, Logstash, Kibana                     │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+                             ▼
+┌──────────────────────────────────────────────────────────────┐
+│         ALERTING & INCIDENT RESPONSE                        │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Alert Rules: 200+ monitoring conditions                    │
+│  Alert Categories:                                          │
+│  ├─ P1: Critical (immediate escalation)                    │
+│  ├─ P2: High (on-call response)                            │
+│  ├─ P3: Medium (business hours)                            │
+│  └─ P4: Low (daily digest)                                 │
+│                                                              │
+│  Tools: PagerDuty + Opsgenie                                │
+│  ├─ SMS/Phone/Slack notifications                          │
+│  ├─ Escalation policies                                    │
+│  ├─ On-call scheduling                                     │
+│  └─ Incident tracking & runbooks                           │
+│                                                              │
+│  Response SLA:                                              │
+│  ├─ P1: &lt;5 min acknowledgment, &lt;15 min mitigation         │
+│  ├─ P2: &lt;15 min acknowledgment, &lt;1 hour mitigation        │
+│  ├─ P3: &lt;1 hour acknowledgment                            │
+│  └─ P4: &lt;24 hour response                                 │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+
+CUSTOM DASHBOARDS:
+
+├─ Executive Dashboard
+│  └─ SLOs, Uptime, Performance Trends
+│
+├─ Platform Health Dashboard
+│  └─ System metrics, Queue depths, Database health
+│
+├─ AI Agent Dashboard
+│  └─ Model inference metrics, GPU utilization, cost
+│
+├─ Test Execution Dashboard
+│  └─ Test throughput, success rates, performance
+│
+└─ Cost Dashboard
+   └─ Spend by service, resource efficiency, trends
+                </pre>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 11: Deployment Pipeline -->
+        <div class="doc-section" id="deployment">
+            <div class="section-header">
+                <h2><i class="fas fa-rocket text-green-400"></i> 11. Deployment Pipeline</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                Automated CI/CD pipeline with comprehensive testing, security scanning, and progressive rollout.
+            </p>
+
+            <div class="diagram-container">
+                <div class="diagram-title">Complete Deployment Workflow</div>
+                <div class="mermaid">
+graph TB
+    Dev["👨‍💻 Developer Commit<br/>GitHub/GitLab"]
+    
+    subgraph CI["🔨 CI PIPELINE (10 min)"]
+        CI1["Stage 1: Code Quality<br/>• Lint (ESLint/Pylint)<br/>• Unit Tests (200+)<br/>• Coverage (80%+)"]
+        CI2["Stage 2: Security<br/>• Dependency Scan (Snyk)<br/>• SAST (SonarQube)<br/>• Secret Scanning"]
+        CI3["Stage 3: Build<br/>• Docker Build<br/>• Image Tag (semver)<br/>• Push to ECR<br/>• Generate SBOM"]
+    end
+    
+    CD["📦 ArgoCD<br/>GitOps Orchestration<br/>Sync • Apply • Verify"]
+    
+    subgraph Stage["🧪 STAGING TESTS (15 min)"]
+        ST1["Integration Tests<br/>Service-to-service"]
+        ST2["E2E Tests<br/>Complete workflows"]
+        ST3["Performance Tests<br/>Load • Stress • Spike"]
+        ST4["Security Tests<br/>DAST • API Security"]
+    end
+    
+    Approval["✅ Manual Approval<br/>Release Manager Review"]
+    
+    subgraph Prod["🚀 PRODUCTION (20 min)"]
+        P1["Phase 1: Canary<br/>10% traffic • 5 min<br/>Monitor metrics"]
+        P2["Phase 2: Progressive<br/>50% traffic • 10 min<br/>Gradual rollout"]
+        P3["Phase 3: Full<br/>100% traffic • 5 min<br/>Replace all pods"]
+    end
+    
+    Post["✓ Post-Deployment<br/>Smoke Tests • Monitoring<br/>Alert Validation"]
+    
+    Rollback["🔄 Auto Rollback<br/>If error rate > 1%<br/>Time: < 2 minutes"]
+    
+    Dev --> CI1
+    CI1 --> CI2
+    CI2 --> CI3
+    CI3 --> CD
+    CD --> ST1
+    ST1 --> ST2
+    ST2 --> ST3
+    ST3 --> ST4
+    ST4 --> Approval
+    Approval --> P1
+    P1 -->|"Success"| P2
+    P1 -.->|"Failure"| Rollback
+    P2 -->|"Success"| P3
+    P2 -.->|"Failure"| Rollback
+    P3 --> Post
+    P3 -.->|"Failure"| Rollback
+    Rollback -.->|"Return to"| Dev
+    
+    style CI fill:#7c3aed
+    style Stage fill:#d97706
+    style Prod fill:#059669
+    style Approval fill:#0891b2
+    style Rollback fill:#dc2626
+    style Post fill:#65a30d
+                </div>
+                <pre class="diagram" style="display:none;">
+┌────────────────────────────────────────────────────────────────┐
+│                  DEVELOPER WORKFLOW                            │
+└────────────────────────────────────────────────────────────────┘
+
+1. Developer commits code to GitHub/GitLab
+                    ▼
+┌────────────────────────────────────────────────────────────────┐
+│              CI PIPELINE (GitHub Actions)                      │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  Stage 1: CODE QUALITY (2 min)                                │
+│  ├─ Lint (ESLint/Pylint/Checkstyle)                          │
+│  ├─ Format Check (Prettier/Black)                            │
+│  ├─ Unit Tests (Jest/pytest) - 200+ tests                   │
+│  └─ Coverage Report - Min 80%                                │
+│                                                                │
+│  Stage 2: SECURITY (3 min)                                   │
+│  ├─ Dependency Scan (Snyk)                                   │
+│  ├─ SAST (Checkmarx/SonarQube)                               │
+│  ├─ Secret Scanning                                          │
+│  └─ Container Image Scan                                     │
+│                                                                │
+│  Stage 3: BUILD (5 min)                                      │
+│  ├─ Docker Image Build                                       │
+│  ├─ Image Tagging (semantic versioning)                      │
+│  ├─ Push to ECR/Docker Hub                                   │
+│  └─ Generate SBOM (Software Bill of Materials)              │
+│                                                                │
+│  Total CI Time: ~10 minutes                                  │
+│  Failure Rate Target: &lt;5%                                    │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+                    ▼
+┌────────────────────────────────────────────────────────────────┐
+│              DEPLOYMENT ORCHESTRATION (ArgoCD)                │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  ✓ Detect new image in registry                              │
+│  ✓ Sync with Git manifests                                   │
+│  ✓ Apply Kubernetes manifests                                │
+│  ✓ Verify deployment health                                  │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+                    ▼
+┌────────────────────────────────────────────────────────────────┐
+│         STAGING ENVIRONMENT VALIDATION (15 min)               │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  Test Suite 1: INTEGRATION TESTS                              │
+│  ├─ Service-to-service communication                          │
+│  ├─ API endpoint validation                                   │
+│  ├─ Database integration                                      │
+│  └─ Message queue verification                               │
+│                                                                │
+│  Test Suite 2: END-TO-END TESTS                               │
+│  ├─ Complete user workflows                                   │
+│  ├─ Cross-browser testing                                     │
+│  ├─ Real device testing                                       │
+│  └─ API contract testing                                      │
+│                                                                │
+│  Test Suite 3: PERFORMANCE TESTS                              │
+│  ├─ Load testing (500 concurrent users)                       │
+│  ├─ Stress testing (gradual increase)                         │
+│  ├─ Spike testing (sudden burst)                              │
+│  └─ Soak testing (long duration)                              │
+│                                                                │
+│  Test Suite 4: SECURITY TESTS                                 │
+│  ├─ DAST (Dynamic Application Security Testing)              │
+│  ├─ API Security scanning                                     │
+│  ├─ Vulnerability assessment                                  │
+│  └─ Compliance validation                                     │
+│                                                                │
+│  Success Criteria:                                             │
+│  ├─ All tests pass                                            │
+│  ├─ Performance baseline met                                  │
+│  ├─ No security vulnerabilities                               │
+│  └─ Coverage maintained                                       │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+                    ▼
+┌────────────────────────────────────────────────────────────────┐
+│            MANUAL APPROVAL GATE (async waiting)               │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  Release Manager Review:                                       │
+│  ├─ Release notes                                              │
+│  ├─ Changelog                                                  │
+│  ├─ Test results                                               │
+│  └─ Risk assessment                                            │
+│                                                                │
+│  Approval Actions:                                             │
+│  ├─ APPROVED → Proceed to production                          │
+│  ├─ REJECTED → Return to development                          │
+│  └─ SCHEDULE → Deploy at specific time                        │
+│                                                                │
+│  Timeout: No automatic deployment after 24h                   │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+                    ▼
+┌────────────────────────────────────────────────────────────────┐
+│      PRODUCTION DEPLOYMENT (Canary Strategy)                  │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  Phase 1: CANARY (5 minutes, 10% traffic)                     │
+│  ├─ Deploy to 1-2 pods                                        │
+│  ├─ Monitor: Error rate, latency, resource usage             │
+│  ├─ Success Criteria: No errors, latency &lt;+10%             │
+│  └─ Decision: Continue or Rollback?                           │
+│                                                                │
+│  Phase 2: PROGRESSIVE (10 minutes, 50% traffic)               │
+│  ├─ Increase replicas gradually                               │
+│  ├─ Monitor same metrics                                      │
+│  ├─ Success Criteria: Stable metrics                          │
+│  └─ Decision: Continue or Rollback?                           │
+│                                                                │
+│  Phase 3: FULL ROLLOUT (5 minutes, 100% traffic)              │
+│  ├─ Replace all remaining pods                                │
+│  ├─ Final validation                                          │
+│  ├─ Update load balancer                                      │
+│  └─ Old pods terminated                                       │
+│                                                                │
+│  Total Deployment Time: 20-30 minutes                         │
+│  Zero-Downtime: Yes (rolling update)                          │
+│  Traffic Loss: None (health checks)                           │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+                    ▼
+┌────────────────────────────────────────────────────────────────┐
+│          POST-DEPLOYMENT VALIDATION (10 min)                  │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  Smoke Tests:                                                  │
+│  ├─ Critical user workflows                                   │
+│  ├─ Health endpoint checks                                    │
+│  └─ Database connectivity                                     │
+│                                                                │
+│  Synthetic Monitoring:                                         │
+│  ├─ Simulated user transactions                               │
+│  ├─ Global endpoint availability                              │
+│  └─ Performance baseline                                      │
+│                                                                │
+│  Alert Validation:                                             │
+│  ├─ Verify monitoring is active                               │
+│  ├─ Test alert routing                                        │
+│  └─ Confirm dashboards updated                                │
+│                                                                │
+│  Success: Send notification to team                           │
+│  Duration: 15 minutes                                         │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+
+ROLLBACK STRATEGY:
+
+Automatic Rollback Triggers:
+├─ Error rate > 1% for 30 seconds
+├─ Latency p95 > 2x baseline for 60 seconds
+├─ CPU/Memory > 90% for 60 seconds
+├─ Database connection pool exhausted
+└─ Manual rollback command
+
+Rollback Time: &lt;2 minutes
+Data Safety: No data mutations during rollback
+Notification: Slack + PagerDuty alert
+Root Cause Analysis: Automated comparison
+                </pre>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 12: Cost Optimization -->
+        <div class="doc-section" id="cost">
+            <div class="section-header">
+                <h2><i class="fas fa-piggy-bank text-yellow-400"></i> 12. Cost Optimization Strategies</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                Multi-layered cost optimization achieving $60/engineer/month for 1000 concurrent users.
+            </p>
+
+            <div class="table-responsive">
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th>Optimization Area</th>
+                            <th>Strategy</th>
+                            <th>Savings Target</th>
+                            <th>Implementation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Compute</strong></td>
+                            <td>Spot Instances (70%) + Reserved (30%)</td>
+                            <td>60-70%</td>
+                            <td>Auto-scaling with spot pools</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Storage</strong></td>
+                            <td>S3 Intelligent-Tiering + Lifecycle</td>
+                            <td>40-50%</td>
+                            <td>90-day move to Glacier</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AI Models</strong></td>
+                            <td>Response Caching (60%) + Quantization</td>
+                            <td>50-60%</td>
+                            <td>Redis cache + 4-bit precision</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Network</strong></td>
+                            <td>CDN caching (80%) + Regional routing</td>
+                            <td>70-80%</td>
+                            <td>CloudFront + Route 53</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database</strong></td>
+                            <td>Read replicas + Connection pooling</td>
+                            <td>30-40%</td>
+                            <td>PgBouncer + Aurora replicas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Monitoring</strong></td>
+                            <td>Sampling (10%) + Log aggregation</td>
+                            <td>50-60%</td>
+                            <td>Trace sampling + ELK</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-lg font-semibold mt-8 mb-4 text-white">Monthly Cost Breakdown (1000 Engineers)</h3>
+            
+            <div class="diagram-container">
+                <div class="diagram-title">Cost Structure Analysis</div>
+                <pre class="diagram">
+SERVICE COST BREAKDOWN:
+
+┌─────────────────────────────────────────────────────────────┐
+│ COMPUTE (K8s Nodes)                                          │
+├─────────────────────────────────────────────────────────────┤
+│ • 30 on-demand nodes @ $0.50/hour         $10,800           │
+│ • 70 spot nodes @ $0.15/hour (avg)        $ 7,560           │
+│ • GPU instances (H100/A100/RTX4090)       $ 8,000           │
+│ ─────────────────────────────────────────────────────────  │
+│ Subtotal: ~$26,360 (44%)                                    │
+└─────────────────────────────────────────────────────────────┘
+
+Cost Optimization:
+├─ Reserved Instances (1-year): -20%
+├─ Spot Fleet: -70% on execution nodes
+├─ Right-sizing: -15% through analysis
+└─ Consolidated: -5% through committed use
+
+┌─────────────────────────────────────────────────────────────┐
+│ AI MODEL APIs & INFERENCE                                   │
+├─────────────────────────────────────────────────────────────┤
+│ • Claude 3.5 API calls              $ 8,000                │
+│ • GPT-4o API calls                  $ 6,000                │
+│ • Self-hosted models (inference)    $ 5,000                │
+│ • RAG & embeddings                  $ 2,000                │
+│ • Fine-tuning & training            $ 4,000                │
+│ ─────────────────────────────────────────────────────────  │
+│ Subtotal: ~$25,000 (42%)                                    │
+└─────────────────────────────────────────────────────────────┘
+
+Cost Optimization:
+├─ Response caching: -60%
+├─ Model quantization: -40%
+├─ Batch processing: -50%
+├─ Model routing (small/large): -30%
+└─ Reserved capacity: -25%
+
+┌─────────────────────────────────────────────────────────────┐
+│ STORAGE (Database + Object Storage)                         │
+├─────────────────────────────────────────────────────────────┤
+│ • RDS PostgreSQL (Multi-AZ)         $ 3,000                │
+│ • S3 Storage (5TB/month avg)        $ 1,200                │
+│ • EBS Volumes                       $   600                │
+│ • Backup & Snapshots                $   200                │
+│ ─────────────────────────────────────────────────────────  │
+│ Subtotal: ~$5,000 (8%)                                      │
+└─────────────────────────────────────────────────────────────┘
+
+Cost Optimization:
+├─ Intelligent-Tiering: -40%
+├─ Lifecycle policies: -30%
+├─ Compression: -20%
+└─ Deduplication: -10%
+
+┌─────────────────────────────────────────────────────────────┐
+│ NETWORKING & CDN                                            │
+├─────────────────────────────────────────────────────────────┤
+│ • CloudFront (1TB/month)            $ 1,500                │
+│ • Data transfer (inter-AZ)          $ 1,000                │
+│ • Load Balancer                     $   300                │
+│ • NAT Gateway                       $   200                │
+│ ─────────────────────────────────────────────────────────  │
+│ Subtotal: ~$3,000 (5%)                                      │
+└─────────────────────────────────────────────────────────────┘
+
+Cost Optimization:
+├─ CDN caching (80%): -80%
+├─ VPC endpoints: -50%
+├─ Regional routing: -30%
+└─ Compression: -15%
+
+┌─────────────────────────────────────────────────────────────┐
+│ MONITORING & LOGGING                                        │
+├─────────────────────────────────────────────────────────────┤
+│ • New Relic APM (1000 hosts)        $ 2,000                │
+│ • Datadog Logs (200GB/day)          $ 1,500                │
+│ • Splunk (optional)                 $ 1,500                │
+│ • PagerDuty + Opsgenie              $   500                │
+│ ─────────────────────────────────────────────────────────  │
+│ Subtotal: ~$5,500 (9%)                                      │
+└─────────────────────────────────────────────────────────────┘
+
+Cost Optimization:
+├─ Trace sampling (10%): -90%
+├─ Log aggregation (ELK): -70%
+├─ Metric cardinality: -40%
+└─ Retention policies: -30%
+
+═══════════════════════════════════════════════════════════════
+                    TOTAL MONTHLY: ~$60,000
+                    PER ENGINEER (1000): $60/month
+═══════════════════════════════════════════════════════════════
+
+SAVINGS ACHIEVED:
+├─ Without optimization: $120,000/month
+├─ With optimization: $60,000/month
+├─ Total savings: 50%
+└─ ROI: 6 months (optimization investment)
+
+FORECAST (5-YEAR):
+Year 1: $720K (ramp-up)
+Year 2: $540K (optimization)
+Year 3: $480K (scaling economies)
+Year 4: $450K (reserved commitments)
+Year 5: $420K (efficiency gains)
+                </pre>
+            </div>
+
+            <div class="callout callout-success mt-8">
+                <div class="callout-title">Cost Management Best Practices</div>
+                <div class="callout-content">
+                    <ul class="space-y-2">
+                        <li>✓ <strong>Weekly Reviews:</strong> Monitor spending trends and anomalies</li>
+                        <li>✓ <strong>Resource Tagging:</strong> Track costs by team, project, environment</li>
+                        <li>✓ <strong>Auto-Scaling:</strong> Scale resources based on actual demand</li>
+                        <li>✓ <strong>Reserved Capacity:</strong> Commit to baseline for 20-30% discount</li>
+                        <li>✓ <strong>Right-Sizing:</strong> Monthly analysis of resource utilization</li>
+                        <li>✓ <strong>Spot Markets:</strong> Use interruptible instances for batch work</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 13: Deployment Options -->
+        <div class="doc-section" id="deployment-options">
+            <div class="section-header">
+                <h2><i class="fas fa-cloud text-blue-400"></i> 13. Deployment Options</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                NEXUS QE supports three deployment models to meet different organizational needs and compliance requirements.
+            </p>
+
+            <div class="deployment-options">
+                <div class="deployment-card bg-gradient-to-br from-blue-600 to-blue-700">
+                    <h3 class="font-bold mb-2">☁️ SaaS (Cloud)</h3>
+                    <p class="text-sm mb-2">Fully managed by NEXUS QE</p>
+                    <ul class="text-xs space-y-1">
+                        <li>• Fastest deployment</li>
+                        <li>• Auto-updates</li>
+                        <li>• Pay-as-you-go</li>
+                        <li>• 99.99% uptime</li>
+                    </ul>
+                </div>
+                <div class="deployment-card bg-gradient-to-br from-purple-600 to-purple-700">
+                    <h3 class="font-bold mb-2">🏢 Private Cloud</h3>
+                    <p class="text-sm mb-2">Your AWS/Azure/GCP</p>
+                    <ul class="text-xs space-y-1">
+                        <li>• Data sovereignty</li>
+                        <li>• Custom configs</li>
+                        <li>• VPC isolation</li>
+                        <li>• Managed service</li>
+                    </ul>
+                </div>
+                <div class="deployment-card bg-gradient-to-br from-green-600 to-green-700">
+                    <h3 class="font-bold mb-2">🔒 On-Premises</h3>
+                    <p class="text-sm mb-2">Your data center</p>
+                    <ul class="text-xs space-y-1">
+                        <li>• Complete control</li>
+                        <li>• Air-gapped option</li>
+                        <li>• Compliance ready</li>
+                        <li>• Professional services</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="table-responsive mt-8">
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>SaaS</th>
+                            <th>Private Cloud</th>
+                            <th>On-Premises</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Deployment Time</strong></td>
+                            <td>Days</td>
+                            <td>1-2 Weeks</td>
+                            <td>4-6 Weeks</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Residency</strong></td>
+                            <td>Multi-region</td>
+                            <td>Your region</td>
+                            <td>On-site</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Updates</strong></td>
+                            <td>Automatic</td>
+                            <td>Scheduled</td>
+                            <td>Manual</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Scaling</strong></td>
+                            <td>Auto</td>
+                            <td>Semi-auto</td>
+                            <td>Manual</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cost Model</strong></td>
+                            <td>Pay-per-use</td>
+                            <td>Hybrid</td>
+                            <td>CapEx</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Compliance</strong></td>
+                            <td>SOC 2</td>
+                            <td>All</td>
+                            <td>All</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Support</strong></td>
+                            <td>24/7 Online</td>
+                            <td>24/7 Phone</td>
+                            <td>24/7 On-site</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Conclusion -->
+        <div class="doc-section">
+            <div class="section-header">
+                <h2><i class="fas fa-checkmark-circle text-green-400"></i> Conclusion</h2>
+            </div>
+
+            <p class="text-gray-300 mb-6">
+                NEXUS QE provides an enterprise-grade, production-ready architecture for AI-powered quality engineering at scale. With a focus on reliability, security, cost-efficiency, and performance, the platform supports organizations of any size from startups to enterprises.
+            </p>
+
+            <div class="callout callout-success">
+                <div class="callout-title">Key Takeaways</div>
+                <div class="callout-content">
+                    <ul class="space-y-3">
+                        <li>✓ <strong>High Availability:</strong> 99.99% uptime SLA with multi-region active-active deployment</li>
+                        <li>✓ <strong>Security First:</strong> Zero-trust architecture with defense-in-depth across 5 layers</li>
+                        <li>✓ <strong>AI-Powered:</strong> 8 specialized agents covering all testing aspects</li>
+                        <li>✓ <strong>Cost Optimized:</strong> 50% savings through spot instances, caching, and quantization</li>
+                        <li>✓ <strong>Scalable:</strong> Horizontal scaling from 0 to 1000+ concurrent tests</li>
+                        <li>✓ <strong>Observable:</strong> Comprehensive monitoring based on golden signals</li>
+                        <li>✓ <strong>Flexible Deployment:</strong> SaaS, Private Cloud, or On-Premises options</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center text-gray-400 text-sm">
+                <p>NEXUS QE Architecture Documentation v1.0</p>
+                <p>Last Updated: January 2026</p>
+                <p>For more information, visit nexus-qe.io or contact sales@nexus-qe.io</p>
+            </div>
+        </div>
+    </div>
+            <div class="stack-card bg-gradient-to-br from-blue-600 to-blue-700">
+                <h3 class="font-bold mb-2">Frontend</h3>
+                <ul class="text-sm space-y-1">
+                    <li>• React 18 + Vite</li>
+                    <li>• TailwindCSS</li>
+                    <li>• React Native</li>
+                    <li>• TypeScript</li>
+                </ul>
+            </div>
+            <div class="stack-card bg-gradient-to-br from-purple-600 to-purple-700">
+                <h3 class="font-bold mb-2">Backend</h3>
+                <ul class="text-sm space-y-1">
+                    <li>• FastAPI + Python</li>
+                    <li>• Node.js + TypeScript</li>
+                    <li>• Go (CLI)</li>
+                    <li>• GraphQL</li>
+                </ul>
+            </div>
+            <div class="stack-card bg-gradient-to-br from-green-600 to-green-700">
+                <h3 class="font-bold mb-2">AI/ML</h3>
+                <ul class="text-sm space-y-1">
+                    <li>• Claude 3.5 Sonnet</li>
+                    <li>• GPT-4o / GPT-4V</li>
+                    <li>• LangChain + MCP</li>
+                    <li>• PyTorch + TensorFlow</li>
+                </ul>
+            </div>
+            <div class="stack-card bg-gradient-to-br from-orange-600 to-orange-700">
+                <h3 class="font-bold mb-2">Infrastructure</h3>
+                <ul class="text-sm space-y-1">
+                    <li>• Kubernetes (EKS/AKS)</li>
+                    <li>• Docker</li>
+                    <li>• Terraform</li>
+                    <li>• AWS/Azure/GCP</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Key Features -->
+        <div class="mt-8 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg p-6 border border-gray-600">
+            <h2 class="text-2xl font-bold mb-4">Key Architectural Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="font-semibold text-green-400 mb-2">Scalability</h3>
+                    <ul class="text-sm space-y-1 text-gray-300">
+                        <li>• Horizontal scaling with Kubernetes</li>
+                        <li>• Auto-scaling based on load</li>
+                        <li>• Multi-region deployment</li>
+                        <li>• Serverless for burst workloads</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-blue-400 mb-2">Reliability</h3>
+                    <ul class="text-sm space-y-1 text-gray-300">
+                        <li>• 99.99% uptime SLA</li>
+                        <li>• Disaster recovery with RPO &lt; 1hr</li>
+                        <li>• Multi-AZ deployment</li>
+                        <li>• Automatic failover</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-purple-400 mb-2">Security</h3>
+                    <ul class="text-sm space-y-1 text-gray-300">
+                        <li>• Zero-trust architecture</li>
+                        <li>• End-to-end encryption</li>
+                        <li>• SOC 2 Type II compliant</li>
+                        <li>• Regular penetration testing</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-orange-400 mb-2">Performance</h3>
+                    <ul class="text-sm space-y-1 text-gray-300">
+                        <li>• Sub-50ms API response time</li>
+                        <li>• Real-time test execution</li>
+                        <li>• Edge caching globally</li>
+                        <li>• Optimized LLM inference</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deployment Options -->
+        <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-2xl font-bold mb-4">Deployment Options</h2>
+            <div class="deployment-options">
+                <div class="deployment-card bg-gradient-to-br from-blue-600 to-blue-700">
+                    <h3 class="font-bold mb-2">☁️ SaaS (Cloud)</h3>
+                    <p class="text-sm mb-2">Fully managed by NEXUS QE</p>
+                    <ul class="text-xs space-y-1">
+                        <li>• Fastest deployment</li>
+                        <li>• Auto-updates</li>
+                        <li>• Pay-as-you-go</li>
+                        <li>• 99.99% uptime</li>
+                    </ul>
+                </div>
+                <div class="deployment-card bg-gradient-to-br from-purple-600 to-purple-700">
+                    <h3 class="font-bold mb-2">🏢 Private Cloud</h3>
+                    <p class="text-sm mb-2">Your AWS/Azure/GCP</p>
+                    <ul class="text-xs space-y-1">
+                        <li>• Data sovereignty</li>
+                        <li>• Custom configs</li>
+                        <li>• VPC isolation</li>
+                        <li>• Managed service</li>
+                    </ul>
+                </div>
+                <div class="deployment-card bg-gradient-to-br from-green-600 to-green-700">
+                    <h3 class="font-bold mb-2">🔒 On-Premises</h3>
+                    <p class="text-sm mb-2">Your data center</p>
+                    <ul class="text-xs space-y-1">
+                        <li>• Complete control</li>
+                        <li>• Air-gapped option</li>
+                        <li>• Compliance ready</li>
+                        <li>• Professional services</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Communication Patterns -->
+        <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-exchange-alt text-cyan-400"></i>
+                Component Communication Patterns
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-gradient-to-br from-cyan-600 to-cyan-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-3 text-lg">Synchronous Communication</h3>
+                    <ul class="text-sm space-y-2">
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-200 font-bold">•</span>
+                            <div>
+                                <div class="font-semibold">gRPC</div>
+                                <div class="text-cyan-100 text-xs">High-performance RPC for internal microservices (orchestration ↔ agents)</div>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-200 font-bold">•</span>
+                            <div>
+                                <div class="font-semibold">REST/GraphQL</div>
+                                <div class="text-cyan-100 text-xs">External API access and client communication</div>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-cyan-200 font-bold">•</span>
+                            <div>
+                                <div class="font-semibold">WebSocket</div>
+                                <div class="text-cyan-100 text-xs">Real-time bidirectional communication for live updates</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-pink-600 to-pink-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-3 text-lg">Asynchronous Communication</h3>
+                    <ul class="text-sm space-y-2">
+                        <li class="flex items-start gap-2">
+                            <span class="text-pink-200 font-bold">•</span>
+                            <div>
+                                <div class="font-semibold">Apache Kafka</div>
+                                <div class="text-pink-100 text-xs">Event streaming for audit logs, metrics, and analytics</div>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-pink-200 font-bold">•</span>
+                            <div>
+                                <div class="font-semibold">RabbitMQ</div>
+                                <div class="text-pink-100 text-xs">Task queues for agent work distribution</div>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-pink-200 font-bold">•</span>
+                            <div>
+                                <div class="font-semibold">Redis Pub/Sub</div>
+                                <div class="text-pink-100 text-xs">Real-time notifications and cache invalidation</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network Architecture -->
+        <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-network-wired text-blue-400"></i>
+                Network Architecture
+            </h2>
+            <div class="space-y-3">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-cloud text-blue-200 text-lg"></i>
+                        <h3 class="font-semibold text-white text-lg">Edge Layer (Global CDN)</h3>
+                    </div>
+                    <p class="text-sm text-blue-100 ml-8">Cloudflare + CloudFront - DDoS Protection + Caching</p>
+                </div>
+                <div class="text-center text-gray-400 text-2xl">↓</div>
+                <div class="bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg p-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-server text-purple-200 text-lg"></i>
+                        <h3 class="font-semibold text-white text-lg">Application Load Balancer (Multi-AZ)</h3>
+                    </div>
+                    <p class="text-sm text-purple-100 ml-8">AWS ALB / Azure Load Balancer - SSL Termination</p>
+                </div>
+                <div class="text-center text-gray-400 text-2xl">↓</div>
+                <div class="bg-gradient-to-r from-pink-600 to-pink-700 rounded-lg p-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-router text-pink-200 text-lg"></i>
+                        <h3 class="font-semibold text-white text-lg">API Gateway Cluster (Kong)</h3>
+                    </div>
+                    <p class="text-sm text-pink-100 ml-8">Authentication • Rate Limiting • Request Routing</p>
+                </div>
+                <div class="text-center text-gray-400 text-2xl">↓</div>
+                <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-lg p-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-cube text-green-200 text-lg"></i>
+                        <h3 class="font-semibold text-white text-lg">Kubernetes Cluster (Multi-AZ)</h3>
+                    </div>
+                    <div class="text-sm text-green-100 ml-8 space-y-1">
+                        <p>• Web Pods (Stateless)</p>
+                        <p>• Agent Pods (GPU-enabled)</p>
+                        <p>• Execution Pods (Stateful)</p>
+                    </div>
+                </div>
+                <div class="text-center text-gray-400 text-2xl">↓</div>
+                <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-lg p-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-database text-indigo-200 text-lg"></i>
+                        <h3 class="font-semibold text-white text-lg">Data Layer (Distributed)</h3>
+                    </div>
+                    <p class="text-sm text-indigo-100 ml-8">PostgreSQL (RDS) • Redis • Kafka • S3 • Pinecone</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Architecture -->
+        <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-shield-alt text-red-400"></i>
+                Security Architecture (Defense in Depth)
+            </h2>
+            <div class="space-y-3">
+                <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">Layer 1: Edge Security</h3>
+                    <ul class="text-sm text-red-100 space-y-1 ml-4">
+                        <li>✓ DDoS Protection (Cloudflare)</li>
+                        <li>✓ WAF Rules (OWASP Top 10)</li>
+                        <li>✓ Rate Limiting</li>
+                        <li>✓ Geo-blocking</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-r from-orange-600 to-orange-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">Layer 2: Network Security</h3>
+                    <ul class="text-sm text-orange-100 space-y-1 ml-4">
+                        <li>✓ VPC Isolation</li>
+                        <li>✓ Security Groups (Firewall)</li>
+                        <li>✓ Private Subnets for Data</li>
+                        <li>✓ VPN/Direct Connect</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-r from-yellow-600 to-yellow-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">Layer 3: Application Security</h3>
+                    <ul class="text-sm text-yellow-100 space-y-1 ml-4">
+                        <li>✓ OAuth 2.0 + OpenID Connect</li>
+                        <li>✓ JWT Token Validation</li>
+                        <li>✓ API Key Management</li>
+                        <li>✓ RBAC (Role-Based Access)</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">Layer 4: Data Security</h3>
+                    <ul class="text-sm text-green-100 space-y-1 ml-4">
+                        <li>✓ Encryption at Rest (AES-256)</li>
+                        <li>✓ Encryption in Transit (TLS 1.3)</li>
+                        <li>✓ Database Encryption</li>
+                        <li>✓ Key Management (KMS)</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">Layer 5: Monitoring & Response</h3>
+                    <ul class="text-sm text-blue-100 space-y-1 ml-4">
+                        <li>✓ SIEM Integration</li>
+                        <li>✓ Threat Detection</li>
+                        <li>✓ Audit Logging</li>
+                        <li>✓ Incident Response</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scalability Design -->
+        <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-chart-line text-green-400"></i>
+                Scalability Design
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-gradient-to-br from-green-600 to-green-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-3">API Gateway</h3>
+                    <ul class="text-xs text-green-100 space-y-1">
+                        <li><span class="font-semibold">Auto-scaling:</span> CPU > 70%</li>
+                        <li><span class="font-semibold">Min instances:</span> 3</li>
+                        <li><span class="font-semibold">Max instances:</span> 50</li>
+                        <li><span class="font-semibold">Scale-up time:</span> 30s</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-cyan-600 to-cyan-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-3">AI Agents</h3>
+                    <ul class="text-xs text-cyan-100 space-y-1">
+                        <li><span class="font-semibold">Scaling:</span> GPU-based, queue depth</li>
+                        <li><span class="font-semibold">Min GPU nodes:</span> 2</li>
+                        <li><span class="font-semibold">Max GPU nodes:</span> 20</li>
+                        <li><span class="font-semibold">Model:</span> On-demand scaling</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-3">Test Execution</h3>
+                    <ul class="text-xs text-purple-100 space-y-1">
+                        <li><span class="font-semibold">Scaling:</span> On-demand via Kubernetes HPA</li>
+                        <li><span class="font-semibold">Min nodes:</span> 5</li>
+                        <li><span class="font-semibold">Max nodes:</span> 100</li>
+                        <li><span class="font-semibold">Cost opt:</span> Spot instances (70%)</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-3">Databases</h3>
+                    <ul class="text-xs text-blue-100 space-y-1">
+                        <li><span class="font-semibold">Read replicas:</span> 5</li>
+                        <li><span class="font-semibold">Write master:</span> 1</li>
+                        <li><span class="font-semibold">Sharding:</span> By tenant_id</li>
+                        <li><span class="font-semibold">Caching:</span> Redis Cluster</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disaster Recovery -->
+        <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-life-ring text-orange-400"></i>
+                Disaster Recovery Strategy
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-gradient-to-br from-orange-600 to-orange-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-3">Primary Region (us-east-1)</h3>
+                    <ul class="text-sm text-orange-100 space-y-1">
+                        <li>✓ Full stack deployment</li>
+                        <li>✓ Primary database (write)</li>
+                        <li>✓ Real-time replication</li>
+                        <li>✓ 60% traffic</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-3">Secondary Region (eu-west-1)</h3>
+                    <ul class="text-sm text-blue-100 space-y-1">
+                        <li>✓ Full stack deployment</li>
+                        <li>✓ Read replica (promoted on failure)</li>
+                        <li>✓ Cross-region replication</li>
+                        <li>✓ 40% traffic</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-4 bg-gray-700 rounded-lg p-4">
+                <h3 class="font-semibold text-white mb-3">DR Metrics</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-gray-600 rounded p-3 text-center">
+                        <div class="text-2xl font-bold text-green-400">&lt; 5 min</div>
+                        <div class="text-xs text-gray-300 mt-1">RTO</div>
+                    </div>
+                    <div class="bg-gray-600 rounded p-3 text-center">
+                        <div class="text-2xl font-bold text-green-400">&lt; 1 min</div>
+                        <div class="text-xs text-gray-300 mt-1">RPO</div>
+                    </div>
+                    <div class="bg-gray-600 rounded p-3 text-center">
+                        <div class="text-2xl font-bold text-green-400">Auto</div>
+                        <div class="text-xs text-gray-300 mt-1">Failover</div>
+                    </div>
+                    <div class="bg-gray-600 rounded p-3 text-center">
+                        <div class="text-2xl font-bold text-green-400">~0</div>
+                        <div class="text-xs text-gray-300 mt-1">Data Loss</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Model Serving -->
+        <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-brain text-purple-400"></i>
+                AI Model Serving Architecture
+            </h2>
+            <div class="space-y-3">
+                <div class="bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">Load Balancer (NGINX)</h3>
+                    <p class="text-sm text-purple-100">Health checks • Request routing • SSL termination</p>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-3">vLLM Inference Server (Pool)</h3>
+                    <ul class="text-sm text-indigo-100 space-y-1">
+                        <li>• Claude 3.5 Sonnet (70B, 4-bit)</li>
+                        <li>• GPT-4o (API proxy with caching)</li>
+                        <li>• CodeLlama 34B (quantized)</li>
+                        <li><span class="font-semibold">Optimization:</span> PagedAttention + Continuous Batching</li>
+                    </ul>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-3">Specialized Model Servers</h3>
+                    <ul class="text-sm text-blue-100 space-y-1">
+                        <li>• YOLO v8 (TorchServe)</li>
+                        <li>• Embedding models (TEI)</li>
+                        <li>• Custom fine-tuned models</li>
+                    </ul>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gradient-to-r from-cyan-600 to-cyan-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-3">Model Cache Layer (Redis)</h3>
+                    <ul class="text-sm text-cyan-100 space-y-1">
+                        <li>• Response caching</li>
+                        <li>• Embedding caching</li>
+                        <li>• TTL management</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-4 bg-gray-700 rounded-lg p-4">
+                <h3 class="font-semibold text-white mb-3">GPU Allocation</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="bg-gray-600 rounded p-3">
+                        <div class="text-sm font-semibold text-purple-300">Primary Models</div>
+                        <div class="text-xs text-gray-300">8x NVIDIA H100 (80GB)</div>
+                    </div>
+                    <div class="bg-gray-600 rounded p-3">
+                        <div class="text-sm font-semibold text-blue-300">Batch Processing</div>
+                        <div class="text-xs text-gray-300">4x A100 (40GB)</div>
+                    </div>
+                    <div class="bg-gray-600 rounded p-3">
+                        <div class="text-sm font-semibold text-cyan-300">Computer Vision</div>
+                        <div class="text-xs text-gray-300">2x RTX 4090 (24GB)</div>
+                    </div>
+                    <div class="bg-gray-600 rounded p-3">
+                        <div class="text-sm font-semibold text-green-300">Development</div>
+                        <div class="text-xs text-gray-300">2x T4 (16GB)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Optimization -->
+        <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-piggy-bank text-yellow-400"></i>
+                Cost Optimization Strategies
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-gradient-to-br from-yellow-600 to-yellow-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">Compute Optimization</h3>
+                    <ul class="text-xs text-yellow-100 space-y-1">
+                        <li>• Spot Instances: 70% of test nodes</li>
+                        <li>• Reserved Instances: Core services</li>
+                        <li>• Aggressive auto-scaling</li>
+                        <li>• Weekly right-sizing analysis</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-green-600 to-green-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">Storage Optimization</h3>
+                    <ul class="text-xs text-green-100 space-y-1">
+                        <li>• S3 Intelligent-Tiering</li>
+                        <li>• Lifecycle policies (90 days → Glacier)</li>
+                        <li>• Compression: gzip/brotli</li>
+                        <li>• Deduplication: Test artifacts</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">AI Model Optimization</h3>
+                    <ul class="text-xs text-blue-100 space-y-1">
+                        <li>• Response caching: 60% hit rate</li>
+                        <li>• Quantization: 4-bit for inference</li>
+                        <li>• Batch processing: Similar requests</li>
+                        <li>• Model routing: Small model for simple tasks</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">Network Optimization</h3>
+                    <ul class="text-xs text-purple-100 space-y-1">
+                        <li>• CDN caching: 80% hit rate</li>
+                        <li>• VPC endpoints: Avoid NAT costs</li>
+                        <li>• Data transfer optimization</li>
+                        <li>• Regional affinity routing</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="bg-gray-700 rounded-lg p-4">
+                <h3 class="font-semibold text-white mb-3">Expected Monthly Cost (1000 engineers)</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="bg-gray-600 rounded p-3">
+                        <div class="text-sm font-semibold text-blue-300">Compute</div>
+                        <div class="text-lg font-bold text-white">$15K</div>
+                        <div class="text-xs text-gray-400">(K8s)</div>
+                    </div>
+                    <div class="bg-gray-600 rounded p-3">
+                        <div class="text-sm font-semibold text-purple-300">AI Models</div>
+                        <div class="text-lg font-bold text-white">$25K</div>
+                        <div class="text-xs text-gray-400">(API)</div>
+                    </div>
+                    <div class="bg-gray-600 rounded p-3">
+                        <div class="text-sm font-semibold text-green-300">Storage</div>
+                        <div class="text-lg font-bold text-white">$5K</div>
+                        <div class="text-xs text-gray-400">(S3/EBS)</div>
+                    </div>
+                    <div class="bg-gray-600 rounded p-3">
+                        <div class="text-sm font-semibold text-yellow-300">Network</div>
+                        <div class="text-lg font-bold text-white">$3K</div>
+                        <div class="text-xs text-gray-400">(CDN)</div>
+                    </div>
+                    <div class="bg-gray-600 rounded p-3">
+                        <div class="text-sm font-semibold text-cyan-300">Databases</div>
+                        <div class="text-lg font-bold text-white">$8K</div>
+                        <div class="text-xs text-gray-400">(RDS)</div>
+                    </div>
+                    <div class="bg-gray-600 rounded p-3">
+                        <div class="text-sm font-semibold text-orange-300">Monitoring</div>
+                        <div class="text-lg font-bold text-white">$4K</div>
+                        <div class="text-xs text-gray-400">(APM)</div>
+                    </div>
+                    <div class="bg-gray-600 rounded p-3 md:col-span-2">
+                        <div class="text-sm font-semibold text-green-400">Total</div>
+                        <div class="text-lg font-bold text-white">~$60K/month</div>
+                        <div class="text-xs text-gray-400">($60/engineer/month)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deployment Pipeline -->
+        <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-rocket text-green-400"></i>
+                Deployment Pipeline
+            </h2>
+            <div class="space-y-2">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-3 text-center">
+                    <div class="font-semibold text-white">Developer Commit</div>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg p-3">
+                    <div class="font-semibold text-white mb-2">GitHub/GitLab (Version Control)</div>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gradient-to-r from-pink-600 to-pink-700 rounded-lg p-3">
+                    <div class="font-semibold text-white mb-2">CI Pipeline (GitHub Actions / GitLab CI)</div>
+                    <ul class="text-xs text-pink-100 space-y-1 ml-4">
+                        <li>✓ Lint & Format</li>
+                        <li>✓ Unit Tests</li>
+                        <li>✓ Security Scan (Snyk)</li>
+                        <li>✓ Build Docker Images</li>
+                        <li>✓ Push to Registry</li>
+                    </ul>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-lg p-3">
+                    <div class="font-semibold text-white mb-2">ArgoCD (GitOps)</div>
+                    <ul class="text-xs text-green-100 space-y-1 ml-4">
+                        <li>✓ Sync with Git</li>
+                        <li>✓ Apply K8s Manifests</li>
+                        <li>✓ Progressive Rollout</li>
+                    </ul>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gradient-to-r from-yellow-600 to-yellow-700 rounded-lg p-3">
+                    <div class="font-semibold text-white mb-2">Staging Environment</div>
+                    <ul class="text-xs text-yellow-100 space-y-1 ml-4">
+                        <li>✓ Integration Tests</li>
+                        <li>✓ E2E Tests</li>
+                        <li>✓ Performance Tests</li>
+                        <li>✓ Security Scan</li>
+                    </ul>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gray-700 rounded-lg p-3 text-center">
+                    <div class="font-semibold text-yellow-400">Manual Approval (for Production)</div>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gradient-to-r from-cyan-600 to-cyan-700 rounded-lg p-3">
+                    <div class="font-semibold text-white mb-2">Production Deployment</div>
+                    <ul class="text-xs text-cyan-100 space-y-1 ml-4">
+                        <li>✓ Canary (10% traffic - 5 min)</li>
+                        <li>✓ Monitor Metrics</li>
+                        <li>✓ Increase to 50% (10 min)</li>
+                        <li>✓ Full Rollout (if healthy)</li>
+                    </ul>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-lg p-3">
+                    <div class="font-semibold text-white mb-2">Post-Deployment</div>
+                    <ul class="text-xs text-indigo-100 space-y-1 ml-4">
+                        <li>✓ Smoke Tests</li>
+                        <li>✓ Synthetic Monitoring</li>
+                        <li>✓ Alert Validation</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-4 bg-red-900 rounded-lg p-4 border border-red-700">
+                <h3 class="font-semibold text-white mb-2 flex items-center gap-2">
+                    <i class="fas fa-undo text-red-300"></i>
+                    Rollback Strategy
+                </h3>
+                <ul class="text-sm text-red-100 space-y-1 ml-4">
+                    <li>• Automatic: If error rate > 1%</li>
+                    <li>• Manual: Via ArgoCD UI</li>
+                    <li>• Time: &lt; 2 minutes</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Observability Stack -->
+        <div class="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-telescope text-cyan-400"></i>
+                Monitoring & Observability Stack
+            </h2>
+            <div class="space-y-3">
+                <div class="bg-gradient-to-r from-yellow-600 to-yellow-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">🎯 Golden Signals Monitoring</h3>
+                    <ul class="text-sm text-yellow-100 space-y-1">
+                        <li><span class="font-semibold">Latency:</span> New Relic APM + Custom Metrics</li>
+                        <li><span class="font-semibold">Traffic:</span> Prometheus + Grafana</li>
+                        <li><span class="font-semibold">Errors:</span> Sentry + CloudWatch</li>
+                        <li><span class="font-semibold">Saturation:</span> Kubernetes Metrics Server</li>
+                    </ul>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">📊 Distributed Tracing</h3>
+                    <p class="text-sm text-blue-100">Jaeger + OpenTelemetry - Full Request Traces</p>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">📝 Log Aggregation</h3>
+                    <p class="text-sm text-purple-100">ELK Stack - Centralized Logging & Analysis</p>
+                </div>
+                <div class="text-center text-gray-400">↓</div>
+                <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-lg p-4">
+                    <h3 class="font-semibold text-white mb-2">🚨 Alerting & Incident Response</h3>
+                    <p class="text-sm text-red-100">PagerDuty + Opsgenie - On-call Management</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data for the architecture diagram
+        const layers = [
+            {
+                id: 'presentation',
+                title: 'PRESENTATION LAYER',
+                color: 'bg-blue-500',
+                icon: 'layers',
+                components: [
+                    {
+                        name: 'Web Dashboard',
+                        tech: 'React 18 + Vite',
+                        features: ['Real-time metrics', 'Test execution view', 'Analytics dashboards']
+                    },
+                    {
+                        name: 'IDE Plugins',
+                        tech: 'VS Code, IntelliJ',
+                        features: ['In-editor test creation', 'Inline AI suggestions', 'Quick test runs']
+                    },
+                    {
+                        name: 'CLI Tool',
+                        tech: 'Go + Cobra',
+                        features: ['CI/CD integration', 'Script automation', 'Batch operations']
+                    },
+                    {
+                        name: 'Mobile App',
+                        tech: 'React Native',
+                        features: ['Test monitoring', 'Approval workflows', 'Notifications']
+                    },
+                    {
+                        name: 'Chat Interface',
+                        tech: 'Claude 3.5 Sonnet',
+                        features: ['Natural language queries', 'Test creation', 'Results analysis']
+                    }
+                ]
+            },
+            {
+                id: 'api',
+                title: 'API GATEWAY LAYER',
+                color: 'bg-purple-500',
+                icon: 'git-branch',
+                components: [
+                    {
+                        name: 'GraphQL API',
+                        tech: 'Apollo Server + TypeScript',
+                        features: ['Unified query interface', 'Real-time subscriptions', 'Schema federation']
+                    },
+                    {
+                        name: 'REST API',
+                        tech: 'FastAPI (Python)',
+                        features: ['Backward compatibility', 'Swagger/OpenAPI docs', 'Rate limiting']
+                    },
+                    {
+                        name: 'WebSocket Server',
+                        tech: 'Socket.io',
+                        features: ['Live test execution', 'Real-time logs', 'Collaborative editing']
+                    },
+                    {
+                        name: 'API Gateway',
+                        tech: 'Kong / AWS API Gateway',
+                        features: ['Authentication', 'Rate limiting', 'Request routing', 'CORS handling']
+                    }
+                ]
+            },
+            {
+                id: 'orchestration',
+                title: 'ORCHESTRATION & WORKFLOW LAYER',
+                color: 'bg-green-500',
+                icon: 'settings',
+                components: [
+                    {
+                        name: 'Workflow Engine',
+                        tech: 'Temporal.io',
+                        features: ['Durable execution', 'State management', 'Retry policies', 'Long-running workflows']
+                    },
+                    {
+                        name: 'Agent Coordinator',
+                        tech: 'LangChain + MCP',
+                        features: ['Multi-agent orchestration', 'Dynamic routing', 'Context management', 'Agent collaboration']
+                    },
+                    {
+                        name: 'Test Scheduler',
+                        tech: 'Apache Airflow',
+                        features: ['Cron-based scheduling', 'Dependency management', 'Pipeline DAGs', 'Backfill support']
+                    },
+                    {
+                        name: 'Resource Manager',
+                        tech: 'Kubernetes Operator',
+                        features: ['Auto-scaling', 'Environment provisioning', 'Cost optimization', 'Health checks']
+                    }
+                ]
+            },
+            {
+                id: 'agents',
+                title: 'AI AGENT LAYER',
+                color: 'bg-orange-500',
+                icon: 'zap',
+                components: [
+                    {
+                        name: 'Test Generation Agent',
+                        tech: 'Claude 3.5 Sonnet + CodeLlama',
+                        features: ['NLP test creation', 'Genetic algorithms', 'Edge case discovery', 'Multi-framework support']
+                    },
+                    {
+                        name: 'Self-Healing Agent',
+                        tech: 'GPT-4V + YOLO v8',
+                        features: ['Computer vision', 'Element recognition', 'Auto-repair scripts', 'DOM analysis']
+                    },
+                    {
+                        name: 'Predictive Analytics Agent',
+                        tech: 'DataRobot + XGBoost',
+                        features: ['Risk scoring', 'Defect prediction', 'Test prioritization', 'Flaky detection']
+                    },
+                    {
+                        name: 'Visual Testing Agent',
+                        tech: 'Applitools + GPT-4V',
+                        features: ['Pixel comparison', 'Layout validation', 'Accessibility checks', 'Responsive testing']
+                    },
+                    {
+                        name: 'Code Validation Agent',
+                        tech: 'Snyk + Claude 3.5',
+                        features: ['Security scanning', 'Logic validation', 'Quality analysis', 'Bias detection']
+                    },
+                    {
+                        name: 'LLM/RAG Testing Agent',
+                        tech: 'GPT-4o + Arize AI',
+                        features: ['RAGAS metrics', 'Hallucination detection', 'RAG validation', 'Prompt injection tests']
+                    },
+                    {
+                        name: 'Performance Agent',
+                        tech: 'LoadRunner + GPT-4',
+                        features: ['Load modeling', 'Bottleneck prediction', 'Chaos engineering', 'Resource profiling']
+                    },
+                    {
+                        name: 'Security Agent',
+                        tech: 'Checkmarx + HiddenLayer',
+                        features: ['SAST/DAST', 'API security', 'ML model security', 'Compliance checks']
+                    }
+                ]
+            },
+            {
+                id: 'execution',
+                title: 'TEST EXECUTION LAYER',
+                color: 'bg-red-500',
+                icon: 'code',
+                components: [
+                    {
+                        name: 'Web Testing',
+                        tech: 'Playwright + Selenium Grid',
+                        features: ['Cross-browser', 'Parallel execution', 'Cloud device farms', 'Network simulation']
+                    },
+                    {
+                        name: 'Mobile Testing',
+                        tech: 'Appium + BrowserStack',
+                        features: ['Real devices', 'iOS/Android', 'Gesture automation', 'Performance profiling']
+                    },
+                    {
+                        name: 'API Testing',
+                        tech: 'Postman + REST Assured',
+                        features: ['Contract testing', 'Load testing', 'Security testing', 'Mock servers']
+                    },
+                    {
+                        name: 'Performance Testing',
+                        tech: 'k6 + JMeter',
+                        features: ['Load simulation', 'Stress testing', 'Spike testing', 'Soak testing']
+                    },
+                    {
+                        name: 'Container Orchestration',
+                        tech: 'Kubernetes + Docker',
+                        features: ['Test isolation', 'Parallel execution', 'Resource limits', 'Auto-healing']
+                    }
+                ]
+            },
+            {
+                id: 'monitoring',
+                title: 'OBSERVABILITY & MONITORING LAYER',
+                color: 'bg-yellow-500',
+                icon: 'eye',
+                components: [
+                    {
+                        name: 'APM & Tracing',
+                        tech: 'New Relic + Datadog',
+                        features: ['Distributed tracing', 'Performance metrics', 'Error tracking', 'Custom dashboards']
+                    },
+                    {
+                        name: 'LLM Observability',
+                        tech: 'Arize AI + LangSmith',
+                        features: ['Request logging', 'Cost tracking', 'Latency monitoring', 'Quality metrics']
+                    },
+                    {
+                        name: 'Log Aggregation',
+                        tech: 'ELK Stack (Elasticsearch)',
+                        features: ['Centralized logging', 'Search & analysis', 'Alerting', 'Compliance logs']
+                    },
+                    {
+                        name: 'Real User Monitoring',
+                        tech: 'Sentry + LogRocket',
+                        features: ['Session replay', 'Error tracking', 'Performance insights', 'User analytics']
+                    },
+                    {
+                        name: 'Synthetic Monitoring',
+                        tech: 'Pingdom + Custom',
+                        features: ['24/7 uptime checks', 'Global monitoring', 'SLA tracking', 'Alert management']
+                    }
+                ]
+            },
+            {
+                id: 'data',
+                title: 'DATA & STORAGE LAYER',
+                color: 'bg-indigo-500',
+                icon: 'database',
+                components: [
+                    {
+                        name: 'Primary Database',
+                        tech: 'PostgreSQL 16 (Managed)',
+                        features: ['Test metadata', 'User data', 'Configuration', 'ACID compliance']
+                    },
+                    {
+                        name: 'Vector Database',
+                        tech: 'Pinecone',
+                        features: ['Embeddings storage', 'Semantic search', 'Hybrid search', 'Sub-50ms queries']
+                    },
+                    {
+                        name: 'Time Series DB',
+                        tech: 'InfluxDB + TimescaleDB',
+                        features: ['Metrics storage', 'Performance data', 'Trend analysis', 'Downsampling']
+                    },
+                    {
+                        name: 'Cache Layer',
+                        tech: 'Redis Cluster',
+                        features: ['Session caching', 'Result caching', 'Rate limiting', 'Pub/Sub messaging']
+                    },
+                    {
+                        name: 'Object Storage',
+                        tech: 'AWS S3 / MinIO',
+                        features: ['Test artifacts', 'Screenshots', 'Videos', 'Reports', 'Logs']
+                    },
+                    {
+                        name: 'Message Queue',
+                        tech: 'Apache Kafka + RabbitMQ',
+                        features: ['Event streaming', 'Async processing', 'Durability', 'Replay capability']
+                    },
+                    {
+                        name: 'Data Warehouse',
+                        tech: 'Snowflake / BigQuery',
+                        features: ['Analytics', 'Historical data', 'ML training data', 'Business intelligence']
+                    }
+                ]
+            },
+            {
+                id: 'integration',
+                title: 'INTEGRATION & CI/CD LAYER',
+                color: 'bg-pink-500',
+                icon: 'git-branch',
+                components: [
+                    {
+                        name: 'Version Control',
+                        tech: 'GitHub / GitLab',
+                        features: ['Test versioning', 'PR integration', 'Branch testing', 'Code review']
+                    },
+                    {
+                        name: 'CI/CD Platforms',
+                        tech: 'Jenkins + GitLab CI + GitHub Actions',
+                        features: ['Pipeline integration', 'Quality gates', 'Auto-deployment', 'Rollback support']
+                    },
+                    {
+                        name: 'Container Registry',
+                        tech: 'Docker Hub / ECR',
+                        features: ['Image storage', 'Version tagging', 'Security scanning', 'Distribution']
+                    },
+                    {
+                        name: 'IaC Management',
+                        tech: 'Terraform + Ansible',
+                        features: ['Infrastructure as code', 'Config management', 'Drift detection', 'Multi-cloud']
+                    },
+                    {
+                        name: 'Collaboration Tools',
+                        tech: 'Slack + Teams + Jira',
+                        features: ['Notifications', 'Issue tracking', 'Status updates', 'Approval workflows']
+                    }
+                ]
+            },
+            {
+                id: 'security',
+                title: 'SECURITY & COMPLIANCE LAYER',
+                color: 'bg-gray-700',
+                icon: 'shield',
+                components: [
+                    {
+                        name: 'Identity Management',
+                        tech: 'Auth0 + Okta',
+                        features: ['SSO', 'MFA', 'RBAC', 'SAML/OAuth', 'API keys']
+                    },
+                    {
+                        name: 'Secrets Management',
+                        tech: 'HashiCorp Vault',
+                        features: ['Credential storage', 'Dynamic secrets', 'Encryption', 'Audit logs']
+                    },
+                    {
+                        name: 'Encryption',
+                        tech: 'AWS KMS + TLS 1.3',
+                        features: ['Data at rest', 'Data in transit', 'Key rotation', 'HSM support']
+                    },
+                    {
+                        name: 'Compliance Engine',
+                        tech: 'Arthur AI + Custom',
+                        features: ['EU AI Act', 'SOC 2', 'GDPR', 'HIPAA', 'Audit trails']
+                    },
+                    {
+                        name: 'Network Security',
+                        tech: 'AWS WAF + Cloudflare',
+                        features: ['DDoS protection', 'Firewall', 'Rate limiting', 'IP filtering']
+                    }
+                ]
+            },
+            {
+                id: 'infrastructure',
+                title: 'CLOUD INFRASTRUCTURE LAYER',
+                color: 'bg-teal-500',
+                icon: 'cloud',
+                components: [
+                    {
+                        name: 'Compute',
+                        tech: 'AWS EC2 / Azure VMs / GCP Compute',
+                        features: ['Auto-scaling groups', 'Spot instances', 'Reserved capacity', 'GPU instances']
+                    },
+                    {
+                        name: 'Container Orchestration',
+                        tech: 'Amazon EKS / Azure AKS / GKE',
+                        features: ['Managed Kubernetes', 'Node pools', 'Service mesh', 'Ingress control']
+                    },
+                    {
+                        name: 'Serverless',
+                        tech: 'AWS Lambda / Azure Functions',
+                        features: ['Event-driven execution', 'Pay-per-use', 'Auto-scaling', 'Cold start optimization']
+                    },
+                    {
+                        name: 'CDN & Edge',
+                        tech: 'CloudFront + Cloudflare',
+                        features: ['Global distribution', 'Edge caching', 'DDoS protection', 'SSL/TLS']
+                    },
+                    {
+                        name: 'Load Balancing',
+                        tech: 'AWS ALB/NLB + NGINX',
+                        features: ['L4/L7 balancing', 'Health checks', 'SSL termination', 'Path routing']
+                    },
+                    {
+                        name: 'DNS & Service Discovery',
+                        tech: 'Route 53 + Consul',
+                        features: ['Geo-routing', 'Failover', 'Health checks', 'Service mesh']
+                    }
+                ]
+            }
+        ];
+
+        const dataFlows = [
+            { from: 'User Request', to: 'API Gateway', label: 'HTTPS/WSS' },
+            { from: 'API Gateway', to: 'Workflow Engine', label: 'gRPC' },
+            { from: 'Workflow Engine', to: 'Agent Coordinator', label: 'Task Queue' },
+            { from: 'Agent Coordinator', to: 'AI Agents', label: 'MCP Protocol' },
+            { from: 'AI Agents', to: 'Test Execution', label: 'Test Scripts' },
+            { from: 'Test Execution', to: 'Observability', label: 'Metrics/Logs' },
+            { from: 'Test Execution', to: 'Data Layer', label: 'Results/Artifacts' }
+        ];
+
+        // State for expanded sections
+        const expandedSections = {
+            presentation: true,
+            api: true,
+            orchestration: true,
+            agents: true,
+            execution: true,
+            monitoring: true,
+            data: true,
+            integration: true,
+            security: true,
+            infrastructure: true
+        };
+
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            
+            // Render layers
+            renderLayers();
+            
+            // Render data flows
+            renderDataFlows();
+            
+            // Add event listeners for toggling sections
+            setupEventListeners();
+        });
+
+        function renderLayers() {
+            const container = document.getElementById('layers-container');
+            
+            layers.forEach(layer => {
+                const layerElement = document.createElement('div');
+                layerElement.className = 'layer-card';
+                layerElement.id = `layer-${layer.id}`;
+                
+                // Determine grid columns based on screen size
+                const gridCols = window.innerWidth < 768 ? '1fr' : window.innerWidth < 1024 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)';
+                
+                layerElement.innerHTML = `
+                    <div class="layer-header ${layer.color}" data-section="${layer.id}">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="${layer.icon}" class="icon"></i>
+                            <span>${layer.title}</span>
+                            <span class="text-sm bg-black bg-opacity-30 px-3 py-1 rounded-full">
+                                ${layer.components.length} components
+                            </span>
+                        </div>
+                        <i data-lucide="${expandedSections[layer.id] ? 'chevron-down' : 'chevron-right'}" class="icon"></i>
+                    </div>
+                    ${expandedSections[layer.id] ? `
+                        <div class="layer-content" id="content-${layer.id}" style="display: grid; grid-template-columns: ${gridCols}; gap: 16px;">
+                            ${layer.components.map(component => `
+                                <div class="component-card">
+                                    <h3 class="font-semibold text-white mb-1">${component.name}</h3>
+                                    <p class="text-sm text-blue-400 mb-3">${component.tech}</p>
+                                    <ul class="space-y-1">
+                                        ${component.features.map(feature => `
+                                            <li class="text-xs text-gray-300 flex items-start">
+                                                <span class="text-green-400 mr-2">✓</span>
+                                                <span>${feature}</span>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                `;
+                
+                container.appendChild(layerElement);
+                
+                // Re-initialize icons for this element
+                lucide.createIcons({ 
+                    icons: lucide.icons, 
+                    attrs: {
+                        width: 20,
+                        height: 20
+                    }
+                });
+            });
+        }
+
+        function renderDataFlows() {
+            const container = document.getElementById('data-flows-container');
+            
+            dataFlows.forEach((flow, idx) => {
+                const flowElement = document.createElement('div');
+                flowElement.className = 'data-flow-item';
+                
+                flowElement.innerHTML = `
+                    <div class="flow-from bg-blue-600">${flow.from}</div>
+                    <div class="flow-connector">
+                        <span class="flow-label">${flow.label}</span>
+                    </div>
+                    <div class="flow-to bg-purple-600">${flow.to}</div>
+                `;
+                
+                container.appendChild(flowElement);
+            });
+        }
+
+        function setupEventListeners() {
+            // Add click handlers to layer headers
+            document.querySelectorAll('.layer-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    const section = this.getAttribute('data-section');
+                    toggleSection(section);
+                });
+            });
+            
+            // Handle window resize to adjust grid layout
+            window.addEventListener('resize', function() {
+                layers.forEach(layer => {
+                    if (expandedSections[layer.id]) {
+                        const contentElement = document.getElementById(`content-${layer.id}`);
+                        if (contentElement) {
+                            const gridCols = window.innerWidth < 768 ? '1fr' : window.innerWidth < 1024 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)';
+                            contentElement.style.gridTemplateColumns = gridCols;
+                        }
+                    }
+                });
+            });
+        }
+
+        function toggleSection(section) {
+            // Toggle the expanded state
+            expandedSections[section] = !expandedSections[section];
+            
+            // Get the layer element
+            const layerElement = document.getElementById(`layer-${section}`);
+            const contentElement = document.getElementById(`content-${section}`);
+            const headerIcon = layerElement.querySelector('.layer-header i[data-lucide]');
+            
+            if (expandedSections[section]) {
+                // Show content
+                if (!contentElement) {
+                    const layer = layers.find(l => l.id === section);
+                    const gridCols = window.innerWidth < 768 ? '1fr' : window.innerWidth < 1024 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)';
+                    
+                    const newContent = document.createElement('div');
+                    newContent.className = 'layer-content';
+                    newContent.id = `content-${section}`;
+                    newContent.style.gridTemplateColumns = gridCols;
+                    
+                    newContent.innerHTML = layer.components.map(component => `
+                        <div class="component-card">
+                            <h3 class="font-semibold text-white mb-1">${component.name}</h3>
+                            <p class="text-sm text-blue-400 mb-3">${component.tech}</p>
+                            <ul class="space-y-1">
+                                ${component.features.map(feature => `
+                                    <li class="text-xs text-gray-300 flex items-start">
+                                        <span class="text-green-400 mr-2">✓</span>
+                                        <span>${feature}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    `).join('');
+                    
+                    layerElement.appendChild(newContent);
+                } else {
+                    contentElement.style.display = 'grid';
+                }
+                
+                // Update icon
+                headerIcon.setAttribute('data-lucide', 'chevron-down');
+            } else {
+                // Hide content
+                if (contentElement) {
+                    contentElement.style.display = 'none';
+                }
+                
+                // Update icon
+                headerIcon.setAttribute('data-lucide', 'chevron-right');
+            }
+            
+            // Update the icon
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Evaluation System - Architecture Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --code-bg: #f1f5f9;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        nav.toc {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        nav.toc h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        nav.toc ol {
+            columns: 2;
+            column-gap: 2rem;
+            padding-left: 1.5rem;
+        }
+
+        nav.toc li {
+            margin-bottom: 0.5rem;
+        }
+
+        nav.toc a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        nav.toc a:hover {
+            color: var(--primary-color);
+        }
+
+        section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h3 {
+            font-size: 1.35rem;
+            color: var(--secondary-color);
+            margin: 1.5rem 0 1rem;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin: 1rem 0 0.75rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        ul, ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--code-bg);
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        tr:hover {
+            background: var(--bg-color);
+        }
+
+        .mermaid {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .feature-card {
+            background: var(--bg-color);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .feature-card h4 {
+            margin: 0 0 0.5rem;
+            font-size: 1rem;
+        }
+
+        .feature-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-blue {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-purple {
+            background: #f3e8ff;
+            color: #7c3aed;
+        }
+
+        .directory-tree {
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .directory-tree .folder {
+            color: #60a5fa;
+        }
+
+        .directory-tree .file {
+            color: #94a3b8;
+        }
+
+        .directory-tree .comment {
+            color: #64748b;
+        }
+
+        .callout {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem 1.25rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        .callout-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 200px);
+        }
+
+        aside {
+            width: 250px;
+            background: #f8f9fa;
+            padding: 1rem;
+            position: fixed;
+            top: 200px;
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border-color);
+        }
+
+        aside h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        aside ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        aside li {
+            margin: 0.5rem 0;
+        }
+
+        aside a {
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        aside a:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        aside a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 250px;
+        }
+
+        @media (max-width: 768px) {
+            aside {
+                display: none;
+            }
+            .content {
+                margin-left: 0;
+            }
+            .main-content {
+                padding: 1rem;
+            }
+
+            nav.toc ol {
+                columns: 1;
+            }
+
+            header h1 {
+                font-size: 1.75rem;
+            }
+
+            section {
+                padding: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Sidebar override: place sidebar in the page flow and blend visually */
+        .page-container, .container {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        aside {
+            width: 300px;
+            background: #ffffff;
+            padding: 1rem;
+            position: -webkit-sticky;
+            position: sticky;
+            top: 120px;
+            margin-top: 0;
+            align-self: flex-start;
+            height: fit-content;
+            overflow: visible;
+            z-index: 5;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+        }
+
+        aside h3 { margin-bottom: 0.75rem; color: var(--text-color); }
+
+        .content { flex: 1 1 0; max-width: 1200px; margin-left: 0 !important; margin-top: 2rem; }
+
+        .article-card { background: #ffffff; border-radius: 12px; padding: 1.75rem; box-shadow: 0 6px 18px rgba(16,24,40,0.04); font-size: 18px; line-height: 1.8; }
+
+        @media (max-width: 768px) { aside { display: none; } .content { max-width: 100%; } .article-card { padding: 1rem; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Prompt Evaluation System - Code Architecture</h1>
+        <p>Code design, flows, etc.</p>
+    </header>
+
+    <div class="page-container">
+                <aside>
+                    <h3>Prompt Evaluation Guides</h3>
+                    <ul>
+                        <li><a href="llm-prompt-evaluation-guide.html">Overview</a></li>
+                        <li><a href="requirement-analysis-prompt-evaluation-guide.html">Requirement Analysis Guide</a></li>
+                        <li><a href="test-case-design-prompt-evaluation-guide.html">Test Case Design Guide</a></li>
+                        <li><a href="automated-test-script-prompt-evaluation-guide.html">Automated Test Script Guide</a></li>
+                        <li><a href="unified-evaluation-system-v2.html">Solution</a></li>
+                        <li><a href="code-architecture.html" class="active">Code Architecture</a></li>
+                    </ul>
+                </aside>
+                <div class="content"><div class="article-card">
+                    <nav class="toc">
+            <h2>Table of Contents</h2>
+            <ol>
+                <li><a href="#system-overview">System Overview</a></li>
+                <li><a href="#directory-structure">Directory Structure</a></li>
+                <li><a href="#core-components">Core Components</a></li>
+                <li><a href="#data-flow">Data Flow & Sequence Diagram</a></li>
+                <li><a href="#module-descriptions">Module Descriptions</a></li>
+                <li><a href="#llm-provider-system">LLM Provider System</a></li>
+                <li><a href="#metrics-system">Metrics System</a></li>
+                <li><a href="#evaluators">Evaluators</a></li>
+                <li><a href="#data-loading">Data Loading & Excel Format</a></li>
+                <li><a href="#report-generation">Report Generation</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#cli-usage">CLI Usage</a></li>
+                <li><a href="#extension-points">Extension Points</a></li>
+            </ol>
+        </nav>
+
+        <section id="system-overview">
+            <h2>System Overview</h2>
+            <p>The <strong>Prompt Evaluation System</strong> is a comprehensive framework for evaluating LLM (Large Language Model) prompt outputs across multiple categories. It supports:</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Multiple LLM Providers</h4>
+                    <p>OpenAI, Azure OpenAI, Google Gemini, Anthropic Claude, Local (Ollama)</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Multiple Metric Types</h4>
+                    <p>DeepEval-based, NLTK-based, and Custom metrics</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Multiple Evaluation Categories</h4>
+                    <p>Requirement Analysis, Test Case Design, Automated Test Scripts</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Flexible Data Input</h4>
+                    <p>Two-sheet or single-sheet Excel formats</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Interactive Reports</h4>
+                    <p>HTML reports with charts, grouping, and detailed analysis</p>
+                </div>
+            </div>
+
+            <h3>Key Features</h3>
+            <ol>
+                <li><strong>Automatic LLM Output Generation</strong>: If <code>llm_output</code> is empty in the Excel file, the system automatically generates it using the configured LLM provider</li>
+                <li><strong>Template-Based Prompting</strong>: Separates prompt templates from input data for better reusability</li>
+                <li><strong>Parallel Evaluation</strong>: Metrics can be evaluated in parallel for performance</li>
+                <li><strong>Per-Item LLM Override</strong>: Each evaluation item can specify its own LLM provider/model</li>
+                <li><strong>Extensible Architecture</strong>: Easy to add new metrics, providers, and evaluators</li>
+            </ol>
+        </section>
+
+        <section id="directory-structure">
+            <h2>Directory Structure</h2>
+            <div class="directory-tree">
+<pre>prompt-evaluation/
+├── src/prompt_eval/
+│   ├── __init__.py              <span class="comment"># Package exports</span>
+│   ├── cli.py                   <span class="comment"># Command-line interface</span>
+│   ├── config_loader.py         <span class="comment"># YAML configuration loader</span>
+│   ├── engine.py                <span class="comment"># Main evaluation orchestrator</span>
+│   ├── main.py                  <span class="comment"># Entry point</span>
+│   │
+│   ├── <span class="folder">core/</span>                    <span class="comment"># Core data structures</span>
+│   │   ├── models.py            <span class="comment"># Data classes (EvaluationItem, EvaluationResult, etc.)</span>
+│   │   └── registry.py          <span class="comment"># MetricRegistry for metric management</span>
+│   │
+│   ├── <span class="folder">data/</span>                    <span class="comment"># Data loading & validation</span>
+│   │   ├── loader.py            <span class="comment"># ExcelDataLoader for loading Excel files</span>
+│   │   ├── schemas.py           <span class="comment"># Excel schema definitions</span>
+│   │   └── validator.py         <span class="comment"># Data validation logic</span>
+│   │
+│   ├── <span class="folder">evaluators/</span>              <span class="comment"># Category-specific evaluators</span>
+│   │   ├── base.py              <span class="comment"># BaseEvaluator abstract class</span>
+│   │   ├── factory.py           <span class="comment"># EvaluatorFactory for creating evaluators</span>
+│   │   ├── generic.py           <span class="comment"># Generic/Dynamic evaluator</span>
+│   │   ├── requirement.py       <span class="comment"># RequirementAnalysisEvaluator</span>
+│   │   ├── test_case.py         <span class="comment"># TestCaseDesignEvaluator</span>
+│   │   └── test_script.py       <span class="comment"># AutomatedTestScriptEvaluator</span>
+│   │
+│   ├── <span class="folder">llm/</span>                     <span class="comment"># LLM provider implementations</span>
+│   │   ├── base.py              <span class="comment"># BaseLLMProvider abstract class</span>
+│   │   ├── manager.py           <span class="comment"># LLMProviderManager singleton</span>
+│   │   ├── openai_provider.py   <span class="comment"># OpenAI implementation</span>
+│   │   ├── azure_provider.py    <span class="comment"># Azure OpenAI implementation</span>
+│   │   ├── google_provider.py   <span class="comment"># Google Gemini implementation</span>
+│   │   ├── anthropic_provider.py <span class="comment"># Anthropic Claude implementation</span>
+│   │   └── local_provider.py    <span class="comment"># Local/Ollama implementation</span>
+│   │
+│   ├── <span class="folder">metrics/</span>                 <span class="comment"># Evaluation metrics</span>
+│   │   ├── base.py              <span class="comment"># BaseMetric, DeepEvalMetric classes</span>
+│   │   ├── registration.py      <span class="comment"># Default metrics registration</span>
+│   │   ├── <span class="folder">deepeval/</span>            <span class="comment"># DeepEval-based metrics</span>
+│   │   ├── <span class="folder">nltk/</span>                <span class="comment"># NLTK-based metrics</span>
+│   │   └── <span class="folder">custom/</span>              <span class="comment"># Custom metrics</span>
+│   │
+│   └── <span class="folder">reports/</span>                 <span class="comment"># Report generation</span>
+│       ├── html_generator.py    <span class="comment"># HTML report with charts</span>
+│       └── summary.py           <span class="comment"># Summary generation</span>
+│
+├── <span class="folder">examples/</span>
+│   ├── config.yaml              <span class="comment"># Example configuration</span>
+│   └── evaluation_data.xlsx     <span class="comment"># Sample evaluation data</span>
+│
+├── <span class="folder">scripts/</span>
+│   └── create_eval_excel.py     <span class="comment"># Script to create sample Excel</span>
+│
+├── <span class="folder">tests/</span>                       <span class="comment"># Unit tests</span>
+├── <span class="folder">docs/</span>                        <span class="comment"># Documentation</span>
+└── <span class="folder">reports/</span>                     <span class="comment"># Generated reports output</span></pre>
+            </div>
+        </section>
+
+        <section id="core-components">
+            <h2>Core Components</h2>
+            <h3>Component Diagram</h3>
+            
+            <div class="mermaid">
+graph TB
+    subgraph CLI["CLI Layer"]
+        A[cli.py<br/>Command-line interface]
+    end
+    
+    subgraph Engine["Engine Layer"]
+        B[EvaluationEngine<br/>engine.py]
+    end
+    
+    subgraph DataLayer["Data Layer"]
+        C[ExcelDataLoader<br/>loader.py]
+        D[EvaluationItem<br/>models.py]
+    end
+    
+    subgraph EvaluatorLayer["Evaluator Layer"]
+        E[EvaluatorFactory<br/>factory.py]
+        F[BaseEvaluator<br/>base.py]
+        G[RequirementEvaluator]
+        H[TestCaseEvaluator]
+        I[TestScriptEvaluator]
+    end
+    
+    subgraph MetricsLayer["Metrics Layer"]
+        J[MetricRegistry<br/>registry.py]
+        K[DeepEval Metrics]
+        L[NLTK Metrics]
+        M[Custom Metrics]
+    end
+    
+    subgraph LLMLayer["LLM Provider Layer"]
+        N[LLMProviderManager<br/>manager.py]
+        O[OpenAI]
+        P[Azure]
+        Q[Google]
+        R[Anthropic]
+    end
+    
+    subgraph ReportLayer["Report Layer"]
+        S[HTMLReportGenerator<br/>html_generator.py]
+    end
+    
+    A --> B
+    B --> C
+    B --> E
+    B --> S
+    C --> D
+    E --> F
+    F --> G
+    F --> H
+    F --> I
+    G --> J
+    H --> J
+    I --> J
+    J --> K
+    J --> L
+    J --> M
+    K --> N
+    N --> O
+    N --> P
+    N --> Q
+    N --> R
+
+    style A fill:#3b82f6,color:#fff
+    style B fill:#8b5cf6,color:#fff
+    style C fill:#10b981,color:#fff
+    style E fill:#f59e0b,color:#fff
+    style J fill:#ef4444,color:#fff
+    style N fill:#ec4899,color:#fff
+    style S fill:#06b6d4,color:#fff
+            </div>
+        </section>
+
+        <section id="data-flow">
+            <h2>Data Flow & Sequence Diagram</h2>
+            
+            <h3>Main Evaluation Flow</h3>
+            <div class="mermaid">
+sequenceDiagram
+    participant CLI
+    participant Engine
+    participant Loader
+    participant Evaluator
+    participant Provider as LLM Provider
+    participant Report
+
+    CLI->>Engine: run(file)
+    Engine->>Loader: load(file)
+    Loader->>Loader: Parse Excel (2 sheets)
+    Loader-->>Engine: items[]
+    
+    loop For each item
+        Engine->>Engine: Check llm_output empty?
+        alt llm_output is empty
+            Engine->>Provider: generate(prompt)
+            Provider-->>Engine: llm_output
+        end
+        Engine->>Evaluator: evaluate(item)
+        
+        loop For each metric
+            Evaluator->>Evaluator: evaluate metric
+        end
+        
+        Evaluator-->>Engine: EvaluationResult
+    end
+    
+    Engine->>Report: generate(results)
+    Report-->>Engine: HTML file
+    Engine-->>CLI: report path
+            </div>
+
+            <h3>Detailed Step-by-Step Flow</h3>
+            <ol>
+                <li><strong>CLI Invocation</strong> (<code>cli.py</code>)
+                    <pre><code>prompt-eval run examples/evaluation_data.xlsx --output reports/</code></pre>
+                </li>
+                <li><strong>Engine Initialization</strong> (<code>engine.py</code>)
+                    <ul>
+                        <li>Creates <code>Config</code> and <code>EngineConfig</code> objects</li>
+                        <li>Calls <code>register_default_metrics()</code> to populate <code>MetricRegistry</code></li>
+                        <li>Initializes <code>LLMProviderManager</code> with configuration</li>
+                        <li>Creates <code>EvaluatorFactory</code> and <code>HTMLReportGenerator</code></li>
+                    </ul>
+                </li>
+                <li><strong>Data Loading</strong> (<code>loader.py</code>)
+                    <ul>
+                        <li>Detects Excel format (two-sheet vs legacy)</li>
+                        <li>Loads "Prompt Templates" sheet → stores in <code>prompt_templates</code> dict</li>
+                        <li>Loads "Evaluation Data" sheet → joins with templates</li>
+                        <li>Creates <code>EvaluationItem</code> objects</li>
+                    </ul>
+                </li>
+                <li><strong>Evaluation Loop</strong> (<code>engine.py</code> → <code>evaluators/</code>)
+                    <ul>
+                        <li>Groups items by category</li>
+                        <li>For each category, gets appropriate evaluator from <code>EvaluatorFactory</code></li>
+                        <li>For each item:
+                            <ul>
+                                <li><code>_ensure_llm_output()</code>: Generate if empty</li>
+                                <li><code>evaluator.evaluate(item)</code>: Run all metrics</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>Report Generation</strong> (<code>html_generator.py</code>)
+                    <ul>
+                        <li>Groups results by <code>prompt_template</code></li>
+                        <li>Prepares context data for Jinja2 template</li>
+                        <li>Generates charts (Chart.js)</li>
+                        <li>Outputs interactive HTML file</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <section id="module-descriptions">
+            <h2>Module Descriptions</h2>
+            
+            <h3><code>src/prompt_eval/core/models.py</code></h3>
+            <p>Defines all data structures:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Class</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>EvaluationItem</code></td>
+                        <td>Input item with prompt_template, prompt_input, llm_output, expected_output, etc.</td>
+                    </tr>
+                    <tr>
+                        <td><code>EvaluationResult</code></td>
+                        <td>Result of evaluation with scores, metric_results, pass/fail status</td>
+                    </tr>
+                    <tr>
+                        <td><code>MetricResult</code></td>
+                        <td>Single metric evaluation result with score, threshold, reason</td>
+                    </tr>
+                    <tr>
+                        <td><code>MetricDefinition</code></td>
+                        <td>Definition of a metric in the registry</td>
+                    </tr>
+                    <tr>
+                        <td><code>CategoryConfig</code></td>
+                        <td>Configuration for an evaluation category</td>
+                    </tr>
+                    <tr>
+                        <td><code>LLMConfig</code></td>
+                        <td>LLM provider configuration</td>
+                    </tr>
+                    <tr>
+                        <td><code>Config</code></td>
+                        <td>Main application configuration</td>
+                    </tr>
+                    <tr>
+                        <td><code>EvaluationSummary</code></td>
+                        <td>Summary statistics of all evaluations</td>
+                    </tr>
+                    <tr>
+                        <td><code>EvaluationReport</code></td>
+                        <td>Complete report with results and summary</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3><code>src/prompt_eval/core/registry.py</code></h3>
+            <p><strong>MetricRegistry</strong> - Central registry for metrics and categories:</p>
+            <ul>
+                <li><code>register(metric)</code> - Register a metric</li>
+                <li><code>register_category(name, ...)</code> - Register a custom category</li>
+                <li><code>get_metrics_for_category(category)</code> - Get metrics for a category</li>
+                <li><code>get_category_config(category)</code> - Get category configuration</li>
+            </ul>
+
+            <h3><code>src/prompt_eval/engine.py</code></h3>
+            <p><strong>EvaluationEngine</strong> - Main orchestrator:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>evaluate_file(file_path)</code></td>
+                        <td>Evaluate items from Excel file</td>
+                    </tr>
+                    <tr>
+                        <td><code>evaluate_items(items)</code></td>
+                        <td>Evaluate a list of items</td>
+                    </tr>
+                    <tr>
+                        <td><code>evaluate_single(item)</code></td>
+                        <td>Evaluate a single item</td>
+                    </tr>
+                    <tr>
+                        <td><code>_ensure_llm_output(item)</code></td>
+                        <td>Generate LLM output if empty</td>
+                    </tr>
+                    <tr>
+                        <td><code>_evaluate_items(items)</code></td>
+                        <td>Internal evaluation loop</td>
+                    </tr>
+                    <tr>
+                        <td><code>_generate_html_report(report)</code></td>
+                        <td>Generate HTML report</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3><code>src/prompt_eval/data/loader.py</code></h3>
+            <p><strong>ExcelDataLoader</strong> - Loads Excel files:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>load(file_path)</code></td>
+                        <td>Load evaluation items from Excel</td>
+                    </tr>
+                    <tr>
+                        <td><code>_load_with_format_detection()</code></td>
+                        <td>Auto-detect Excel format</td>
+                    </tr>
+                    <tr>
+                        <td><code>_load_two_sheet_format()</code></td>
+                        <td>Load two-sheet format</td>
+                    </tr>
+                    <tr>
+                        <td><code>_load_main_sheet()</code></td>
+                        <td>Load legacy single-sheet format</td>
+                    </tr>
+                    <tr>
+                        <td><code>get_prompt_templates()</code></td>
+                        <td>Get loaded templates dict</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="llm-provider-system">
+            <h2>LLM Provider System</h2>
+            
+            <h3>Provider Hierarchy</h3>
+            <div class="mermaid">
+classDiagram
+    class BaseLLMProvider {
+        provider_name
+        available_models
+        set_model()
+        generate()
+        configure_deepeval()
+        validate_connection()
+        get_client()
+    }
+
+    class OpenAIProvider {
+        provider_name
+    }
+
+    class AzureOpenAIProvider {
+        provider_name
+    }
+
+    class GoogleProvider {
+        provider_name
+    }
+
+    class AnthropicProvider {
+        provider_name
+    }
+
+    class LocalProvider {
+        provider_name
+    }
+
+    BaseLLMProvider <|-- OpenAIProvider
+    BaseLLMProvider <|-- AzureOpenAIProvider
+    BaseLLMProvider <|-- GoogleProvider
+    BaseLLMProvider <|-- AnthropicProvider
+    BaseLLMProvider <|-- LocalProvider
+    %% style nodes gray
+    style BaseLLMProvider fill:#e5e7eb,color:#1e293b
+    style OpenAIProvider fill:#e5e7eb,color:#1e293b
+    style AzureOpenAIProvider fill:#e5e7eb,color:#1e293b
+    style GoogleProvider fill:#e5e7eb,color:#1e293b
+    style AnthropicProvider fill:#e5e7eb,color:#1e293b
+    style LocalProvider fill:#e5e7eb,color:#1e293b
+            </div>
+
+            <h3>LLMProviderManager</h3>
+            <p>Singleton manager with class methods:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>initialize(config)</code></td>
+                        <td>Initialize all providers</td>
+                    </tr>
+                    <tr>
+                        <td><code>get_provider(...)</code></td>
+                        <td>Get provider with priority resolution</td>
+                    </tr>
+                    <tr>
+                        <td><code>get_default_provider()</code></td>
+                        <td>Get default provider name</td>
+                    </tr>
+                    <tr>
+                        <td><code>get_default_model()</code></td>
+                        <td>Get default model name</td>
+                    </tr>
+                    <tr>
+                        <td><code>register_provider(name, class)</code></td>
+                        <td>Register custom provider</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Provider Priority Resolution</h3>
+            <div class="mermaid">
+flowchart TD
+    A[get_provider called] --> B{Item has<br/>llm_provider?}
+    B -->|Yes| C[Use item.llm_provider]
+    B -->|No| D{Explicit provider<br/>parameter?}
+    D -->|Yes| E[Use explicit parameter]
+    D -->|No| F{Category-level<br/>config?}
+    F -->|Yes| G[Use category config]
+    F -->|No| H[Use global default]
+    
+    C --> I[Return Provider]
+    E --> I
+    G --> I
+    H --> I
+
+    style A fill:#3b82f6,color:#fff
+    style I fill:#22c55e,color:#fff
+            </div>
+
+            <h3>Provider Implementation</h3>
+            <p>Each provider implements:</p>
+            <pre><code>class BaseLLMProvider:
+    provider_name: str          # Property: e.g., "google"
+    available_models: list      # Property: list of supported models
+    
+    def set_model(model: str)           # Set current model
+    def generate(prompt: str) -> str    # Generate text output
+    def configure_deepeval() -> Any     # Configure for DeepEval metrics
+    def validate_connection() -> bool   # Validate API connection
+    def get_client()                    # Get underlying client</code></pre>
+        </section>
+
+        <section id="metrics-system">
+            <h2>Metrics System</h2>
+            
+            <h3>Metric Types</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Base Class</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge badge-blue">DeepEval</span></td>
+                        <td><code>DeepEvalMetric</code></td>
+                        <td>LLM-based evaluation using DeepEval library</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-green">NLTK</span></td>
+                        <td><code>NLTKMetric</code></td>
+                        <td>Rule-based evaluation using NLTK</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge badge-purple">Custom</span></td>
+                        <td><code>BaseMetric</code></td>
+                        <td>Custom evaluation logic</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Available Metrics</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Type</th>
+                        <th>Categories</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>faithfulness</code></td>
+                        <td><span class="badge badge-blue">DeepEval</span></td>
+                        <td>all</td>
+                        <td>Checks if output is faithful to retrieval context</td>
+                    </tr>
+                    <tr>
+                        <td><code>relevancy</code></td>
+                        <td><span class="badge badge-blue">DeepEval</span></td>
+                        <td>all</td>
+                        <td>Checks if output is relevant to input</td>
+                    </tr>
+                    <tr>
+                        <td><code>completeness</code></td>
+                        <td><span class="badge badge-blue">DeepEval</span></td>
+                        <td>all</td>
+                        <td>G-Eval for completeness</td>
+                    </tr>
+                    <tr>
+                        <td><code>testability</code></td>
+                        <td><span class="badge badge-blue">DeepEval</span></td>
+                        <td>test_case</td>
+                        <td>G-Eval for testability</td>
+                    </tr>
+                    <tr>
+                        <td><code>coverage</code></td>
+                        <td><span class="badge badge-blue">DeepEval</span></td>
+                        <td>test_case, test_script</td>
+                        <td>G-Eval for coverage</td>
+                    </tr>
+                    <tr>
+                        <td><code>code_quality</code></td>
+                        <td><span class="badge badge-blue">DeepEval</span></td>
+                        <td>test_script</td>
+                        <td>G-Eval for code quality</td>
+                    </tr>
+                    <tr>
+                        <td><code>readability</code></td>
+                        <td><span class="badge badge-green">NLTK</span></td>
+                        <td>requirement</td>
+                        <td>Flesch-Kincaid readability</td>
+                    </tr>
+                    <tr>
+                        <td><code>terminology</code></td>
+                        <td><span class="badge badge-green">NLTK</span></td>
+                        <td>requirement</td>
+                        <td>Technical terminology usage</td>
+                    </tr>
+                    <tr>
+                        <td><code>ambiguity</code></td>
+                        <td><span class="badge badge-green">NLTK</span></td>
+                        <td>all</td>
+                        <td>Detects ambiguous language</td>
+                    </tr>
+                    <tr>
+                        <td><code>action_verbs</code></td>
+                        <td><span class="badge badge-green">NLTK</span></td>
+                        <td>test_case</td>
+                        <td>Action verb usage</td>
+                    </tr>
+                    <tr>
+                        <td><code>format_compliance</code></td>
+                        <td><span class="badge badge-purple">Custom</span></td>
+                        <td>requirement</td>
+                        <td>Format pattern matching</td>
+                    </tr>
+                    <tr>
+                        <td><code>syntax_validation</code></td>
+                        <td><span class="badge badge-purple">Custom</span></td>
+                        <td>test_script</td>
+                        <td>Code syntax validation</td>
+                    </tr>
+                    <tr>
+                        <td><code>traceability</code></td>
+                        <td><span class="badge badge-purple">Custom</span></td>
+                        <td>test_case</td>
+                        <td>Requirement traceability</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Metric Registration</h3>
+            <pre><code># In registration.py
+registry.register(FaithfulnessMetric(
+    threshold=0.80,
+    weight=0.15,
+))</code></pre>
+        </section>
+
+        <section id="evaluators">
+            <h2>Evaluators</h2>
+            
+            <h3>Evaluator Hierarchy</h3>
+            <div class="mermaid">
+classDiagram
+    class BaseEvaluator {
+        evaluate()
+        prepare_metrics()
+        evaluate_parallel()
+        evaluate_sequential()
+        calculate_overall_score()
+    }
+
+    class RequirementAnalysisEvaluator {
+        category
+    }
+
+    class TestCaseDesignEvaluator {
+        category
+    }
+
+    class AutomatedTestScriptEvaluator {
+        category
+    }
+
+    class GenericEvaluator {
+        category
+    }
+
+    class DynamicEvaluator {
+        category
+    }
+
+    BaseEvaluator <|-- RequirementAnalysisEvaluator
+    BaseEvaluator <|-- TestCaseDesignEvaluator
+    BaseEvaluator <|-- AutomatedTestScriptEvaluator
+    BaseEvaluator <|-- GenericEvaluator
+    BaseEvaluator <|-- DynamicEvaluator
+    %% style nodes gray
+    style BaseEvaluator fill:#e5e7eb,color:#1e293b
+    style RequirementAnalysisEvaluator fill:#e5e7eb,color:#1e293b
+    style TestCaseDesignEvaluator fill:#e5e7eb,color:#1e293b
+    style AutomatedTestScriptEvaluator fill:#e5e7eb,color:#1e293b
+    style GenericEvaluator fill:#e5e7eb,color:#1e293b
+    style DynamicEvaluator fill:#e5e7eb,color:#1e293b
+            </div>
+
+            <h3>Category to Evaluator Mapping</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Evaluator</th>
+                        <th>Metrics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>requirement_analysis</code></td>
+                        <td>RequirementAnalysisEvaluator</td>
+                        <td>faithfulness, relevancy, completeness, readability, terminology, ambiguity, format_compliance</td>
+                    </tr>
+                    <tr>
+                        <td><code>test_case_design</code></td>
+                        <td>TestCaseDesignEvaluator</td>
+                        <td>faithfulness, relevancy, testability, coverage, ambiguity, action_verbs, traceability</td>
+                    </tr>
+                    <tr>
+                        <td><code>automated_test_script</code></td>
+                        <td>AutomatedTestScriptEvaluator</td>
+                        <td>faithfulness, relevancy, completeness, coverage, code_quality, syntax_validation</td>
+                    </tr>
+                    <tr>
+                        <td>(custom)</td>
+                        <td>GenericEvaluator</td>
+                        <td>Inherited metrics from base_metrics</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Evaluation Process</h3>
+            <div class="mermaid">
+flowchart TD
+    A[evaluate called] --> B[Get LLM provider for item]
+    B --> C[Prepare metrics with model]
+    C --> D{Parallel mode?}
+    D -->|Yes| E[Evaluate metrics in parallel]
+    D -->|No| F[Evaluate metrics sequentially]
+    E --> G[Calculate weighted overall score]
+    F --> G
+    G --> H{score >= threshold?}
+    H -->|Yes| I[passed = true]
+    H -->|No| J[passed = false]
+    I --> K[Return EvaluationResult]
+    J --> K
+
+    style A fill:#3b82f6,color:#fff
+    style K fill:#22c55e,color:#fff
+            </div>
+
+            <pre><code>def evaluate(self, item: EvaluationItem) -> EvaluationResult:
+    # 1. Get LLM provider for this item
+    provider = self.llm_manager.get_provider(item=item)
+    
+    # 2. Prepare metrics with model
+    metrics = self._prepare_metrics(provider.get_model_name())
+    
+    # 3. Run metrics (parallel or sequential)
+    if self.parallel:
+        metric_results = self._evaluate_parallel(item, metrics)
+    else:
+        metric_results = self._evaluate_sequential(item, metrics)
+    
+    # 4. Calculate overall score (weighted average)
+    overall_score = self._calculate_overall_score(metric_results)
+    
+    # 5. Determine pass/fail
+    passed = overall_score >= pass_threshold
+    
+    return EvaluationResult(...)</code></pre>
+        </section>
+
+        <section id="data-loading">
+            <h2>Data Loading & Excel Format</h2>
+            
+            <h3>Two-Sheet Format (Recommended)</h3>
+            
+            <h4>Sheet 1: "Prompt Templates"</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Column</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>category</code></td>
+                        <td>string</td>
+                        <td>Yes</td>
+                        <td>Category name (e.g., "requirement_analysis")</td>
+                    </tr>
+                    <tr>
+                        <td><code>id</code></td>
+                        <td>string</td>
+                        <td>Yes</td>
+                        <td>Unique template ID (e.g., "REQ-001")</td>
+                    </tr>
+                    <tr>
+                        <td><code>prompt_template</code></td>
+                        <td>string</td>
+                        <td>Yes</td>
+                        <td>Full prompt with <code>{{input}}</code> placeholder</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Sheet 2: "Evaluation Data"</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Column</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>prompt_template_id</code></td>
+                        <td>string</td>
+                        <td>Yes</td>
+                        <td>Reference to template ID</td>
+                    </tr>
+                    <tr>
+                        <td><code>prompt_input</code></td>
+                        <td>string</td>
+                        <td>Yes</td>
+                        <td>Input to substitute into template</td>
+                    </tr>
+                    <tr>
+                        <td><code>llm_output</code></td>
+                        <td>string</td>
+                        <td>No</td>
+                        <td>LLM response (auto-generated if empty)</td>
+                    </tr>
+                    <tr>
+                        <td><code>expected_output</code></td>
+                        <td>string</td>
+                        <td>No</td>
+                        <td>Ground truth for comparison</td>
+                    </tr>
+                    <tr>
+                        <td><code>framework</code></td>
+                        <td>string</td>
+                        <td>No</td>
+                        <td>Test framework (playwright, selenium)</td>
+                    </tr>
+                    <tr>
+                        <td><code>llm_provider</code></td>
+                        <td>string</td>
+                        <td>No</td>
+                        <td>Override LLM provider</td>
+                    </tr>
+                    <tr>
+                        <td><code>llm_model</code></td>
+                        <td>string</td>
+                        <td>No</td>
+                        <td>Override LLM model</td>
+                    </tr>
+                    <tr>
+                        <td><code>retrieval_context</code></td>
+                        <td>string</td>
+                        <td>No</td>
+                        <td>Reference docs for faithfulness</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Data Loading Sequence</h3>
+            <div class="mermaid">
+flowchart TD
+    A[load file_path] --> B{Has templates sheet<br/>AND data sheet?}
+    B -->|Yes| C[Load two-sheet format]
+    B -->|No| D[Load legacy single-sheet]
+    
+    C --> E[Load templates sheet]
+    E --> F[Store templates by ID]
+    F --> G[Load evaluation data sheet]
+    G --> H[Join with templates]
+    H --> I[Create EvaluationItems]
+    
+    D --> I
+    I --> J[Return items]
+
+    style A fill:#3b82f6,color:#fff
+    style J fill:#22c55e,color:#fff
+            </div>
+
+            <pre><code># loader.py
+def load(file_path):
+    # 1. Detect format
+    if has_templates_sheet and has_data_sheet:
+        return self._load_two_sheet_format(file_path)
+    else:
+        return self._load_main_sheet(file_path)  # Legacy
+
+def _load_two_sheet_format(file_path, xl):
+    # 1. Load templates sheet
+    templates_df = pd.read_excel(xl, sheet_name="Prompt Templates")
+    
+    # 2. Store templates by ID
+    for row in templates_df:
+        self.prompt_templates[row.id] = {
+            "id": row.id,
+            "category": row.category,
+            "prompt_template": row.prompt_template,
+        }
+    
+    # 3. Load evaluation data sheet
+    data_df = pd.read_excel(xl, sheet_name="Evaluation Data")
+    
+    # 4. Join with templates and create EvaluationItems
+    items = []
+    for idx, row in data_df.iterrows():
+        template = self.prompt_templates[row.prompt_template_id]
+        item = EvaluationItem(
+            id=f"{row.prompt_template_id}-{idx+1}",
+            category=template["category"],
+            prompt_template=template["prompt_template"],
+            prompt_input=row.prompt_input,
+            llm_output=row.llm_output,
+            ...
+        )
+        items.append(item)
+    
+    return items</code></pre>
+        </section>
+
+        <section id="report-generation">
+            <h2>Report Generation</h2>
+            
+            <h3>HTML Report Structure</h3>
+            <p>The HTML report includes:</p>
+            <ol>
+                <li><strong>Header</strong>: Report title, generation timestamp, summary stats</li>
+                <li><strong>Summary Cards</strong>: Pass rate, average score, passed/failed counts</li>
+                <li><strong>Charts Section</strong>:
+                    <ul>
+                        <li>Results by Category (bar chart)</li>
+                        <li>Score Distribution (histogram)</li>
+                        <li>Results by Template (bar chart)</li>
+                    </ul>
+                </li>
+                <li><strong>Results by Template</strong>:
+                    <ul>
+                        <li>Collapsible template groups</li>
+                        <li>Template header with ID, category badge, stats</li>
+                        <li>Expandable prompt template text</li>
+                        <li>Evaluation inputs with details</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>Grouping Logic</h3>
+            <div class="mermaid">
+flowchart LR
+    A[Results] --> B[Group by template_id]
+    B --> C[For each group]
+    C --> D[Count passed/total]
+    C --> E[Store prompt_template]
+    C --> F[Store category]
+    D --> G[Calculate avg_score]
+    E --> G
+    F --> G
+    G --> H[Return grouped data]
+
+    style A fill:#3b82f6,color:#fff
+    style H fill:#22c55e,color:#fff
+            </div>
+
+            <pre><code>def _group_by_template(results):
+    """Group results by prompt_template."""
+    groups = defaultdict(lambda: {
+        "results": [],
+        "prompt_template": "",
+        "category": "",
+        "passed_count": 0,
+        "total_count": 0,
+    })
+    
+    for result in results:
+        template_id = result.item_id.rsplit("-", 1)[0]
+        groups[template_id]["results"].append(result)
+        groups[template_id]["prompt_template"] = result.prompt_template
+        groups[template_id]["category"] = result.category
+        if result.passed:
+            groups[template_id]["passed_count"] += 1
+        groups[template_id]["total_count"] += 1
+    
+    # Calculate average scores
+    for group in groups.values():
+        scores = [r.overall_score for r in group["results"]]
+        group["avg_score"] = sum(scores) / len(scores) if scores else 0
+    
+    return groups</code></pre>
+        </section>
+
+        <section id="configuration">
+            <h2>Configuration</h2>
+            
+            <h3><code>examples/config.yaml</code></h3>
+            <pre><code># LLM Configuration
+llm:
+  provider: google              # openai, azure, anthropic, google, local
+  model: gemini-2.0-flash       # Model name
+  temperature: 0.0              # Determinism
+
+# Category configurations
+categories:
+  requirement_analysis:
+    pass_threshold: 0.75
+    metrics:
+      - name: faithfulness
+        threshold: 0.80
+        weight: 0.15
+      - name: relevancy
+        threshold: 0.80
+        weight: 0.15
+      # ... more metrics
+
+# Report settings
+report_title: "Prompt Evaluation Report"
+include_charts: true
+include_details: true</code></pre>
+
+            <h3>Environment Variables</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Provider</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>OPENAI_API_KEY</code></td>
+                        <td>OpenAI</td>
+                        <td>OpenAI API key</td>
+                    </tr>
+                    <tr>
+                        <td><code>AZURE_OPENAI_API_KEY</code></td>
+                        <td>Azure</td>
+                        <td>Azure OpenAI API key</td>
+                    </tr>
+                    <tr>
+                        <td><code>AZURE_OPENAI_ENDPOINT</code></td>
+                        <td>Azure</td>
+                        <td>Azure endpoint URL</td>
+                    </tr>
+                    <tr>
+                        <td><code>GOOGLE_API_KEY</code></td>
+                        <td>Google</td>
+                        <td>Google AI API key</td>
+                    </tr>
+                    <tr>
+                        <td><code>ANTHROPIC_API_KEY</code></td>
+                        <td>Anthropic</td>
+                        <td>Anthropic API key</td>
+                    </tr>
+                    <tr>
+                        <td><code>OLLAMA_BASE_URL</code></td>
+                        <td>Local</td>
+                        <td>Ollama server URL</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="cli-usage">
+            <h2>CLI Usage</h2>
+            
+            <h3>Basic Commands</h3>
+            <pre><code># Run evaluation
+prompt-eval run examples/evaluation_data.xlsx --output reports/
+
+# Run with specific config
+prompt-eval run data.xlsx -c config.yaml -o reports/
+
+# Run with provider override
+prompt-eval run data.xlsx --provider google --model gemini-2.0-flash
+
+# Verbose output
+prompt-eval run data.xlsx -v
+
+# Disable parallel evaluation
+prompt-eval run data.xlsx --no-parallel</code></pre>
+
+            <h3>CLI Options</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>-o, --output</code></td>
+                        <td>Output path for HTML report</td>
+                    </tr>
+                    <tr>
+                        <td><code>-c, --config</code></td>
+                        <td>Path to YAML config file</td>
+                    </tr>
+                    <tr>
+                        <td><code>--provider</code></td>
+                        <td>Override LLM provider</td>
+                    </tr>
+                    <tr>
+                        <td><code>--model</code></td>
+                        <td>Override LLM model</td>
+                    </tr>
+                    <tr>
+                        <td><code>--parallel/--no-parallel</code></td>
+                        <td>Enable/disable parallel metrics</td>
+                    </tr>
+                    <tr>
+                        <td><code>--workers</code></td>
+                        <td>Max parallel workers</td>
+                    </tr>
+                    <tr>
+                        <td><code>-v, --verbose</code></td>
+                        <td>Verbose output</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="extension-points">
+            <h2>Extension Points</h2>
+            
+            <h3>Adding a New LLM Provider</h3>
+            <p>1. Create <code>src/prompt_eval/llm/my_provider.py</code>:</p>
+            <pre><code>from prompt_eval.llm.base import BaseLLMProvider
+
+class MyProvider(BaseLLMProvider):
+    @property
+    def provider_name(self) -> str:
+        return "my_provider"
+    
+    @property
+    def available_models(self) -> list:
+        return ["model-a", "model-b"]
+    
+    def set_model(self, model: str) -> None:
+        self.current_model = model
+    
+    def generate(self, prompt: str) -> str:
+        # Implement generation logic
+        pass
+    
+    def configure_deepeval(self) -> Any:
+        # Return DeepEval-compatible model
+        pass
+    
+    def validate_connection(self) -> bool:
+        # Validate API connection
+        pass</code></pre>
+            
+            <p>2. Register in <code>manager.py</code>:</p>
+            <pre><code>_provider_classes = {
+    ...
+    "my_provider": MyProvider,
+}</code></pre>
+
+            <h3>Adding a New Metric</h3>
+            <p>1. Create metric class:</p>
+            <pre><code>from prompt_eval.metrics.base import BaseMetric
+
+class MyMetric(BaseMetric):
+    def __init__(self, threshold=0.8, weight=1.0, categories=None):
+        super().__init__(
+            name="my_metric",
+            threshold=threshold,
+            weight=weight,
+            categories=categories or ["all"],
+        )
+    
+    def evaluate(self, item: EvaluationItem) -> MetricResult:
+        # Implement evaluation logic
+        score = ...
+        return MetricResult(
+            metric_name=self.name,
+            score=score,
+            passed=score >= self.threshold,
+            threshold=self.threshold,
+            reason="...",
+        )</code></pre>
+            
+            <p>2. Register in <code>registration.py</code>:</p>
+            <pre><code>def _register_custom_metrics(registry):
+    registry.register(MyMetric(
+        threshold=0.80,
+        weight=0.15,
+    ))</code></pre>
+
+            <h3>Adding a New Category</h3>
+            <pre><code>registry.register_category(
+    name="my_category",
+    description="My custom category",
+    base_metrics=["faithfulness", "relevancy", "my_metric"],
+    thresholds={
+        "faithfulness": 0.80,
+        "relevancy": 0.80,
+        "my_metric": 0.85,
+    },
+    weights={
+        "faithfulness": 0.30,
+        "relevancy": 0.30,
+        "my_metric": 0.40,
+    },
+)</code></pre>
+        </section>
+
+        <section id="summary">
+            <h2>Summary</h2>
+            <p>The Prompt Evaluation System provides a comprehensive, extensible framework for evaluating LLM outputs:</p>
+            
+            <div class="mermaid">
+flowchart LR
+    subgraph Input
+        A[Excel Files]
+        B[Prompt Templates]
+        C[Evaluation Data]
+    end
+    
+    subgraph Processing
+        D[Auto LLM Generation]
+        E[Multi-Metric Evaluation]
+        F[Parallel Processing]
+    end
+    
+    subgraph Output
+        G[HTML Reports]
+        H[Charts]
+        I[Detailed Analysis]
+    end
+    
+    A --> D
+    B --> D
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    F --> H
+    F --> I
+
+    style A fill:#3b82f6,color:#fff
+    style E fill:#8b5cf6,color:#fff
+    style G fill:#22c55e,color:#fff
+            </div>
+
+            <h3>Key Benefits</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Modular</h4>
+                    <p>Easy to add providers, metrics, evaluators</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Flexible</h4>
+                    <p>Per-item, per-category, or global LLM configuration</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Comprehensive</h4>
+                    <p>Multiple metric types for thorough evaluation</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Interactive</h4>
+                    <p>Rich HTML reports with filtering and grouping</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div></div>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#3b82f6',
+                primaryTextColor: '#1e293b',
+                primaryBorderColor: '#2563eb',
+                lineColor: '#64748b',
+                secondaryColor: '#f1f5f9',
+                tertiaryColor: '#ffffff',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+            },
+            flowchart: {
+                curve: 'basis',
+                padding: 20
+            },
+            sequence: {
+                diagramMarginX: 50,
+                diagramMarginY: 10,
+                actorMargin: 50,
+                width: 150,
+                height: 65,
+                boxMargin: 10,
+                boxTextMargin: 5,
+                noteMargin: 10,
+                messageMargin: 35
+            }
+        });
+    </script>
+</div></div></div>
+</body>
+</html>
