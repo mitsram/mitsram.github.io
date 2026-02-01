@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Guide to LLM Prompt Evaluation</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #7c3aed;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --code-bg: #f1f5f9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px 20px;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Main Content */
+        main {
+            padding: 40px 0;
+        }
+
+        section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        h3 {
+            color: var(--text-color);
+            font-size: 1.4rem;
+            margin: 25px 0 15px;
+        }
+
+        h4 {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        blockquote {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        blockquote p {
+            margin: 0;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--code-bg);
+        }
+
+        tr:hover {
+            background: #e0e7ff;
+        }
+
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        code {
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+        }
+
+        :not(pre) > code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--danger-color);
+        }
+
+        /* Feature cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 1px solid #bae6fd;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .feature-card h4 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
+
+        /* Mermaid diagrams */
+        .mermaid {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        /* Info boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box.note {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .info-box.warning {
+            background: #fffbeb;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .info-box.success {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: inherit;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist li {
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-color);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+        }
+
+        footer p {
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            section {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            nav {
+                display: none;
+            }
+
+            section {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📚 Comprehensive Guide to LLM Prompt Evaluation</h1>
+            <p class="subtitle">Master the art of evaluating, measuring, and improving LLM prompt quality for reliable AI applications</p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#why-evaluate">Why Evaluate?</a></li>
+                <li><a href="#goals">Goals & Objectives</a></li>
+                <li><a href="#process">Evaluation Process</a></li>
+                <li><a href="#activities">Key Activities</a></li>
+                <li><a href="#metrics">Evaluation Metrics</a></li>
+                <li><a href="#tools">Tools</a></li>
+                <li><a href="#best-practices">Best Practices</a></li>
+                <li><a href="#getting-started">Getting Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Introduction -->
+        <section id="introduction">
+            <h2>📖 Introduction</h2>
+            
+            <p>Large Language Models (LLMs) like GPT-4, Claude, and Llama have revolutionized how we interact with AI systems. However, the quality of an LLM's output heavily depends on the <strong>prompts</strong> we provide. <strong>Prompt evaluation</strong> is the systematic process of measuring, analyzing, and improving how well your prompts perform in generating desired outputs.</p>
+
+            <p>Think of it this way: if an LLM is a highly skilled worker, the prompt is the instruction manual you give them. A vague or poorly written manual leads to inconsistent or incorrect results. Prompt evaluation helps ensure your "instruction manual" is clear, effective, and reliable.</p>
+        </section>
+
+        <!-- Why Evaluate -->
+        <section id="why-evaluate">
+            <h2>❓ Why Evaluate LLM Prompts?</h2>
+
+            <h3>The Core Problem</h3>
+            <p>LLMs are probabilistic systems—they don't always produce the same output for the same input. This variability, combined with the complexity of natural language, creates several challenges:</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🔄 Inconsistency</h4>
+                    <p>The same prompt might yield different quality responses across multiple runs</p>
+                </div>
+                <div class="feature-card">
+                    <h4>👻 Hallucinations</h4>
+                    <p>LLMs can generate plausible-sounding but incorrect information</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚖️ Bias</h4>
+                    <p>Responses may contain unintended biases from training data</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🎯 Relevance Drift</h4>
+                    <p>Outputs may not stay focused on the intended task</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚠️ Safety Concerns</h4>
+                    <p>Without evaluation, harmful or inappropriate content may slip through</p>
+                </div>
+            </div>
+
+            <h3>The Ultimate Concept</h3>
+            <blockquote>
+                <p>We evaluate LLM prompts to ensure our AI systems are reliable, accurate, safe, and aligned with our intended use cases.</p>
+            </blockquote>
+
+            <p>Without evaluation, deploying LLM-powered applications is like launching software without testing—you're hoping for the best but have no evidence it will work correctly.</p>
+        </section>
+
+        <!-- Goals and Objectives -->
+        <section id="goals">
+            <h2>🎯 Goals and Objectives</h2>
+
+            <h3>Primary Goal</h3>
+            <p><strong>To systematically measure and improve the quality, reliability, and safety of LLM outputs through rigorous prompt testing and optimization.</strong></p>
+
+            <h3>Key Objectives</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Objective</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Quality Assurance</strong></td>
+                        <td>Ensure outputs meet defined quality standards</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Consistency</strong></td>
+                        <td>Achieve predictable, reproducible results</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Accuracy</strong></td>
+                        <td>Verify factual correctness and relevance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Safety</strong></td>
+                        <td>Prevent harmful, biased, or inappropriate outputs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Optimization</strong></td>
+                        <td>Continuously improve prompt effectiveness</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cost Efficiency</strong></td>
+                        <td>Minimize token usage while maintaining quality</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scalability</strong></td>
+                        <td>Create evaluation pipelines that work at scale</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Business Value</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🛡️ Reduced Risk</h4>
+                    <p>Catch problematic outputs before they reach users</p>
+                </div>
+                <div class="feature-card">
+                    <h4>✨ Improved UX</h4>
+                    <p>Deliver consistent, high-quality responses</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚡ Faster Iteration</h4>
+                    <p>Data-driven prompt improvements</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📋 Compliance</h4>
+                    <p>Meet regulatory and ethical standards</p>
+                </div>
+                <div class="feature-card">
+                    <h4>💰 Cost Control</h4>
+                    <p>Optimize prompts for efficiency</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Evaluation Process -->
+        <section id="process">
+            <h2>🔄 The Evaluation Process</h2>
+
+            <h3>Overview Diagram</h3>
+            <div class="mermaid">
+flowchart TB
+    subgraph Lifecycle["LLM PROMPT EVALUATION LIFECYCLE"]
+        direction TB
+        DESIGN["🎨 DESIGN Phase<br/>• Define test cases<br/>• Set metrics<br/>• Create golden datasets"]
+        EXECUTE["⚙️ EXECUTE Phase<br/>• Run prompts<br/>• Collect outputs<br/>• Log metadata"]
+        ANALYZE["📊 ANALYZE Phase<br/>• Score results<br/>• Identify patterns<br/>• Find failures"]
+        IMPROVE["🔧 IMPROVE Phase<br/>• Refine prompts<br/>• Update test cases<br/>• Re-evaluate"]
+    end
+
+    DESIGN --> EXECUTE
+    EXECUTE --> ANALYZE
+    ANALYZE --> IMPROVE
+    IMPROVE -.->|"Iterate"| DESIGN
+
+    style DESIGN fill:#dbeafe,stroke:#2563eb
+    style EXECUTE fill:#dcfce7,stroke:#16a34a
+    style ANALYZE fill:#fef3c7,stroke:#d97706
+    style IMPROVE fill:#f3e8ff,stroke:#9333ea
+            </div>
+
+            <h3>Phase 1: Design</h3>
+            <p><strong>Purpose:</strong> Establish what you're testing and how you'll measure success.</p>
+            
+            <p><strong>Activities:</strong></p>
+            <ol>
+                <li><strong>Define Use Cases:</strong> What tasks should your prompts accomplish?</li>
+                <li><strong>Create Test Cases:</strong> Develop input-output pairs that represent expected behavior</li>
+                <li><strong>Build Golden Datasets:</strong> Curate "ground truth" examples for comparison</li>
+                <li><strong>Select Metrics:</strong> Choose evaluation criteria (accuracy, relevance, safety, etc.)</li>
+                <li><strong>Set Thresholds:</strong> Define minimum acceptable scores</li>
+            </ol>
+
+            <h3>Phase 2: Execute</h3>
+            <p><strong>Purpose:</strong> Run your prompts through the LLM and collect outputs.</p>
+            
+            <p><strong>Activities:</strong></p>
+            <ol>
+                <li><strong>Batch Processing:</strong> Run all test cases through the LLM</li>
+                <li><strong>Output Collection:</strong> Store all generated responses</li>
+                <li><strong>Metadata Logging:</strong> Record timestamps, model versions, parameters</li>
+                <li><strong>Error Handling:</strong> Capture and log any failures</li>
+            </ol>
+
+            <h3>Phase 3: Analyze</h3>
+            <p><strong>Purpose:</strong> Measure output quality against your defined metrics.</p>
+            
+            <p><strong>Activities:</strong></p>
+            <ol>
+                <li><strong>Automated Scoring:</strong> Apply metrics to all outputs</li>
+                <li><strong>Statistical Analysis:</strong> Calculate averages, distributions, trends</li>
+                <li><strong>Failure Analysis:</strong> Identify and categorize problematic outputs</li>
+                <li><strong>Comparative Analysis:</strong> Compare across prompt versions or models</li>
+            </ol>
+
+            <h3>Phase 4: Improve</h3>
+            <p><strong>Purpose:</strong> Use insights to enhance prompt performance.</p>
+            
+            <p><strong>Activities:</strong></p>
+            <ol>
+                <li><strong>Root Cause Analysis:</strong> Understand why certain prompts failed</li>
+                <li><strong>Prompt Refinement:</strong> Modify prompts based on findings</li>
+                <li><strong>A/B Testing:</strong> Compare original vs. improved prompts</li>
+                <li><strong>Documentation:</strong> Record changes and their impact</li>
+            </ol>
+        </section>
+
+        <!-- Key Activities -->
+        <section id="activities">
+            <h2>🔑 Key Activities in Prompt Evaluation</h2>
+
+            <h3>1. Test Case Development</h3>
+            <p>Test cases are the foundation of evaluation. Each test case should include:</p>
+
+            <pre><code>test_case = {
+    "input": "User query or context",
+    "expected_output": "Ideal response (or characteristics)",
+    "context": "Any additional information the LLM needs",
+    "metadata": {
+        "category": "factual_qa",
+        "difficulty": "medium",
+        "tags": ["science", "biology"]
+    }
+}</code></pre>
+
+            <p><strong>Types of Test Cases:</strong></p>
+            <ul>
+                <li><strong>Positive Tests:</strong> Verify correct behavior</li>
+                <li><strong>Negative Tests:</strong> Ensure proper handling of edge cases</li>
+                <li><strong>Adversarial Tests:</strong> Check resistance to manipulation</li>
+                <li><strong>Boundary Tests:</strong> Test limits of capability</li>
+            </ul>
+
+            <h3>2. Metric Selection</h3>
+            <p>Choose metrics based on your use case:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Recommended Metrics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Q&A Systems</td>
+                        <td>Accuracy, Faithfulness, Answer Relevancy</td>
+                    </tr>
+                    <tr>
+                        <td>Summarization</td>
+                        <td>ROUGE, Coherence, Conciseness</td>
+                    </tr>
+                    <tr>
+                        <td>Content Generation</td>
+                        <td>Creativity, Fluency, Toxicity</td>
+                    </tr>
+                    <tr>
+                        <td>Classification</td>
+                        <td>Precision, Recall, F1 Score</td>
+                    </tr>
+                    <tr>
+                        <td>Conversation</td>
+                        <td>Context Retention, Helpfulness</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3. Automated vs. Human Evaluation</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Automated Evaluation</th>
+                        <th>Human Evaluation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Speed</strong></td>
+                        <td>Fast, scalable</td>
+                        <td>Slow, limited</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Consistency</strong></td>
+                        <td>Perfectly consistent</td>
+                        <td>Variable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Nuance</strong></td>
+                        <td>Limited</td>
+                        <td>Excellent</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cost</strong></td>
+                        <td>Low per evaluation</td>
+                        <td>High per evaluation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best For</strong></td>
+                        <td>Regression testing, large datasets</td>
+                        <td>Quality validation, edge cases</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box note">
+                <h4>Best Practice</h4>
+                <p>Use automated evaluation for continuous testing and human evaluation for periodic quality audits.</p>
+            </div>
+
+            <h3>4. Regression Testing</h3>
+            <p>Ensure prompt changes don't break existing functionality:</p>
+
+            <div class="mermaid">
+flowchart LR
+    V1["Version 1.0<br/>Score: 85%"]
+    V2["Version 1.1<br/>Score: 88%<br/>✓ Improvement"]
+    V3["Version 1.2<br/>Score: 72%<br/>✗ Regression!"]
+
+    V1 --> V2
+    V2 --> V3
+
+    style V1 fill:#e0e7ff,stroke:#6366f1
+    style V2 fill:#dcfce7,stroke:#16a34a
+    style V3 fill:#fee2e2,stroke:#dc2626
+            </div>
+
+            <h3>5. Continuous Evaluation Pipeline</h3>
+            <div class="mermaid">
+flowchart LR
+    CODE["📝 Code<br/>Change"]
+    RUN["▶️ Run<br/>Tests"]
+    EVAL["📊 Evaluate<br/>Results"]
+    REPORT["📄 Report<br/>& Alert"]
+
+    CODE --> RUN
+    RUN --> EVAL
+    EVAL --> REPORT
+    REPORT -.->|"CI/CD Pipeline"| CODE
+
+    style CODE fill:#dbeafe,stroke:#2563eb
+    style RUN fill:#dcfce7,stroke:#16a34a
+    style EVAL fill:#fef3c7,stroke:#d97706
+    style REPORT fill:#f3e8ff,stroke:#9333ea
+            </div>
+        </section>
+
+        <!-- Evaluation Metrics -->
+        <section id="metrics">
+            <h2>📏 Evaluation Metrics</h2>
+
+            <h3>Retrieval & Relevance Metrics</h3>
+
+            <h4>Answer Relevancy</h4>
+            <p>Measures how well the response addresses the question.</p>
+            <pre><code>Score = Semantic Similarity(Response, Question Intent)
+Range: 0.0 - 1.0 (higher is better)</code></pre>
+
+            <h4>Faithfulness</h4>
+            <p>Ensures the response is grounded in provided context (no hallucinations).</p>
+            <pre><code>Score = Claims Supported by Context / Total Claims
+Range: 0.0 - 1.0 (higher is better)</code></pre>
+
+            <h4>Contextual Relevancy</h4>
+            <p>Measures if the retrieved context is relevant to the question.</p>
+            <pre><code>Score = Relevant Context Chunks / Total Context Chunks
+Range: 0.0 - 1.0 (higher is better)</code></pre>
+
+            <h3>Text Quality Metrics</h3>
+
+            <h4>BLEU Score</h4>
+            <p>Measures n-gram overlap between generated and reference text.</p>
+            <pre><code>Best for: Translation, short text generation
+Range: 0.0 - 1.0</code></pre>
+
+            <h4>ROUGE Score</h4>
+            <p>Measures recall-oriented overlap for summarization tasks.</p>
+            <ul>
+                <li><strong>ROUGE-1:</strong> Unigram overlap</li>
+                <li><strong>ROUGE-2:</strong> Bigram overlap</li>
+                <li><strong>ROUGE-L:</strong> Longest common subsequence</li>
+            </ul>
+
+            <h4>Semantic Similarity</h4>
+            <p>Measures meaning similarity using embeddings.</p>
+            <pre><code>Uses: Sentence transformers, embedding models
+Range: -1.0 to 1.0 (cosine similarity)</code></pre>
+
+            <h3>Safety Metrics</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🔒 Toxicity</h4>
+                    <p>Detects harmful, offensive, or inappropriate content</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚖️ Bias</h4>
+                    <p>Identifies unfair treatment of demographic groups</p>
+                </div>
+                <div class="feature-card">
+                    <h4>👻 Hallucination</h4>
+                    <p>Detects fabricated information not supported by source data</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools for Evaluation -->
+        <section id="tools">
+            <h2>🛠️ Tools for Evaluation</h2>
+
+            <h3>DeepEval</h3>
+
+            <h4>What is DeepEval?</h4>
+            <p><strong>DeepEval</strong> is an open-source evaluation framework specifically designed for LLM applications. It provides a comprehensive suite of metrics and testing capabilities that make it easy to evaluate prompt quality at scale.</p>
+
+            <h4>Why Use DeepEval?</h4>
+            <ol>
+                <li><strong>LLM-Native:</strong> Built specifically for evaluating LLM outputs</li>
+                <li><strong>Comprehensive Metrics:</strong> 14+ built-in evaluation metrics</li>
+                <li><strong>Easy Integration:</strong> Works with pytest for CI/CD pipelines</li>
+                <li><strong>RAG Support:</strong> Specialized metrics for retrieval-augmented generation</li>
+                <li><strong>Synthetic Data:</strong> Can generate test cases automatically</li>
+            </ol>
+
+            <h4>Basic Usage Example</h4>
+            <pre><code># Installation
+pip install deepeval
+
+# Basic Usage Example
+from deepeval import evaluate
+from deepeval.metrics import AnswerRelevancyMetric
+from deepeval.test_case import LLMTestCase
+
+# Create a test case
+test_case = LLMTestCase(
+    input="What is the capital of France?",
+    actual_output="The capital of France is Paris.",
+    expected_output="Paris"
+)
+
+# Define metric
+metric = AnswerRelevancyMetric(threshold=0.7)
+
+# Evaluate
+evaluate([test_case], [metric])</code></pre>
+
+            <h4>DeepEval Metrics</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Purpose</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>AnswerRelevancyMetric</code></td>
+                        <td>Response addresses the question</td>
+                        <td>Q&A systems</td>
+                    </tr>
+                    <tr>
+                        <td><code>FaithfulnessMetric</code></td>
+                        <td>Response grounded in context</td>
+                        <td>RAG applications</td>
+                    </tr>
+                    <tr>
+                        <td><code>ContextualRelevancyMetric</code></td>
+                        <td>Retrieved context is relevant</td>
+                        <td>RAG applications</td>
+                    </tr>
+                    <tr>
+                        <td><code>HallucinationMetric</code></td>
+                        <td>Detects fabricated info</td>
+                        <td>All applications</td>
+                    </tr>
+                    <tr>
+                        <td><code>ToxicityMetric</code></td>
+                        <td>Detects harmful content</td>
+                        <td>User-facing apps</td>
+                    </tr>
+                    <tr>
+                        <td><code>BiasMetric</code></td>
+                        <td>Detects unfair bias</td>
+                        <td>All applications</td>
+                    </tr>
+                    <tr>
+                        <td><code>GEval</code></td>
+                        <td>Custom LLM-based evaluation</td>
+                        <td>Custom criteria</td>
+                    </tr>
+                    <tr>
+                        <td><code>SummarizationMetric</code></td>
+                        <td>Evaluates summary quality</td>
+                        <td>Summarization</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>DeepEval in CI/CD</h4>
+            <pre><code># test_prompts.py
+import pytest
+from deepeval import assert_test
+from deepeval.metrics import AnswerRelevancyMetric
+from deepeval.test_case import LLMTestCase
+
+@pytest.mark.parametrize("test_case", load_test_cases())
+def test_prompt_quality(test_case):
+    metric = AnswerRelevancyMetric(threshold=0.7)
+    assert_test(test_case, [metric])</code></pre>
+
+            <pre><code># Run with pytest
+deepeval test run test_prompts.py</code></pre>
+
+            <h4>How DeepEval Helps</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Challenge</th>
+                        <th>DeepEval Solution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Manual evaluation is slow</td>
+                        <td>Automated metric calculation</td>
+                    </tr>
+                    <tr>
+                        <td>No standardized metrics</td>
+                        <td>Pre-built, validated metrics</td>
+                    </tr>
+                    <tr>
+                        <td>Hard to test RAG systems</td>
+                        <td>Specialized RAG metrics</td>
+                    </tr>
+                    <tr>
+                        <td>Difficult CI/CD integration</td>
+                        <td>Native pytest support</td>
+                    </tr>
+                    <tr>
+                        <td>Subjective quality assessment</td>
+                        <td>LLM-as-judge (GEval)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>NLTK</h3>
+
+            <h4>What is NLTK?</h4>
+            <p><strong>NLTK (Natural Language Toolkit)</strong> is a comprehensive Python library for working with human language data. While not specifically designed for LLM evaluation, it provides essential text processing and analysis tools that are invaluable for prompt evaluation.</p>
+
+            <h4>Why Use NLTK for Evaluation?</h4>
+            <ol>
+                <li><strong>Text Preprocessing:</strong> Normalize and clean text for comparison</li>
+                <li><strong>Tokenization:</strong> Break text into meaningful units</li>
+                <li><strong>Linguistic Analysis:</strong> POS tagging, parsing, semantic analysis</li>
+                <li><strong>Similarity Metrics:</strong> Edit distance, BLEU score implementation</li>
+                <li><strong>Corpus Resources:</strong> Access to linguistic datasets</li>
+            </ol>
+
+            <h4>Installation and Setup</h4>
+            <pre><code># Installation
+pip install nltk
+
+# Download required resources
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')</code></pre>
+
+            <h4>NLTK for Text Comparison</h4>
+            <pre><code>from nltk.tokenize import word_tokenize
+from nltk.translate.bleu_score import sentence_bleu
+from nltk.metrics import edit_distance
+
+# Tokenization
+reference = word_tokenize("The capital of France is Paris")
+candidate = word_tokenize("Paris is the capital of France")
+
+# BLEU Score - measures n-gram overlap
+reference_tokens = [reference]  # List of references
+bleu = sentence_bleu(reference_tokens, candidate)
+print(f"BLEU Score: {bleu:.3f}")
+
+# Edit Distance - measures character-level difference
+ref_text = "The capital of France is Paris"
+cand_text = "Paris is the capital city of France"
+distance = edit_distance(ref_text, cand_text)
+print(f"Edit Distance: {distance}")</code></pre>
+
+            <h4>NLTK for Preprocessing</h4>
+            <pre><code>from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+
+def preprocess_for_comparison(text):
+    """Normalize text for fair comparison"""
+    # Tokenize
+    tokens = word_tokenize(text.lower())
+    
+    # Remove stopwords
+    stop_words = set(stopwords.words('english'))
+    tokens = [t for t in tokens if t not in stop_words]
+    
+    # Lemmatize (reduce to base form)
+    lemmatizer = WordNetLemmatizer()
+    tokens = [lemmatizer.lemmatize(t) for t in tokens]
+    
+    return tokens
+
+# Compare processed texts
+ref_processed = preprocess_for_comparison("The cats are running quickly")
+out_processed = preprocess_for_comparison("A cat runs quick")
+# Both become: ['cat', 'running', 'quickly'] and ['cat', 'run', 'quick']</code></pre>
+
+            <h4>NLTK for Semantic Analysis</h4>
+            <pre><code>from nltk.corpus import wordnet
+
+def get_synonyms(word):
+    """Get synonyms for semantic matching"""
+    synonyms = set()
+    for syn in wordnet.synsets(word):
+        for lemma in syn.lemmas():
+            synonyms.add(lemma.name())
+    return synonyms
+
+# Check semantic similarity
+word = "happy"
+synonyms = get_synonyms(word)
+# {'happy', 'glad', 'felicitous', 'well-chosen', ...}
+
+def semantic_word_match(word1, word2):
+    """Check if words are semantically similar"""
+    syns1 = get_synonyms(word1)
+    syns2 = get_synonyms(word2)
+    return len(syns1 & syns2) > 0 or word1 in syns2 or word2 in syns1</code></pre>
+
+            <h4>How NLTK Helps Evaluation</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Evaluation Need</th>
+                        <th>NLTK Solution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Text normalization</td>
+                        <td>Tokenization, stemming, lemmatization</td>
+                    </tr>
+                    <tr>
+                        <td>Surface-level comparison</td>
+                        <td>BLEU score, edit distance</td>
+                    </tr>
+                    <tr>
+                        <td>Semantic understanding</td>
+                        <td>WordNet synonyms, hypernyms</td>
+                    </tr>
+                    <tr>
+                        <td>Grammar checking</td>
+                        <td>POS tagging, parsing</td>
+                    </tr>
+                    <tr>
+                        <td>Language detection</td>
+                        <td>Corpus-based classification</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Using DeepEval and NLTK Together</h3>
+            <p>The most powerful evaluation pipelines combine both tools:</p>
+
+            <pre><code>from deepeval import evaluate
+from deepeval.metrics import AnswerRelevancyMetric, GEval
+from deepeval.test_case import LLMTestCase
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.translate.bleu_score import sentence_bleu
+
+def comprehensive_evaluation(input_text, actual_output, expected_output, context=None):
+    """
+    Combine DeepEval metrics with NLTK analysis
+    """
+    results = {}
+    
+    # 1. DeepEval: Semantic Relevancy
+    test_case = LLMTestCase(
+        input=input_text,
+        actual_output=actual_output,
+        expected_output=expected_output,
+        retrieval_context=[context] if context else None
+    )
+    
+    relevancy_metric = AnswerRelevancyMetric(threshold=0.7)
+    relevancy_metric.measure(test_case)
+    results['relevancy_score'] = relevancy_metric.score
+    
+    # 2. NLTK: BLEU Score for lexical overlap
+    reference_tokens = [word_tokenize(expected_output.lower())]
+    candidate_tokens = word_tokenize(actual_output.lower())
+    results['bleu_score'] = sentence_bleu(reference_tokens, candidate_tokens)
+    
+    # 3. NLTK: Sentence count comparison
+    expected_sentences = len(sent_tokenize(expected_output))
+    actual_sentences = len(sent_tokenize(actual_output))
+    results['sentence_ratio'] = actual_sentences / expected_sentences
+    
+    # 4. Combined score
+    results['combined_score'] = (
+        results['relevancy_score'] * 0.5 +
+        results['bleu_score'] * 0.3 +
+        min(results['sentence_ratio'], 1.0) * 0.2
+    )
+    
+    return results
+
+# Example usage
+results = comprehensive_evaluation(
+    input_text="Explain photosynthesis",
+    actual_output="Photosynthesis is the process by which plants convert sunlight into energy.",
+    expected_output="Photosynthesis is how plants use sunlight, water, and CO2 to create glucose and oxygen."
+)</code></pre>
+        </section>
+
+        <!-- Best Practices -->
+        <section id="best-practices">
+            <h2>✅ Best Practices</h2>
+
+            <h3>1. Start with Clear Objectives</h3>
+            <p>Before evaluating, define:</p>
+            <ul>
+                <li>What does "good" look like for your use case?</li>
+                <li>What are the must-have vs. nice-to-have qualities?</li>
+                <li>What are the dealbreakers (safety, accuracy thresholds)?</li>
+            </ul>
+
+            <h3>2. Create Representative Test Sets</h3>
+            <div class="mermaid">
+pie title Test Set Composition
+    "Common/Expected Queries" : 60
+    "Edge Cases" : 20
+    "Adversarial Inputs" : 10
+    "Boundary Conditions" : 10
+            </div>
+
+            <h3>3. Use Multiple Metrics</h3>
+            <p>Don't rely on a single metric. Combine:</p>
+            <ul>
+                <li><strong>Semantic metrics</strong> (relevancy, faithfulness)</li>
+                <li><strong>Lexical metrics</strong> (BLEU, ROUGE)</li>
+                <li><strong>Safety metrics</strong> (toxicity, bias)</li>
+            </ul>
+
+            <h3>4. Automate Everything</h3>
+            <pre><code># Add to CI/CD pipeline
+on:
+  push:
+    branches: [main]
+  
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run prompt evaluation
+        run: deepeval test run tests/
+      - name: Check thresholds
+        run: python scripts/check_scores.py</code></pre>
+
+            <h3>5. Track Metrics Over Time</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Version</th>
+                        <th>Relevancy</th>
+                        <th>BLEU</th>
+                        <th>Safety</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>v1.0</td>
+                        <td>0.72</td>
+                        <td>0.45</td>
+                        <td>0.98</td>
+                    </tr>
+                    <tr>
+                        <td>v1.1</td>
+                        <td>0.78</td>
+                        <td>0.48</td>
+                        <td>0.99</td>
+                    </tr>
+                    <tr>
+                        <td>v1.2</td>
+                        <td><strong>0.85</strong></td>
+                        <td><strong>0.52</strong></td>
+                        <td><strong>0.99</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>6. Include Human Review</h3>
+            <ul>
+                <li>Periodically validate automated scores with human judgment</li>
+                <li>Use human evaluation for ambiguous or high-stakes outputs</li>
+                <li>Create feedback loops between human reviewers and automated systems</li>
+            </ul>
+        </section>
+
+        <!-- Getting Started -->
+        <section id="getting-started">
+            <h2>🚀 Getting Started</h2>
+
+            <h3>Quick Start Checklist</h3>
+            <ul class="checklist">
+                <li><strong>Define your use case:</strong> What should your LLM do?</li>
+                <li><strong>Create 10-20 test cases:</strong> Start small, expand over time</li>
+                <li><strong>Choose 2-3 metrics:</strong> Don't overcomplicate initially</li>
+                <li><strong>Set up DeepEval:</strong> Install and run basic evaluation</li>
+                <li><strong>Use NLTK for preprocessing:</strong> Normalize text comparisons</li>
+                <li><strong>Review results:</strong> Understand where prompts fail</li>
+                <li><strong>Iterate:</strong> Improve prompts based on findings</li>
+            </ul>
+
+            <h3>Minimal Example</h3>
+            <pre><code># 1. Install dependencies
+# pip install deepeval nltk
+
+# 2. Create evaluation script (eval_prompts.py)
+from deepeval import evaluate
+from deepeval.metrics import AnswerRelevancyMetric
+from deepeval.test_case import LLMTestCase
+
+# Define test cases
+test_cases = [
+    LLMTestCase(
+        input="What is machine learning?",
+        actual_output="Machine learning is a subset of AI...",  # Your LLM output
+        expected_output="Machine learning is a type of artificial intelligence..."
+    ),
+    # Add more test cases
+]
+
+# Define metrics
+metrics = [AnswerRelevancyMetric(threshold=0.7)]
+
+# Run evaluation
+results = evaluate(test_cases, metrics)
+
+# Print results
+for result in results:
+    print(f"Score: {result.metrics[0].score}")</code></pre>
+
+            <pre><code># 3. Run evaluation
+python eval_prompts.py</code></pre>
+
+            <h3>Summary</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Key Takeaway</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Why Evaluate</strong></td>
+                        <td>Ensure LLM outputs are reliable, accurate, and safe</td>
+                    </tr>
+                    <tr>
+                        <td><strong>The Process</strong></td>
+                        <td>Design → Execute → Analyze → Improve (repeat)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DeepEval</strong></td>
+                        <td>LLM-native evaluation with comprehensive metrics</td>
+                    </tr>
+                    <tr>
+                        <td><strong>NLTK</strong></td>
+                        <td>Text preprocessing and linguistic analysis</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Combined Approach</strong></td>
+                        <td>Use both for semantic + lexical evaluation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best Practice</strong></td>
+                        <td>Automate, track over time, include human review</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Additional Resources</h3>
+            <ul>
+                <li><a href="https://docs.confident-ai.com/" target="_blank">DeepEval Documentation</a></li>
+                <li><a href="https://www.nltk.org/" target="_blank">NLTK Documentation</a></li>
+                <li><a href="https://huggingface.co/docs/evaluate/" target="_blank">Hugging Face Evaluate Library</a></li>
+                <li><a href="https://cookbook.openai.com/" target="_blank">OpenAI Cookbook - Evaluation</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p><strong>Comprehensive Guide to LLM Prompt Evaluation</strong></p>
+            <p>Document created: January 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Highlight current section in navigation
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.background = '';
+                link.style.color = '';
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.style.background = '#2563eb';
+                    link.style.color = 'white';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
