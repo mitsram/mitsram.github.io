@@ -678,30 +678,34 @@ await page.click('#submit');
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Chromium</td>
-                            <td style="text-align: center;">Partial</td>
-                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Full</td>
+                            <td>Chromium/Chrome</td>
+                            <td style="text-align: center; color: var(--warning);">⚠️ WebDriver only</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ WebDriver + CDP access</td>
                         </tr>
                         <tr>
                             <td>Firefox</td>
                             <td style="text-align: center;">Good</td>
-                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Full</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Full + DevTools Protocol</td>
                         </tr>
                         <tr>
                             <td>WebKit/Safari</td>
-                            <td style="text-align: center; color: var(--warning);">❌ None</td>
-                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Full</td>
+                            <td style="text-align: center; color: var(--warning);">❌ Safari only (macOS)</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ WebKit everywhere</td>
                         </tr>
                         <tr>
                             <td>Edge</td>
-                            <td style="text-align: center;">Workaround</td>
-                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Native</td>
+                            <td style="text-align: center; color: var(--warning);">⚠️ Needs EdgeDriver</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Native Chromium-based</td>
                         </tr>
                     </tbody>
                 </table>
                 
                 <div class="highlight-box" style="margin-top: 30px;">
-                    <p><strong>Playwright bundles browser binaries</strong>—no driver downloads, no versioning hell</p>
+                    <p><strong>The Key Difference:</strong> Selenium uses only W3C WebDriver → limited to standard automation. Playwright uses native browser protocols (CDP, WDP, FDP) → access to network interception, performance metrics, coverage reports, and advanced debugging.</p>
+                </div>
+                
+                <div class="highlight-box" style="margin-top: 20px; background: #D1FAE5; border-left: 5px solid var(--success);">
+                    <p><strong>Bonus:</strong> Playwright bundles browser binaries—no driver downloads, no version matching hell, works offline.</p>
                 </div>
             </div>
         </div>
@@ -874,7 +878,7 @@ npx playwright codegen example.com
 
 // It generates:
 await page.click('text=Login');
-await page.fill('#email', 'test@test.com');
+await page.fill('#email', '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c2b6a7b1b682b6a7b1b6eca1adaf">[email&#160;protected]</a>');
 await page.click('button:has-text("Submit")');</pre>
                         </div>
                     </div>
@@ -1106,7 +1110,7 @@ await expect(page).toHaveScreenshot({
                     <pre>// Select by ARIA role - the way users with disabilities interact
 await page.getByRole('button', { name: 'Submit' }).click();
 await page.getByRole('navigation').getByRole('link', { name: 'Home' }).click();
-await page.getByLabel('Email address').fill('test@example.com');
+await page.getByLabel('Email address').fill('<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="354150464175504d54584559501b565a58">[email&#160;protected]</a>');
 await page.getByPlaceholder('Search...').type('Playwright');
 
 // These selectors work for screen readers AND sighted users
@@ -1232,8 +1236,598 @@ await page.getByPlaceholder('Search...').type('Playwright');
             </div>
         </div>
 
-        <!-- Slide 18: JMeter Concern -->
+        <!-- Slide 18: Developer Skills Concern -->
         <div class="slide light-bg" data-slide="18">
+            <div class="section-content">
+                <h2>But Our Developers Use Java...</h2>
+                <div class="accent-line"></div>
+                
+                <div class="bullet-section">
+                    <h3>The Common Concern</h3>
+                    <p>"Our developers are skilled in Java for unit and integration testing. Shouldn't E2E automation align with their skills?"</p>
+                </div>
+                
+                <div class="content-grid" style="margin-top: 30px;">
+                    <div class="card">
+                        <span class="card-icon">🎯</span>
+                        <h3>Different Layers, Different Tools</h3>
+                        <p>Unit tests test Java code → Use Java. E2E tests test browser behavior → Use best browser automation tool.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">👥</span>
+                        <h3>Who Owns E2E Tests?</h3>
+                        <p>QA engineers write 80-90% of E2E tests. Optimize for QA productivity, not backend developer convenience.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">🎨</span>
+                        <h3>Frontend is TypeScript</h3>
+                        <p>E2E tests interact with UI components, not backend services. Align with what you're testing: the TypeScript frontend.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">🔧</span>
+                        <h3>JMeter Precedent</h3>
+                        <p>You're keeping JMeter (Java) for performance while using Playwright for UI. Different tools for different jobs—already polyglot.</p>
+                    </div>
+                </div>
+                
+                <div class="highlight-box" style="margin-top: 30px; background: #D1FAE5; border-left: 5px solid var(--success);">
+                    <p><strong>Bottom Line:</strong> E2E tests don't execute Java—they click buttons in browsers. Backend language is irrelevant. Choose the best browser automation tool.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Developer Contribution Scenario -->
+        <div class="slide light-bg" data-slide="19">
+            <div class="section-content">
+                <h2>What If Developers Want to Contribute Tests?</h2>
+                <div class="accent-line"></div>
+                
+                <div class="bullet-section">
+                    <h3>The Follow-Up Question</h3>
+                    <p>"We want developers to write some E2E tests alongside QA. Shouldn't we use Java for their contributions?"</p>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h3 style="font-size: 1.4em; margin-bottom: 20px; color: var(--navy);">Three Critical Questions First:</h3>
+                    
+                    <div class="risk-card" style="border-left: 5px solid var(--teal); background: var(--white);">
+                        <h3 style="color: var(--teal);">❓ Q1: How Many Tests Will Developers Actually Write?</h3>
+                        <p><strong>Be honest:</strong> Check the past 6 months. In most organizations, developers write &lt;10% of E2E tests. QA writes &gt;90%. Optimizing for rare contributions makes no sense.</p>
+                    </div>
+                    
+                    <div class="risk-card" style="border-left: 5px solid var(--teal); background: var(--white); margin-top: 15px;">
+                        <h3 style="color: var(--teal);">❓ Q2: Should Developers Write E2E Tests?</h3>
+                        <p><strong>Different expertise:</strong> Developers excel at unit tests (code logic). QA excels at E2E tests (user workflows, browser behavior). Better model: Developers write component tests, QA writes E2E tests.</p>
+                    </div>
+                    
+                    <div class="risk-card" style="border-left: 5px solid var(--teal); background: var(--white); margin-top: 15px;">
+                        <h3 style="color: var(--teal);">❓ Q3: What's the Learning Cost?</h3>
+                        <p><strong>TypeScript for Java devs:</strong> 3-5 days. They already know types, OOP, and async patterns. No complex features needed for Playwright tests. Reasonable investment for a multi-year framework.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 20: TypeScript Learning Curve -->
+        <div class="slide light-bg" data-slide="20">
+            <div class="section-content">
+                <h2>TypeScript is Easy for Java Developers</h2>
+                <div class="accent-line"></div>
+                
+                <div class="two-column" style="margin-top: 20px;">
+                    <div>
+                        <h3 style="font-size: 1.4em; margin-bottom: 15px;">What Java Devs Already Know</h3>
+                        <ul style="font-size: 1em;">
+                            <li>Types and interfaces</li>
+                            <li>Object-oriented programming</li>
+                            <li>Async patterns (CompletableFuture)</li>
+                            <li>IDE autocomplete and type checking</li>
+                        </ul>
+                        
+                        <div class="highlight-box" style="margin-top: 20px; background: #DBEAFE;">
+                            <p><strong>Learning Timeline:</strong></p>
+                            <p style="margin-top: 10px;">• Day 1-2: TypeScript basics workshop<br>
+                            • Day 3-5: Write practice Playwright tests<br>
+                            • <strong>Total: 3-5 days to productivity</strong></p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 style="font-size: 1.4em; margin-bottom: 15px;">Code Comparison</h3>
+                        
+                        <div class="code-block selenium" style="margin-bottom: 15px;">
+                            <h3 style="font-size: 1em;">Java (Familiar)</h3>
+                            <pre style="font-size: 0.75em;">public class UserService {
+    public User getUser(Long id) {
+        return repository
+            .findById(id)
+            .orElseThrow();
+    }
+}</pre>
+                        </div>
+                        
+                        <div class="code-block playwright">
+                            <h3 style="font-size: 1em;">TypeScript (Very Similar)</h3>
+                            <pre style="font-size: 0.75em;">class UserService {
+    getUser(id: number): User {
+        return repository
+            .findById(id) 
+            ?? throw Error();
+    }
+}</pre>
+                        </div>
+                        
+                        <p style="margin-top: 15px; font-size: 0.95em; color: var(--gray-text); font-style: italic;">For Playwright tests, it's even simpler—no complex TypeScript features needed.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Better Collaboration Models -->
+        <div class="slide light-bg" data-slide="21">
+            <div class="section-content">
+                <h2>Better Developer Collaboration Models</h2>
+                <div class="accent-line"></div>
+                
+                <div class="bullet-section">
+                    <h3>Instead of Developers Writing E2E Tests...</h3>
+                    <p>Establish collaboration that plays to each team's strengths while avoiding language conflicts.</p>
+                </div>
+                
+                <div class="content-grid" style="margin-top: 30px;">
+                    <div class="card">
+                        <span class="card-icon">🧩</span>
+                        <h3>Model 1: Component Tests</h3>
+                        <p>Developers write component-level tests in TypeScript (Jest, Vitest). Fast (milliseconds), isolated, same language as frontend. QA writes full E2E journeys.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">📝</span>
+                        <h3>Model 2: Define & Implement</h3>
+                        <p>Developers define test scenarios in plain English. QA implements in Playwright. Each contributes expertise—no language conflict.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">🏷️</span>
+                        <h3>Model 3: Test IDs</h3>
+                        <p>Developers add data-testid attributes to UI components. QA uses them in tests. Makes tests resilient to refactoring—language irrelevant.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">🔄</span>
+                        <h3>Model 4: API Test Data</h3>
+                        <p>Developers build test data APIs. Both Java integration tests and TypeScript E2E tests consume them. Language-agnostic collaboration.</p>
+                    </div>
+                </div>
+                
+                <div class="key-point" style="margin-top: 30px;">
+                    Best collaboration comes from clear boundaries, not shared languages. Developers build testable software; QA validates user experience.
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 22: The Optimization Question -->
+        <div class="slide light-bg" data-slide="22">
+            <div class="section-content">
+                <h2>Who Should We Optimize For?</h2>
+                <div class="accent-line"></div>
+                
+                <div style="margin-top: 30px;">
+                    <h3 style="font-size: 1.5em; margin-bottom: 25px; color: var(--navy); text-align: center;">Contribution Reality Check</h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
+                        <div style="background: #FEF3C7; border-left: 5px solid var(--accent); padding: 30px; border-radius: 8px;">
+                            <h3 style="color: var(--accent); font-size: 1.8em; margin-bottom: 15px;">10-20%</h3>
+                            <p style="font-size: 1.1em; margin-bottom: 10px;"><strong>Developer Contributions</strong></p>
+                            <p style="font-size: 0.95em; color: var(--gray-text);">Occasional smoke tests, critical path validation</p>
+                        </div>
+                        
+                        <div style="background: #D1FAE5; border-left: 5px solid var(--success); padding: 30px; border-radius: 8px;">
+                            <h3 style="color: var(--success); font-size: 1.8em; margin-bottom: 15px;">80-90%</h3>
+                            <p style="font-size: 1.1em; margin-bottom: 10px;"><strong>QA Contributions</strong></p>
+                            <p style="font-size: 0.95em; color: var(--gray-text);">Full test suite, ongoing maintenance, regression testing</p>
+                        </div>
+                    </div>
+                    
+                    <h3 style="font-size: 1.4em; margin-bottom: 20px; color: var(--navy);">The Trade-Off</h3>
+                    
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Choice</th>
+                                <th>QA Team (80%)</th>
+                                <th>Developers (20%)</th>
+                                <th>Verdict</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Use TypeScript</strong></td>
+                                <td style="color: var(--success); font-weight: 700;">✅ Best tools, best experience</td>
+                                <td style="color: var(--accent);">⚠️ Learn TypeScript (3-5 days)</td>
+                                <td style="color: var(--success); font-weight: 700;">Optimize majority</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Use Playwright Java</strong></td>
+                                <td style="color: var(--warning); font-weight: 700;">❌ Worse tools, lag features</td>
+                                <td style="color: var(--success);">✅ Stay in Java</td>
+                                <td style="color: var(--warning); font-weight: 700;">Handicap majority</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="highlight-box" style="margin-top: 30px; background: #DBEAFE; border-left: 5px solid var(--teal);">
+                        <p style="font-size: 1.1em;"><strong>The Math is Simple:</strong> Handicapping QA (80% of tests) to accommodate developers (20% of tests) is backwards. Ask developers to invest 3-5 days learning TypeScript for a multi-year framework.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 23: Polyglot is Professional -->
+        <div class="slide light-bg" data-slide="23">
+            <div class="section-content">
+                <h2>Modern Teams Are Already Polyglot</h2>
+                <div class="accent-line"></div>
+                
+                <div class="bullet-section">
+                    <h3>Your Stack Already Uses Multiple Languages</h3>
+                    <p>Adding TypeScript for E2E tests isn't creating a problem—it's using the right tool for the job.</p>
+                </div>
+                
+                <div style="margin-top: 30px; background: var(--white); padding: 30px; border-radius: 12px; border: 2px solid var(--teal);">
+                    <h3 style="font-size: 1.3em; margin-bottom: 20px; color: var(--navy);">Typical Technology Stack in 2026</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div style="display: flex; align-items: center; padding: 12px; background: #F8FAFC; border-radius: 6px;">
+                            <span style="font-size: 1.5em; margin-right: 15px;">☕</span>
+                            <div>
+                                <strong style="color: var(--navy);">Backend:</strong>
+                                <span style="margin-left: 10px;">Java/Spring Boot</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; padding: 12px; background: #F8FAFC; border-radius: 6px;">
+                            <span style="font-size: 1.5em; margin-right: 15px;">⚛️</span>
+                            <div>
+                                <strong style="color: var(--navy);">Frontend:</strong>
+                                <span style="margin-left: 10px;">TypeScript/React</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; padding: 12px; background: #F8FAFC; border-radius: 6px;">
+                            <span style="font-size: 1.5em; margin-right: 15px;">📱</span>
+                            <div>
+                                <strong style="color: var(--navy);">Mobile:</strong>
+                                <span style="margin-left: 10px;">Swift/Kotlin</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; padding: 12px; background: #F8FAFC; border-radius: 6px;">
+                            <span style="font-size: 1.5em; margin-right: 15px;">🗄️</span>
+                            <div>
+                                <strong style="color: var(--navy);">Database:</strong>
+                                <span style="margin-left: 10px;">SQL</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; padding: 12px; background: #F8FAFC; border-radius: 6px;">
+                            <span style="font-size: 1.5em; margin-right: 15px;">🐍</span>
+                            <div>
+                                <strong style="color: var(--navy);">Data/Scripts:</strong>
+                                <span style="margin-left: 10px;">Python</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; padding: 12px; background: #F8FAFC; border-radius: 6px;">
+                            <span style="font-size: 1.5em; margin-right: 15px;">⚙️</span>
+                            <div>
+                                <strong style="color: var(--navy);">Infrastructure:</strong>
+                                <span style="margin-left: 10px;">Terraform/YAML</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; padding: 12px; background: #F8FAFC; border-radius: 6px;">
+                            <span style="font-size: 1.5em; margin-right: 15px;">📊</span>
+                            <div>
+                                <strong style="color: var(--navy);">Performance:</strong>
+                                <span style="margin-left: 10px;">JMeter (Java)</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; padding: 12px; background: #D1FAE5; border-radius: 6px; border: 2px solid var(--success);">
+                            <span style="font-size: 1.5em; margin-right: 15px;">🎭</span>
+                            <div>
+                                <strong style="color: var(--success);">E2E Testing:</strong>
+                                <span style="margin-left: 10px;">Playwright (TypeScript)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="two-column" style="margin-top: 30px;">
+                    <div class="highlight-box" style="background: #FEF3C7;">
+                        <p><strong>Bad Architecture:</strong> Force everything into one language despite different needs, sacrificing quality for false consistency.</p>
+                    </div>
+                    
+                    <div class="highlight-box" style="background: #D1FAE5;">
+                        <p><strong>Professional Architecture:</strong> Use the best tool for each layer. TypeScript for browser automation is the industry standard.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 24: Investment Benefits -->
+        <div class="slide light-bg" data-slide="24">
+            <div class="section-content">
+                <h2>TypeScript Investment Pays Off Organization-Wide</h2>
+                <div class="accent-line"></div>
+                
+                <div class="bullet-section">
+                    <h3>One-Time Learning, Perpetual Benefits</h3>
+                    <p>TypeScript knowledge isn't just for E2E tests—it unlocks value across your entire organization.</p>
+                </div>
+                
+                <div class="content-grid" style="margin-top: 30px;">
+                    <div class="card">
+                        <span class="card-icon">👨‍💻</span>
+                        <h3>Backend Developers</h3>
+                        <p>Can read frontend code, debug integration issues faster, understand UI component structure, contribute to frontend when needed.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">🎨</span>
+                        <h3>Frontend Developers</h3>
+                        <p>Can get backend help on complex UI features, share type definitions with tests, collaborate with QA on component testing.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">🧪</span>
+                        <h3>QA Engineers</h3>
+                        <p>Better collaboration with frontend team, reuse frontend utilities, share selectors and test data, modern automation skills.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">⚙️</span>
+                        <h3>DevOps Team</h3>
+                        <p>TypeScript useful for infrastructure as code (CDK, Pulumi), automation scripts, CI/CD tooling, cloud functions.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">💼</span>
+                        <h3>Career Growth</h3>
+                        <p>Engineers who know TypeScript + Java are more valuable, polyglot skills attract better talent, modern stack reduces turnover.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">🚀</span>
+                        <h3>Future-Proofing</h3>
+                        <p>TypeScript is growing 300% year-over-year, industry standard for modern web, AI tooling (Copilot) optimized for TypeScript.</p>
+                    </div>
+                </div>
+                
+                <div class="key-point" style="margin-top: 30px; font-size: 1.15em;">
+                    3-5 day investment per developer → Years of organizational benefit across multiple teams and use cases
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 25: Playwright TypeScript vs Playwright Java -->
+        <div class="slide light-bg" data-slide="25">
+            <div class="section-content">
+                <h2>Playwright TypeScript vs Playwright Java</h2>
+                <div class="accent-line"></div>
+                
+                <div class="bullet-section">
+                    <h3>Wait, Playwright Has a Java Binding. Why Not Use That?</h3>
+                    <p>Yes, Playwright offers Java support—but it's a second-class citizen. Microsoft's primary focus and innovation happens in TypeScript. Here's why TypeScript is the superior choice:</p>
+                </div>
+                
+                <div class="content-grid" style="margin-top: 30px;">
+                    <div class="card">
+                        <span class="card-icon">🎯</span>
+                        <h3>First-Class Support</h3>
+                        <p>TypeScript is Playwright's native language. New features ship here first. Java bindings lag by weeks or months.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">📚</span>
+                        <h3>Documentation & Examples</h3>
+                        <p>90% of Playwright docs, Stack Overflow answers, and community examples are in TypeScript. Java examples are sparse.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">🔧</span>
+                        <h3>Tooling Maturity</h3>
+                        <p>VS Code Playwright extension, Codegen, Inspector, and Trace Viewer are all built for TypeScript workflows.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">⚡</span>
+                        <h3>Performance</h3>
+                        <p>Node.js event loop is optimized for I/O-bound operations like browser automation. Java's threading model adds overhead.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">🚀</span>
+                        <h3>Development Velocity</h3>
+                        <p>No compile step = instant test execution. TypeScript's live reload makes debugging 5x faster than Java.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">🤝</span>
+                        <h3>Frontend Collaboration</h3>
+                        <p>Share page objects, utilities, and type definitions with frontend team. They already use TypeScript.</p>
+                    </div>
+                </div>
+                
+                <div class="key-point" style="margin-top: 30px;">
+                    Choosing Playwright Java means betting on a secondary binding. TypeScript is where Microsoft invests, where the community thrives, and where the future roadmap lives.
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 26: Code Comparison - Playwright TS vs Java -->
+        <div class="slide light-bg" data-slide="26">
+            <div class="section-content">
+                <h2>Code Comparison: TypeScript vs Java</h2>
+                <div class="accent-line"></div>
+                
+                <div class="code-comparison">
+                    <div class="code-block selenium">
+                        <h3>Playwright Java</h3>
+                        <pre style="font-size: 0.75em;">import com.microsoft.playwright.*;
+
+public class LoginTest {
+  public static void main(String[] args) {
+    try (Playwright playwright = 
+         Playwright.create()) {
+      Browser browser = playwright
+        .chromium().launch();
+      BrowserContext context = 
+        browser.newContext();
+      Page page = context.newPage();
+      
+      page.navigate("https://example.com");
+      page.locator("#username")
+        .fill("<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c7b2b4a2b587b3a2b4b3e9a4a8aa">[email&#160;protected]</a>");
+      page.locator("#password")
+        .fill("password123");
+      page.locator("button[type='submit']")
+        .click();
+      
+      String title = page.title();
+      System.out.println("Title: " + title);
+      
+      browser.close();
+    }
+  }
+}</pre>
+                    </div>
+                    
+                    <div class="code-block playwright">
+                        <h3>Playwright TypeScript</h3>
+                        <pre style="font-size: 0.75em;">import { test, expect } from '@playwright/test';
+
+test('user login', async ({ page }) => {
+  await page.goto('https://example.com');
+  
+  await page.fill('#username', '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3b6b0a6b183b7a6b0b7eda0acae">[email&#160;protected]</a>');
+  await page.fill('#password', 'password123');
+  await page.click("button[type='submit']");
+  
+  await expect(page).toHaveTitle(/Dashboard/);
+});
+
+
+
+
+
+// Built-in fixtures handle setup/teardown
+// Automatic browser lifecycle management
+// Native async/await syntax
+// Assertion library included</pre>
+                    </div>
+                </div>
+                
+                <div class="two-column" style="margin-top: 30px;">
+                    <div class="highlight-box" style="background: #FEF3C7;">
+                        <p><strong>Java:</strong> 24 lines, manual resource management, verbose syntax, try-with-resources boilerplate</p>
+                    </div>
+                    
+                    <div class="highlight-box" style="background: #D1FAE5;">
+                        <p><strong>TypeScript:</strong> 9 lines, automatic cleanup, concise, built-in test runner and assertions</p>
+                    </div>
+                </div>
+                
+                <p style="text-align: center; margin-top: 25px; font-size: 1.1em; color: var(--teal); font-style: italic; font-weight: 600;">TypeScript code is 60% shorter and infinitely more readable</p>
+            </div>
+        </div>
+
+        <!-- Slide 27: Feature Parity Table -->
+        <div class="slide light-bg" data-slide="27">
+            <div class="section-content">
+                <h2>TypeScript vs Java: Feature & Ecosystem</h2>
+                <div class="accent-line"></div>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th style="text-align: center;">Playwright Java</th>
+                            <th style="text-align: center;">Playwright TypeScript</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Release Cadence</td>
+                            <td style="text-align: center; color: var(--warning);">⚠️ Lags by 2-4 weeks</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Same-day releases</td>
+                        </tr>
+                        <tr>
+                            <td>Official Documentation</td>
+                            <td style="text-align: center; color: var(--warning);">⚠️ Limited examples</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Comprehensive</td>
+                        </tr>
+                        <tr>
+                            <td>VS Code Extension</td>
+                            <td style="text-align: center; color: var(--warning);">⚠️ Basic support</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Full integration</td>
+                        </tr>
+                        <tr>
+                            <td>Codegen Quality</td>
+                            <td style="text-align: center; color: var(--warning);">⚠️ Verbose output</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Production-ready code</td>
+                        </tr>
+                        <tr>
+                            <td>Community Support</td>
+                            <td style="text-align: center; color: var(--warning);">⚠️ ~10% of questions</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ 90% of Stack Overflow</td>
+                        </tr>
+                        <tr>
+                            <td>Test Runner</td>
+                            <td style="text-align: center; color: var(--warning);">❌ Bring your own (JUnit)</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Built-in @playwright/test</td>
+                        </tr>
+                        <tr>
+                            <td>Parallel Execution</td>
+                            <td style="text-align: center; color: var(--warning);">⚠️ TestNG/Maven config</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ One flag: --workers=4</td>
+                        </tr>
+                        <tr>
+                            <td>Trace Viewer UX</td>
+                            <td style="text-align: center; color: var(--warning);">⚠️ Works but clunky</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Optimized workflow</td>
+                        </tr>
+                        <tr>
+                            <td>Compilation Time</td>
+                            <td style="text-align: center; color: var(--warning);">⚠️ 5-30 seconds</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Instant (0 seconds)</td>
+                        </tr>
+                        <tr>
+                            <td>Hot Reload</td>
+                            <td style="text-align: center; color: var(--warning);">❌ Not available</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Instant feedback loop</td>
+                        </tr>
+                        <tr>
+                            <td>Frontend Integration</td>
+                            <td style="text-align: center; color: var(--warning);">❌ Separate codebase</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Share types/utilities</td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft Focus</td>
+                            <td style="text-align: center; color: var(--warning);">⚠️ Secondary binding</td>
+                            <td style="text-align: center; color: var(--success); font-weight: 700;">✅ Primary language</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 28: JMeter Concern -->
+        <div class="slide light-bg" data-slide="28">
             <div class="section-content">
                 <h2>Addressing the JMeter Concern</h2>
                 <div class="accent-line"></div>
@@ -1261,8 +1855,8 @@ await page.getByPlaceholder('Search...').type('Playwright');
             </div>
         </div>
 
-        <!-- Slide 19: Migration Strategy -->
-        <div class="slide light-bg" data-slide="19">
+        <!-- Slide 29: Migration Strategy -->
+        <div class="slide light-bg" data-slide="29">
             <div class="section-content">
                 <h2>Phased Migration Strategy</h2>
                 <div class="accent-line"></div>
@@ -1309,8 +1903,8 @@ await page.getByPlaceholder('Search...').type('Playwright');
             </div>
         </div>
 
-        <!-- Slide 20: Cost-Benefit -->
-        <div class="slide light-bg" data-slide="20">
+        <!-- Slide 30: Cost-Benefit -->
+        <div class="slide light-bg" data-slide="30">
             <div class="section-content">
                 <h2>Cost-Benefit Analysis</h2>
                 <div class="accent-line"></div>
@@ -1344,8 +1938,8 @@ await page.getByPlaceholder('Search...').type('Playwright');
             </div>
         </div>
 
-        <!-- Slide 21: Industry Adoption -->
-        <div class="slide light-bg" data-slide="21">
+        <!-- Slide 31: Industry Adoption -->
+        <div class="slide light-bg" data-slide="31">
             <div class="section-content">
                 <h2>Industry Adoption: Real Numbers</h2>
                 <div class="accent-line"></div>
@@ -1380,8 +1974,8 @@ await page.getByPlaceholder('Search...').type('Playwright');
             </div>
         </div>
 
-        <!-- Slide 22: Risks -->
-        <div class="slide light-bg" data-slide="22">
+        <!-- Slide 32: Risks -->
+        <div class="slide light-bg" data-slide="32">
             <div class="section-content">
                 <h2>Risk Assessment & Mitigation</h2>
                 <div class="accent-line"></div>
@@ -1408,8 +2002,8 @@ await page.getByPlaceholder('Search...').type('Playwright');
             </div>
         </div>
 
-        <!-- Slide 23: Decision Framework -->
-        <div class="slide light-bg" data-slide="23">
+        <!-- Slide 33: Decision Framework -->
+        <div class="slide light-bg" data-slide="33">
             <div class="section-content">
                 <h2>Decision Framework</h2>
                 <div class="accent-line"></div>
@@ -1453,8 +2047,8 @@ await page.getByPlaceholder('Search...').type('Playwright');
             </div>
         </div>
 
-        <!-- Slide 24: The Technology Gap -->
-        <div class="slide light-bg" data-slide="24">
+        <!-- Slide 34: The Technology Gap -->
+        <div class="slide light-bg" data-slide="34">
             <div class="section-content">
                 <h2>The Technology Gap is Widening</h2>
                 <div class="accent-line"></div>
@@ -1497,8 +2091,8 @@ await page.getByPlaceholder('Search...').type('Playwright');
             </div>
         </div>
 
-        <!-- Slide 25: Next Steps -->
-        <div class="slide navy-bg" data-slide="25">
+        <!-- Slide 35: Next Steps -->
+        <div class="slide navy-bg" data-slide="35">
             <div class="section-content" style="text-align: center; margin-top: 60px;">
                 <h1 style="font-size: 3em; margin-bottom: 50px;">Recommended Next Steps</h1>
                 
@@ -1514,8 +2108,8 @@ await page.getByPlaceholder('Search...').type('Playwright');
             </div>
         </div>
 
-        <!-- Slide 26: Closing -->
-        <div class="slide navy-bg title-slide" data-slide="26">
+        <!-- Slide 36: Closing -->
+        <div class="slide navy-bg title-slide" data-slide="36">
             <h1 style="font-size: 3.5em;">Future-Proof Your Automation</h1>
             
             <div style="max-width: 900px; margin: 60px auto; font-size: 1.3em; line-height: 1.8; color: var(--light-teal);">
@@ -1530,14 +2124,14 @@ await page.getByPlaceholder('Search...').type('Playwright');
     <div class="navigation">
         <button class="nav-btn" id="prevBtn">← Previous</button>
         <div class="slide-counter">
-            <span id="currentSlide">1</span> / <span id="totalSlides">17</span>
+            <span id="currentSlide">1</span> / <span id="totalSlides">36</span>
         </div>
         <button class="nav-btn" id="nextBtn">Next →</button>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         let currentSlide = 1;
-        const totalSlides = 26;
+        const totalSlides = 36;
         
         function showSlide(n) {
             const slides = document.querySelectorAll('.slide');
