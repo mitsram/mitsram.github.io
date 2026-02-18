@@ -1,0 +1,2844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programme Test Strategy - Vector Programme</title>
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #0066cc;
+            --accent-color: #0099ff;
+            --text-color: #333;
+            --bg-color: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --table-header-bg: #003366;
+            --table-odd-row: #f8f9fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Cover Page */
+        .cover {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 60px 20px;
+            margin: -40px -20px 60px -20px;
+        }
+        
+        .cover h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .cover .subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            font-weight: 300;
+            opacity: 0.95;
+        }
+        
+        .cover .meta {
+            font-size: 1.1rem;
+            margin-top: 30px;
+            opacity: 0.9;
+        }
+        
+        .cover .meta p {
+            margin: 8px 0;
+        }
+        
+        /* Headings */
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin: 50px 0 25px 0;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--accent-color);
+            font-weight: 700;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            margin: 30px 0 15px 0;
+            font-weight: 600;
+        }
+        
+        h4 {
+            color: var(--secondary-color);
+            font-size: 1.25rem;
+            margin: 25px 0 12px 0;
+            font-weight: 600;
+        }
+        
+        h5 {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }
+        
+        h6 {
+            color: var(--text-color);
+            font-size: 1rem;
+            margin: 15px 0 8px 0;
+            font-weight: 600;
+        }
+        
+        /* Content */
+        p {
+            margin: 15px 0;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        
+        p.subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--secondary-color);
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 15px 0 15px 20px;
+            padding-left: 20px;
+        }
+        
+        li {
+            margin: 8px 0;
+            line-height: 1.7;
+        }
+        
+        ul ul, ol ol, ul ol, ol ul {
+            margin: 5px 0 5px 20px;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+        
+        th {
+            background-color: var(--table-header-bg);
+            color: white;
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+        
+        tr:nth-child(even) {
+            background-color: var(--table-odd-row);
+        }
+        
+        tr:hover {
+            background-color: #e9ecef;
+            transition: background-color 0.2s ease;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .cover {
+                padding: 40px 20px;
+                margin: -20px -15px 40px -15px;
+            }
+            
+            .cover h1 {
+                font-size: 2.5rem;
+            }
+            
+            .cover .subtitle {
+                font-size: 1.3rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.6rem;
+            }
+            
+            h3 {
+                font-size: 1.3rem;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .cover {
+                page-break-after: always;
+            }
+            
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+            
+            table {
+                page-break-inside: avoid;
+            }
+            
+            tr {
+                page-break-inside: avoid;
+            }
+        }
+        
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="cover">
+        <h1>Programme Test Strategy</h1>
+        <p class="subtitle">Vector Programme</p>
+        <div class="meta">
+            <p><strong>Version:</strong> 2.0</p>
+            <p><strong>Date:</strong> February 19, 2026</p>
+        </div>
+    </div>
+    
+    <div class="container">
+<p>Programme Test Strategy</p>
+<p>Manual Testing · Test Automation · Performance Testing · Security Testing</p>
+<p>Vector Programme</p>
+<p>Version 2.0 — 17 February 2026</p>
+<p>Classification: Confidential</p>
+<h1>Document Control</h1>
+<h2>Revision History</h2>
+<table>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Author</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>0.1</td>
+<td>2026-02-17</td>
+<td>[Author Name]</td>
+<td>Initial Draft</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>[TBD]</td>
+<td>[Author Name]</td>
+<td>First Approved Release</td>
+</tr>
+<tr>
+<td>2.0</td>
+<td>[TBD]</td>
+<td>[Author Name]</td>
+<td>Consolidated release — full test automation strategy integrated into this standalone document</td>
+</tr>
+</table>
+<h2>Distribution List</h2>
+<table>
+<tr>
+<th>Name</th>
+<th>Role</th>
+<th>Organisation</th>
+</tr>
+<tr>
+<td>[Name]</td>
+<td>Programme Manager</td>
+<td>Vector Programme</td>
+</tr>
+<tr>
+<td>[Name]</td>
+<td>Test Manager</td>
+<td>Vector Programme</td>
+</tr>
+<tr>
+<td>[Name]</td>
+<td>Solution Architect</td>
+<td>Vector Programme</td>
+</tr>
+<tr>
+<td>[Name]</td>
+<td>Delivery Lead</td>
+<td>Vector Programme</td>
+</tr>
+<tr>
+<td>[Name]</td>
+<td>Security Lead</td>
+<td>Vector Programme</td>
+</tr>
+<tr>
+<td>[Name]</td>
+<td>App1 Test Lead</td>
+<td>Vector Programme</td>
+</tr>
+<tr>
+<td>[Name]</td>
+<td>App2 Test Lead</td>
+<td>Vector Programme</td>
+</tr>
+<tr>
+<td>[Name]</td>
+<td>Siebel Test Lead</td>
+<td>Vector Programme</td>
+</tr>
+</table>
+<h2>Approvals</h2>
+<table>
+<tr>
+<th>Name</th>
+<th>Role</th>
+<th>Signature</th>
+<th>Date</th>
+</tr>
+<tr>
+<td>[Name]</td>
+<td>Programme Manager</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>[Name]</td>
+<td>Test Manager</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>[Name]</td>
+<td>Security Lead</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+<h2>Related Documents</h2>
+<table>
+<tr>
+<th>Document</th>
+<th>Version</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>[Project Test Plan — App1]</td>
+<td>[x.x]</td>
+<td>App1 system test plan</td>
+</tr>
+<tr>
+<td>[Project Test Plan — App2]</td>
+<td>[x.x]</td>
+<td>App2 system test plan</td>
+</tr>
+<tr>
+<td>[Project Test Plan — Siebel]</td>
+<td>[x.x]</td>
+<td>Siebel system test plan</td>
+</tr>
+<tr>
+<td>[Requirements Specification]</td>
+<td>[x.x]</td>
+<td>Functional and non-functional requirements</td>
+</tr>
+<tr>
+<td>[Solution Architecture Document]</td>
+<td>[x.x]</td>
+<td>System architecture and integration design</td>
+</tr>
+</table>
+<h1>Table of Contents</h1>
+<p>[Right-click → Update Field to generate Table of Contents in Microsoft Word]</p>
+<h1>1. Executive Summary</h1>
+<p>This Programme Test Strategy defines the overarching testing approach for the Vector Programme. It establishes a unified, risk-based testing framework that spans all testing disciplines — manual functional testing, test automation, performance testing, and security testing — across the programme&#x27;s interconnected application landscape. This is a self-contained document; all testing disciplines, including the complete test automation strategy, are fully defined herein.</p>
+<p>The Vector Programme comprises three core systems — App1, App2, and Siebel — that interact through SOAP-based integrations, a Pub/Sub integration layer, and an ETL reporting pipeline (Fivetran → Coalesce → Snowflake → Power BI). Each system maintains independent development and system testing activities. This strategy governs the programme-level testing that validates integration quality, end-to-end business process integrity, non-functional requirements, and overall production readiness.</p>
+<p>The strategy is structured around four complementary testing pillars:</p>
+<table>
+<tr>
+<th>Pillar</th>
+<th>Purpose</th>
+<th>Scope</th>
+</tr>
+<tr>
+<td>Manual Testing</td>
+<td>Validate functional correctness, business logic, and user experience through structured and exploratory testing</td>
+<td>System integration testing, E2E business scenarios, UAT support, exploratory testing</td>
+</tr>
+<tr>
+<td>Test Automation</td>
+<td>Deliver repeatable, efficient regression testing across integration, data, and UI layers</td>
+<td>SOAP/REST integration tests, ETL data validation, UI regression, service virtualisation for E2E</td>
+</tr>
+<tr>
+<td>Performance Testing</td>
+<td>Validate system responsiveness, scalability, and stability under expected and peak loads</td>
+<td>Integration layer throughput, ETL pipeline performance, end-to-end response times, concurrent user capacity</td>
+</tr>
+<tr>
+<td>Security Testing</td>
+<td>Identify and mitigate security vulnerabilities across applications and integration points</td>
+<td>Application security assessment, API security testing, data protection validation, penetration testing</td>
+</tr>
+</table>
+<p>The test automation pillar is grounded in the principles of the ISTQB Certified Tester – Test Automation Strategy (CT-TAS) Syllabus v1.0, with objectives including improved test efficiency, broader test coverage, reduced total cost and time to market, increased test frequency, and the ability to perform tests that manual testers cannot practically execute — particularly across integration boundaries and data pipelines.</p>
+<p>Together, these four pillars ensure comprehensive quality assurance across functional correctness, reliability, performance, and security — providing confidence that the Vector Programme&#x27;s systems will operate correctly, efficiently, and securely in production.</p>
+<h1>2. Introduction</h1>
+<h2>2.1 Purpose</h2>
+<p>This document establishes the programme-wide test strategy for the Vector Programme. It provides a single, self-contained reference for all stakeholders to understand the testing approach, test levels, test types, test automation strategy, performance and security testing approaches, roles, environments, tooling, governance, and quality criteria that will be applied to deliver a production-ready solution.</p>
+<h2>2.2 Scope</h2>
+<p>This strategy covers all programme-level testing activities. Individual system testing (unit testing, component testing) within App1, App2, and Siebel is managed by each application team&#x27;s own test plan and is referenced but not governed by this document.</p>
+<p>In scope:</p>
+<ul>
+<li>System Integration Testing (SIT) — validating interactions between App1, App2, Siebel, and the integration layer</li>
+<li>End-to-End Testing (E2E) — verifying complete business use cases across multiple systems</li>
+<li>Regression Testing — both manual and automated regression for integration and E2E scope</li>
+<li>Test Automation — comprehensive automated testing across SOAP/REST integration, data/ETL, UI, and E2E layers (Sections 7.1–7.11)</li>
+<li>Performance Testing — load, stress, endurance, and scalability testing of integrations and the ETL pipeline</li>
+<li>Security Testing — vulnerability assessment, API security, data protection, and penetration testing</li>
+<li>User Acceptance Testing (UAT) support — supporting business teams in validating acceptance criteria</li>
+<li>Data/ETL Testing — validating the data pipeline from App1 through to Power BI</li>
+<li>Service Virtualisation — simulating dependent systems for isolated and reliable testing</li>
+</ul>
+<p>Out of scope:</p>
+<ul>
+<li>Unit testing and component-level testing within individual applications</li>
+<li>Development team code reviews and static analysis (though findings may inform test design)</li>
+<li>Infrastructure provisioning (managed by the platform team)</li>
+</ul>
+<h2>2.3 Audience</h2>
+<p>This strategy is intended for programme leadership, test managers, test leads, test analysts, test automation engineers, developers, solution architects, security specialists, and business stakeholders involved in the Vector Programme.</p>
+<h1>3. Programme Architecture Overview</h1>
+<h2>3.1 System Landscape</h2>
+<p>The Vector Programme consists of three core applications, an integration layer, and a data/reporting pipeline. Understanding this architecture is fundamental to designing an effective programme-wide testing approach, including selecting the right test automation approach (ISTQB CT-TAS Section 3.1.2).</p>
+<p>┌─────────────┐     SOAP      ┌─────────────┐
+│             │◄──────────────►│             │
+│    App2     │               │    App1      │
+│             │               │             │
+└─────────────┘               └──┬───┬──┬───┘
+                                 │   │  │
+                        SOAP/    │   │  │  Reporting
+                        Pub/Sub  │   │  │  Data
+                                 │   │  │
+                    ┌────────────┘   │  └────────────┐
+                    ▼                │               ▼
+             ┌─────────────┐        │       ┌──────────────┐
+             │ Integration │        │       │   Fivetran   │
+             │   Layer     │        │       └──────┬───────┘
+             └──────┬──────┘        │              │
+                    │               │              ▼
+                    ▼               │       ┌──────────────┐
+             ┌─────────────┐        │       │  Coalesce    │
+             │   Siebel    │        │       └──────┬───────┘
+             └─────────────┘        │              │
+                                    │              ▼
+                                    │       ┌──────────────┐
+                                    │       │  Snowflake   │
+                                    │       └──────┬───────┘
+                                    │              │
+                                    │              ▼
+                                    │       ┌──────────────┐
+                                    │       │   Power BI   │
+                                    │       └──────────────┘</p>
+<h2>3.2 Application Descriptions</h2>
+<table>
+<tr>
+<th>System</th>
+<th>Description</th>
+<th>Key Interfaces</th>
+</tr>
+<tr>
+<td>App1</td>
+<td>Core business application — the primary system under test for integration and E2E testing. Houses core business logic and initiates most integration flows.</td>
+<td>SOAP to Siebel (via integration layer), SOAP to App2, data export to Fivetran (ETL pipeline)</td>
+</tr>
+<tr>
+<td>App2</td>
+<td>Supporting business application that exchanges data with App1 via SOAP messaging.</td>
+<td>SOAP to/from App1</td>
+</tr>
+<tr>
+<td>Siebel</td>
+<td>CRM platform that receives and sends business transactions via the integration layer using SOAP and Pub/Sub messaging.</td>
+<td>SOAP/Pub-Sub to/from App1 via integration layer</td>
+</tr>
+<tr>
+<td>Integration Layer</td>
+<td>Middleware orchestrating message routing, transformation, and Pub/Sub event delivery between App1 and Siebel.</td>
+<td>SOAP/Pub-Sub — App1 ↔ Siebel</td>
+</tr>
+<tr>
+<td>Fivetran</td>
+<td>Data ingestion tool — extracts data from App1 for the reporting pipeline.</td>
+<td>Data from App1</td>
+</tr>
+<tr>
+<td>Coalesce</td>
+<td>Data transformation platform — applies business rules and transformations to data before loading into the warehouse.</td>
+<td>Data from Fivetran → Snowflake</td>
+</tr>
+<tr>
+<td>Snowflake</td>
+<td>Cloud data warehouse — stores transformed data for analytics and reporting.</td>
+<td>Data from Coalesce → Power BI</td>
+</tr>
+<tr>
+<td>Power BI</td>
+<td>Business intelligence and reporting platform — presents dashboards and reports to end users.</td>
+<td>Data from Snowflake</td>
+</tr>
+</table>
+<h2>3.3 Integration Points</h2>
+<table>
+<tr>
+<th>Ref</th>
+<th>Source</th>
+<th>Target</th>
+<th>Protocol</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>INT-01</td>
+<td>App1</td>
+<td>Siebel</td>
+<td>SOAP / Pub-Sub</td>
+<td>Business transactions flow between App1 and Siebel through an integration layer using SOAP messaging and a Pub/Sub process for asynchronous events</td>
+</tr>
+<tr>
+<td>INT-02</td>
+<td>App1</td>
+<td>App2</td>
+<td>SOAP</td>
+<td>App1 communicates with App2 via SOAP messages for data exchange and process orchestration</td>
+</tr>
+<tr>
+<td>INT-03</td>
+<td>App1</td>
+<td>Fivetran</td>
+<td>Data Export</td>
+<td>App1&#x27;s reporting core module sends data to Fivetran as the first stage of the ETL pipeline</td>
+</tr>
+<tr>
+<td>INT-04</td>
+<td>Fivetran</td>
+<td>Coalesce</td>
+<td>ETL Pipeline</td>
+<td>Fivetran extracts and loads data into Coalesce for transformation</td>
+</tr>
+<tr>
+<td>INT-05</td>
+<td>Coalesce</td>
+<td>Snowflake</td>
+<td>ETL Pipeline</td>
+<td>Coalesce transforms and loads data into the Snowflake data warehouse</td>
+</tr>
+<tr>
+<td>INT-06</td>
+<td>Snowflake</td>
+<td>Power BI</td>
+<td>Data Connection</td>
+<td>Power BI connects to Snowflake for reporting and analytics visualisation</td>
+</tr>
+</table>
+<h2>3.4 Testing Boundaries</h2>
+<p>App1, App2, and Siebel each have independent system testing with their own test plans, environments, and results. This strategy specifically addresses the testing that occurs across the boundaries between these systems — ensuring that data flows correctly, transformations are accurate, and business processes complete successfully end to end.</p>
+<h1>4. Test Levels and Test Types</h1>
+<h2>4.1 Test Levels</h2>
+<p>The following test levels are defined for the Vector Programme. This strategy governs the programme-level test levels (SIT, E2E, UAT). System testing is the responsibility of each application team.</p>
+<table>
+<tr>
+<th>Test Level</th>
+<th>Responsibility</th>
+<th>Scope</th>
+<th>Entry Criteria</th>
+</tr>
+<tr>
+<td>Unit Testing</td>
+<td>Application development teams</td>
+<td>Individual code units within App1, App2, Siebel</td>
+<td>Code complete for feature; managed by each team&#x27;s development process</td>
+</tr>
+<tr>
+<td>Component / System Testing</td>
+<td>Application test teams</td>
+<td>Individual application functionality. Each application (App1, App2, Siebel) has its own system testing with own results.</td>
+<td>Unit testing complete; system test plan approved</td>
+</tr>
+<tr>
+<td>System Integration Testing (SIT)</td>
+<td>Programme test team</td>
+<td>Interactions between App1↔Siebel, App1↔App2 via SOAP/Pub-Sub. Data flows through the ETL pipeline.</td>
+<td>System testing signed off for participating applications; integration environment available</td>
+</tr>
+<tr>
+<td>End-to-End Testing (E2E)</td>
+<td>Programme test team</td>
+<td>Complete business use cases spanning multiple systems. Validates business process integrity from initiation to completion.</td>
+<td>SIT signed off; E2E environment available; service virtualisation configured for unavailable dependencies</td>
+</tr>
+<tr>
+<td>User Acceptance Testing (UAT)</td>
+<td>Business stakeholders (supported by programme test team)</td>
+<td>Business validation of requirements and acceptance criteria. Confirms solution meets business needs.</td>
+<td>E2E testing signed off; UAT environment provisioned; UAT test cases approved by business</td>
+</tr>
+</table>
+<h2>4.2 Test Types</h2>
+<p>The following test types are applied across the programme test levels:</p>
+<table>
+<tr>
+<th>Test Type</th>
+<th>Description</th>
+<th>Applied At</th>
+<th>Approach</th>
+</tr>
+<tr>
+<td>Functional Testing</td>
+<td>Validates that system behaviour meets functional requirements and business rules across integration points</td>
+<td>SIT, E2E, UAT</td>
+<td>Manual + Automated</td>
+</tr>
+<tr>
+<td>Regression Testing</td>
+<td>Re-verifies that previously working functionality has not been adversely affected by changes</td>
+<td>SIT, E2E</td>
+<td>Primarily Automated (see Section 7)</td>
+</tr>
+<tr>
+<td>Integration Testing</td>
+<td>Validates SOAP/REST message exchange, Pub/Sub event flows, and data transformation between systems</td>
+<td>SIT</td>
+<td>Manual + Automated</td>
+</tr>
+<tr>
+<td>Data / ETL Testing</td>
+<td>Validates data extraction, transformation, loading, and reporting accuracy across the pipeline</td>
+<td>SIT, E2E</td>
+<td>Manual + Automated</td>
+</tr>
+<tr>
+<td>Exploratory Testing</td>
+<td>Session-based exploratory testing to discover defects not covered by scripted test cases</td>
+<td>SIT, E2E</td>
+<td>Manual only</td>
+</tr>
+<tr>
+<td>Performance Testing</td>
+<td>Validates system responsiveness, throughput, and stability under load conditions</td>
+<td>SIT, E2E, Pre-Prod</td>
+<td>Specialised tooling (see Section 8)</td>
+</tr>
+<tr>
+<td>Security Testing</td>
+<td>Identifies security vulnerabilities in applications, APIs, data handling, and infrastructure</td>
+<td>SIT, Pre-Prod</td>
+<td>Specialised tooling + manual review (see Section 9)</td>
+</tr>
+<tr>
+<td>Usability Testing</td>
+<td>Validates that the user interface is intuitive and meets user experience requirements</td>
+<td>UAT</td>
+<td>Manual only</td>
+</tr>
+<tr>
+<td>Smoke Testing</td>
+<td>Rapid verification that critical functionality works after a deployment or environment refresh</td>
+<td>All levels</td>
+<td>Manual + Automated</td>
+</tr>
+</table>
+<h1>5. Overall Test Approach</h1>
+<h2>5.1 Risk-Based Testing</h2>
+<p>The programme adopts a risk-based testing approach in which testing effort is concentrated on areas of highest business and technical risk. Risk assessments are conducted collaboratively with business stakeholders, solution architects, and development teams to identify and prioritise test activities.</p>
+<p>Risk Assessment Factors:</p>
+<ul>
+<li>Business Impact — The consequence of a defect in production (financial, reputational, regulatory)</li>
+<li>Likelihood of Failure — Complexity, volatility, and novelty of the component or integration</li>
+<li>Integration Complexity — Number and type of integrations, data transformations, and asynchronous flows</li>
+<li>Data Sensitivity — Personal, financial, or commercially sensitive data traversing the integration</li>
+<li>Change Frequency — How often the component or interface is modified</li>
+</ul>
+<h2>5.2 Test Design Techniques</h2>
+<p>The following test design techniques will be applied programme-wide, selected based on the test level and test type:</p>
+<table>
+<tr>
+<th>Technique</th>
+<th>Description</th>
+<th>Primary Use</th>
+</tr>
+<tr>
+<td>Equivalence Partitioning</td>
+<td>Dividing input data into partitions that are expected to behave similarly</td>
+<td>Functional testing of SOAP/REST payloads, data field validation</td>
+</tr>
+<tr>
+<td>Boundary Value Analysis</td>
+<td>Testing at the boundaries of equivalence partitions</td>
+<td>Field-level validation, data range testing</td>
+</tr>
+<tr>
+<td>Decision Table Testing</td>
+<td>Testing combinations of conditions and expected outcomes</td>
+<td>Business rule validation across integration flows</td>
+</tr>
+<tr>
+<td>State Transition Testing</td>
+<td>Testing system behaviour across state changes</td>
+<td>Workflow testing, status transitions through Siebel and App1</td>
+</tr>
+<tr>
+<td>Use Case Testing</td>
+<td>Testing end-to-end business use cases</td>
+<td>E2E testing, UAT scenarios</td>
+</tr>
+<tr>
+<td>Exploratory Testing</td>
+<td>Session-based, charter-driven testing by experienced testers</td>
+<td>Discovering integration edge cases, user experience issues</td>
+</tr>
+<tr>
+<td>Contract Testing</td>
+<td>Verifying that service interfaces comply with defined contracts (ISTQB CT-TAS Section 3.1.1)</td>
+<td>SOAP WSDL compliance, REST API schema validation</td>
+</tr>
+<tr>
+<td>Data Comparison</td>
+<td>Comparing source and target data to verify transformation accuracy</td>
+<td>ETL pipeline testing, data migration validation</td>
+</tr>
+<tr>
+<td>Pairwise / Combinatorial</td>
+<td>Selecting representative combinations of parameters to reduce test volume</td>
+<td>Configuration testing, multi-parameter integration scenarios</td>
+</tr>
+</table>
+<h2>5.3 Entry and Exit Criteria</h2>
+<p>Entry and exit criteria ensure that testing activities begin and conclude at appropriate quality gates.</p>
+<table>
+<tr>
+<th>Test Level</th>
+<th>Entry Criteria</th>
+<th>Exit Criteria</th>
+</tr>
+<tr>
+<td>SIT</td>
+<td>• System test exit criteria met for all participating applications
+• SIT environment provisioned and accessible
+• Integration test cases reviewed and approved
+• Test data provisioned
+• Service virtualisation configured for unavailable systems</td>
+<td>• All critical and high-priority SIT test cases executed
+• No unresolved critical/high-severity defects
+• Defect fix rate &gt; defect arrival rate
+• Integration test automation pass rate ≥ 95%
+• SIT test summary report approved</td>
+</tr>
+<tr>
+<td>E2E</td>
+<td>• SIT exit criteria met
+• E2E test environment available
+• E2E business scenarios reviewed and signed off by business
+• Service virtualisation validated for accuracy</td>
+<td>• All critical E2E business scenarios executed and passed
+• No unresolved critical/high-severity defects
+• Performance test results within acceptable thresholds
+• E2E test summary report approved</td>
+</tr>
+<tr>
+<td>UAT</td>
+<td>• E2E exit criteria met
+• UAT environment provisioned
+• UAT test cases/scenarios approved by business stakeholders
+• Business testers briefed and trained</td>
+<td>• All UAT acceptance criteria validated
+• Business sign-off obtained
+• No outstanding critical defects
+• Go/No-Go recommendation documented</td>
+</tr>
+</table>
+<h1>6. Manual Testing Strategy</h1>
+<p>Manual testing remains an essential component of the programme-wide test approach. While the test automation strategy (Section 7) addresses repeatable regression and integration testing, manual testing provides the human judgement, creativity, and contextual understanding that automation cannot replicate.</p>
+<h2>6.1 Role of Manual Testing</h2>
+<p>Manual testing serves the following primary purposes within the programme:</p>
+<ul>
+<li>New Feature Validation — Testing newly developed or modified integration flows, business rules, and data transformations for the first time, before they are candidates for automation</li>
+<li>Exploratory Testing — Session-based exploratory testing to uncover defects, edge cases, and integration issues that scripted tests may miss</li>
+<li>User Acceptance Testing — Supporting business stakeholders in validating that the solution meets their acceptance criteria and business needs</li>
+<li>Complex Scenario Validation — Testing intricate multi-step, multi-system business processes that require human interpretation of intermediate results</li>
+<li>Visual and Usability Validation — Verifying Power BI report layouts, data visualisations, and application user interfaces</li>
+<li>Ad-hoc and Defect Verification — Investigating reported defects, performing root cause analysis, and verifying defect fixes</li>
+</ul>
+<h2>6.2 Manual Testing Approach by Test Level</h2>
+<h3>6.2.1 System Integration Testing (Manual)</h3>
+<p>Manual SIT focuses on validating integration flows that are new, complex, or not yet covered by automation.</p>
+<ul>
+<li>Execute new SOAP integration test cases for App1↔Siebel and App1↔App2 flows, verifying message content, routing, and business rule application</li>
+<li>Validate Pub/Sub event delivery by manually triggering events and verifying receipt and processing in Siebel</li>
+<li>Manually verify data transformation rules in the ETL pipeline by comparing source data in App1 to transformed data in Coalesce and loaded data in Snowflake</li>
+<li>Perform negative testing — sending malformed SOAP messages, invalid data, and testing error handling and retry logic</li>
+<li>Validate integration logging and monitoring — ensure failures are logged with sufficient detail for diagnosis</li>
+</ul>
+<h3>6.2.2 End-to-End Testing (Manual)</h3>
+<p>Manual E2E testing validates complete business processes, exercising the full chain of systems involved.</p>
+<ul>
+<li>Execute business use case scenarios from initiation in App1 through integration with Siebel and/or App2, verifying outcomes at each step</li>
+<li>Validate end-to-end data flows from App1 data entry through the ETL pipeline to Power BI report outputs</li>
+<li>Conduct session-based exploratory testing focused on integration boundaries — specifically targeting timing issues, data truncation, character encoding, and edge-case business rules</li>
+<li>Verify workflow and status transitions across systems — a record created in App1 should reflect the correct status in Siebel after processing</li>
+</ul>
+<h3>6.2.3 User Acceptance Testing Support</h3>
+<ul>
+<li>Prepare UAT test scenarios in collaboration with business stakeholders, mapping to acceptance criteria</li>
+<li>Provide a guided UAT environment with pre-provisioned test data</li>
+<li>Support business testers during UAT execution with technical assistance and defect triage</li>
+<li>Capture and document UAT outcomes, including business sign-off evidence</li>
+</ul>
+<h2>6.3 Exploratory Testing</h2>
+<p>Structured exploratory testing sessions will be conducted using a charter-based approach:</p>
+<table>
+<tr>
+<th>Element</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>Charter</td>
+<td>A focused objective for the session (e.g., &quot;Explore App1→Siebel Pub/Sub flow with concurrent messages&quot;)</td>
+</tr>
+<tr>
+<td>Time-box</td>
+<td>Sessions are time-boxed to 60–90 minutes</td>
+</tr>
+<tr>
+<td>Note-taking</td>
+<td>Testers capture observations, questions, and defects during the session using a session sheet</td>
+</tr>
+<tr>
+<td>Debrief</td>
+<td>Post-session debrief to share findings with the team and determine follow-up actions</td>
+</tr>
+<tr>
+<td>Coverage Areas</td>
+<td>Integration boundaries, error handling, data edge cases, concurrency, timing, and recovery scenarios</td>
+</tr>
+</table>
+<h2>6.4 Test Case Management</h2>
+<ul>
+<li>Test cases are managed in the programme&#x27;s test management tool (e.g., Azure DevOps Test Plans, Xray, Zephyr)</li>
+<li>Test cases are linked to integration requirements and user stories for traceability</li>
+<li>Each test case includes preconditions, test data requirements, steps, and expected results</li>
+<li>Test execution results are recorded against each test case for every test cycle</li>
+<li>Defects are raised from failed test cases with full reproduction steps and linked to the originating test case</li>
+</ul>
+<h2>6.5 Defect Management</h2>
+<p>A consistent defect management process is applied across all testing activities:</p>
+<table>
+<tr>
+<th>Severity</th>
+<th>Definition</th>
+<th>Target Resolution SLA</th>
+</tr>
+<tr>
+<td>Critical</td>
+<td>System crash, data loss, or complete business process failure; no workaround available</td>
+<td>24 hours (fix or agreed workaround)</td>
+</tr>
+<tr>
+<td>High</td>
+<td>Major functionality impaired; workaround may exist but impacts business operations</td>
+<td>3 business days</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>Moderate impact on functionality; workaround available; does not block core business processes</td>
+<td>5 business days</td>
+</tr>
+<tr>
+<td>Low</td>
+<td>Minor issue with minimal impact; cosmetic defects; minor documentation issues</td>
+<td>Next release (backlog)</td>
+</tr>
+</table>
+<p>Defect triage meetings are held daily during active test cycles and weekly during maintenance periods. Defects are triaged for severity, priority, assignment, and resolution target.</p>
+<h1>7. Test Automation Strategy</h1>
+<p>This section defines the complete test automation strategy for the Vector Programme, grounded in the ISTQB Certified Tester – Test Automation Strategy (CT-TAS) Syllabus v1.0. It covers automation objectives, test pyramid distribution, approach by test layer, test automation architecture, deployment strategy, metrics, ROI, transition planning, and continuous testing integration.</p>
+<h2>7.1 Objectives, Goals, and Success Factors</h2>
+<h3>7.1.1 Goals and Objectives</h3>
+<p>Aligned with ISTQB CT-TAS Section 1.1.1, the goals and objectives of the test automation strategy are:</p>
+<table>
+<tr>
+<th>Ref</th>
+<th>Objective</th>
+<th>Measure of Success</th>
+</tr>
+<tr>
+<td>OBJ-01</td>
+<td>Validate integration flows between App1, App2 and Siebel through automated SOAP/REST tests</td>
+<td>All critical integration paths covered with automated tests</td>
+</tr>
+<tr>
+<td>OBJ-02</td>
+<td>Verify data integrity across the ETL pipeline (Fivetran → Coalesce → Snowflake → Power BI)</td>
+<td>Automated data reconciliation checks pass for all key entities</td>
+</tr>
+<tr>
+<td>OBJ-03</td>
+<td>Enable repeatable end-to-end testing of core business use cases using service virtualisation</td>
+<td>E2E test suite executes without dependency on external system availability</td>
+</tr>
+<tr>
+<td>OBJ-04</td>
+<td>Reduce regression test cycle time for integration testing</td>
+<td>≥50% reduction in SIT regression test execution time</td>
+</tr>
+<tr>
+<td>OBJ-05</td>
+<td>Establish a sustainable test data management approach</td>
+<td>Test data provisioned automatically for each test run</td>
+</tr>
+<tr>
+<td>OBJ-06</td>
+<td>Provide early and continuous feedback on integration quality</td>
+<td>Test results available within CI/CD pipeline within agreed SLA</td>
+</tr>
+</table>
+<h3>7.1.2 Success Factors</h3>
+<p>As outlined in the ISTQB CT-TAS Syllabus (Section 1.1.2), the following success factors are critical for the test automation initiative:</p>
+<ul>
+<li>SUT Testability — Each application (App1, App2, Siebel) must expose testable interfaces (SOAP endpoints, APIs, database access) to enable automation</li>
+<li>Defined Test Automation Strategy — This section, kept current and aligned with programme evolution</li>
+<li>Test Automation Architecture (TAA) — Clear separation of concerns between UI, API/integration, and data layers (see Section 7.5)</li>
+<li>Test Automation Framework (TAF) — A well-documented, maintainable framework with consistent patterns for test creation, execution, and reporting</li>
+<li>Appropriate Test Environment — Stable, accessible environments with service virtualisation capability (see Section 11)</li>
+<li>Stakeholder Buy-in — Active support from project leadership, development teams, and business stakeholders</li>
+<li>Skilled Test Automation Engineers — TAEs with expertise in SOAP/REST testing, ETL validation, and service virtualisation tools</li>
+</ul>
+<h2>7.2 Test Automation Distribution (Test Pyramid)</h2>
+<p>Following the ISTQB CT-TAS principles (Section 3.1.1), the test automation distribution for this programme follows a pyramid model adapted for integration and E2E testing. As Mike Cohn devised, the test automation pyramid describes the distribution of test cases across levels — with more tests at lower levels (faster, cheaper, more stable) and fewer tests at higher levels (slower, more expensive, but validating complete flows).</p>
+<p>For the Vector Programme integration and E2E testing, the pyramid is structured as follows:</p>
+<table>
+<tr>
+<th>Level</th>
+<th>Test Type</th>
+<th>Scope</th>
+<th>Volume</th>
+<th>Speed</th>
+</tr>
+<tr>
+<td>Level 1 — API/Service</td>
+<td>SOAP &amp; REST Integration Tests</td>
+<td>Individual service endpoints and message contracts between App1↔Siebel, App1↔App2</td>
+<td>High</td>
+<td>Fast</td>
+</tr>
+<tr>
+<td>Level 2 — Data/ETL</td>
+<td>Data Pipeline Tests</td>
+<td>Data extraction, transformation, and loading validation across Fivetran→Coalesce→Snowflake→Power BI</td>
+<td>Medium</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Level 3 — E2E (Virtualised)</td>
+<td>End-to-End Scenario Tests</td>
+<td>Complete business use cases flowing across multiple systems, using service virtualisation</td>
+<td>Low–Medium</td>
+<td>Slower</td>
+</tr>
+<tr>
+<td>Level 4 — UI</td>
+<td>UI Regression Tests</td>
+<td>Critical user journeys through App1 and App2 user interfaces</td>
+<td>Low</td>
+<td>Slowest</td>
+</tr>
+</table>
+<h2>7.3 Test Automation Approach by Layer</h2>
+<h3>7.3.1 UI Test Automation</h3>
+<p>As described in the ISTQB CT-TAS Syllabus (Section 3.1.1), UI testing is end-to-end testing of a system, interacting with its GUI. Given that App1 and App2 each have independent system testing, UI automation at the integration level focuses on critical cross-system user journeys.</p>
+<p>Approach:</p>
+<ul>
+<li>Automate critical user journeys that span integration boundaries (e.g., a process initiated in App1&#x27;s UI that triggers SOAP calls to Siebel)</li>
+<li>Focus on happy-path and high-priority regression scenarios only at the UI level</li>
+<li>Leverage the Page Object Model (POM) design pattern for maintainability</li>
+<li>Parameterise tests to run across multiple test environments with minimal changes (as recommended in CT-TAS Section 4.2.1)</li>
+<li>Integrate UI tests into CI/CD pipelines as quality gates (CT-TAS Section 4.1.1)</li>
+</ul>
+<p>Recommended Tools:</p>
+<ul>
+<li>Selenium WebDriver / Playwright for browser-based UI automation</li>
+<li>Cucumber / SpecFlow for BDD-style test specifications</li>
+</ul>
+<h3>7.3.2 Integration Testing (SOAP &amp; REST)</h3>
+<p>Per ISTQB CT-TAS Section 3.1.1, the service level of the test pyramid encompasses component integration testing, contract testing, and API testing. For the Vector Programme, the primary integration protocols are SOAP and, where applicable, REST.</p>
+<p>SOAP Integration Testing (App1 ↔ Siebel, App1 ↔ App2):</p>
+<ul>
+<li>Validate SOAP message request/response structures against WSDL contracts</li>
+<li>Test message routing through the integration layer, including Pub/Sub event flows</li>
+<li>Verify error handling and fault tolerance (e.g., malformed messages, timeouts, retry logic)</li>
+<li>Validate business rules applied during message transformation in the integration layer</li>
+<li>Test asynchronous Pub/Sub message delivery, ordering, and idempotency</li>
+<li>Automate contract testing to ensure interface compatibility between App1, App2, and Siebel (as recommended in CT-TAS Section 3.1.1 and CTAL-TAE Section 5.1.3)</li>
+</ul>
+<p>REST Integration Testing:</p>
+<ul>
+<li>Where REST APIs exist (e.g., within the reporting module or ancillary services), validate endpoints for correct HTTP status codes, response payloads, and data integrity</li>
+<li>Apply contract testing for REST services using tools such as Pact</li>
+<li>Verify authentication and authorisation mechanisms</li>
+</ul>
+<p>Recommended Tools:</p>
+<ul>
+<li>SoapUI / ReadyAPI for SOAP and REST API testing</li>
+<li>Postman / Newman for REST API testing and collection execution in CI/CD</li>
+<li>Pact for contract testing between services</li>
+<li>Apache Kafka testing tools (if Pub/Sub is Kafka-based) or appropriate messaging test libraries</li>
+</ul>
+<h3>7.3.3 Data Testing (ETL Pipeline)</h3>
+<p>The ETL reporting pipeline (App1 → Fivetran → Coalesce → Snowflake → Power BI) is a critical data flow that requires dedicated testing. As stated in CT-TAS Section 4.3.3, TAEs must understand data dependencies and interface requirements for effective test automation.</p>
+<p>Approach:</p>
+<ul>
+<li>Validate data extraction accuracy — compare source data in App1 with data loaded into Fivetran</li>
+<li>Verify transformation rules in Coalesce — ensure business logic applied during transformation is correct</li>
+<li>Validate data loading into Snowflake — row counts, data types, null handling, referential integrity</li>
+<li>Verify Power BI reports reflect accurate data from Snowflake — compare report outputs against Snowflake queries</li>
+<li>Implement data reconciliation checks at each stage of the pipeline</li>
+<li>Test incremental and full-load scenarios</li>
+<li>Validate data freshness and latency requirements</li>
+</ul>
+<p>Recommended Tools:</p>
+<ul>
+<li>Great Expectations or dbt tests for data quality validation</li>
+<li>SQL-based test scripts for Snowflake data verification</li>
+<li>Python automation scripts for cross-system data reconciliation</li>
+<li>Fivetran and Coalesce monitoring APIs for pipeline health checks</li>
+</ul>
+<h3>7.3.4 Service Virtualisation for End-to-End Testing</h3>
+<p>As noted in ISTQB CT-TAS Section 3.1.3, leveraging test doubles (e.g., mocks, stubs) helps achieve a shift-left from expensive, slow, and unreliable tests. Removing the reliance on real services and data improves the consistency of test execution and provides early feedback that is easy to integrate into CI/CD pipelines.</p>
+<p>Service virtualisation is a cornerstone of this strategy. Given that App1, App2, and Siebel are independent systems with their own release schedules and environments, achieving a fully integrated environment for E2E testing is challenging. Service virtualisation addresses this by simulating the behaviour of dependent systems.</p>
+<p>Approach:</p>
+<ul>
+<li>Create virtual services that simulate Siebel&#x27;s SOAP responses for App1 integration testing</li>
+<li>Create virtual services that simulate App2&#x27;s SOAP interface for App1 testing</li>
+<li>Virtualise the integration layer&#x27;s Pub/Sub messaging for controlled, repeatable event-driven testing</li>
+<li>Simulate ETL pipeline responses for testing App1&#x27;s data export behaviour in isolation</li>
+<li>Record and replay production-like traffic patterns to build realistic virtual services</li>
+<li>Maintain virtual service definitions under version control alongside test scripts</li>
+</ul>
+<p>Benefits:</p>
+<ul>
+<li>Eliminates dependency on external system availability for E2E testing</li>
+<li>Enables parallel testing by multiple teams without environment contention</li>
+<li>Supports testing of error conditions and edge cases that are difficult to reproduce with live systems</li>
+<li>Reduces cost and complexity of maintaining full integrated test environments</li>
+<li>Allows shift-left testing by enabling integration tests earlier in the SDLC</li>
+</ul>
+<p>Recommended Tools:</p>
+<ul>
+<li>Broadcom/CA Service Virtualization, Parasoft Virtualize, or Traffic Parrot</li>
+<li>WireMock for lightweight HTTP/SOAP service simulation</li>
+<li>Mountebank for multi-protocol service virtualisation</li>
+</ul>
+<h2>7.4 Automation vs. Manual Testing Balance</h2>
+<p>The programme recognises that not all tests should be automated. As stated in CT-TAS Section 2.2.1, 100% test automation coverage is not achievable. The following guidelines determine the balance:</p>
+<table>
+<tr>
+<th>Characteristic</th>
+<th>Automate</th>
+<th>Keep Manual</th>
+</tr>
+<tr>
+<td>High execution frequency (regression)</td>
+<td>✓</td>
+<td></td>
+</tr>
+<tr>
+<td>Stable interface / low maintenance cost</td>
+<td>✓</td>
+<td></td>
+</tr>
+<tr>
+<td>Data-intensive validation (ETL)</td>
+<td>✓</td>
+<td></td>
+</tr>
+<tr>
+<td>New / untested feature (first pass)</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Exploratory / ad-hoc investigation</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Visual validation (Power BI layouts)</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Complex human judgement required</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>High business risk + repeatable</td>
+<td>✓</td>
+<td></td>
+</tr>
+<tr>
+<td>One-time or infrequent execution</td>
+<td></td>
+<td>✓</td>
+</tr>
+</table>
+<h3>7.4.1 Prioritisation Criteria for Automation</h3>
+<p>Per CT-TAS Section 3.3.1, the following criteria determine suitability for automation:</p>
+<table>
+<tr>
+<th>Criterion</th>
+<th>Weight</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>Execution Frequency</td>
+<td>High</td>
+<td>Tests executed in every regression cycle are highest priority for automation</td>
+</tr>
+<tr>
+<td>Integration Criticality</td>
+<td>High</td>
+<td>Tests covering critical integration paths (e.g., App1↔Siebel payment flows) are prioritised</td>
+</tr>
+<tr>
+<td>Data Sensitivity</td>
+<td>High</td>
+<td>ETL pipeline tests where manual verification is error-prone and time-consuming</td>
+</tr>
+<tr>
+<td>Stability of Interface</td>
+<td>Medium</td>
+<td>Interfaces with stable contracts are better candidates; volatile interfaces may have high maintenance cost</td>
+</tr>
+<tr>
+<td>Complexity of Setup</td>
+<td>Medium</td>
+<td>Tests requiring complex data setup benefit from automation but require investment in data provisioning</td>
+</tr>
+<tr>
+<td>Manual Execution Time</td>
+<td>Medium</td>
+<td>Long-running manual tests deliver higher ROI when automated</td>
+</tr>
+</table>
+<h3>7.4.2 Conditions Difficult to Automate</h3>
+<p>As identified in CT-TAS Section 3.3.3, some test conditions are difficult to automate. For the Vector Programme, these include:</p>
+<ul>
+<li>Visual validation of Power BI report layouts and formatting</li>
+<li>Exploratory testing of new integration features not yet documented</li>
+<li>Testing of manual intervention steps in the Pub/Sub process (e.g., manual message resubmission)</li>
+<li>Usability testing of App1 and App2 user interfaces</li>
+<li>Testing scenarios requiring real-time coordination between live systems</li>
+</ul>
+<h2>7.5 Test Automation Architecture (TAA)</h2>
+<p>Per the ISTQB CT-TAS Syllabus (Section 1.1.1), designing the test automation architecture is a fundamental activity when defining a test automation strategy. The TAA describes the structural design of the test automation solution, including its components, their interactions, and the technologies used.</p>
+<h3>7.5.1 Architecture Layers</h3>
+<p>┌──────────────────────────────────────────────────────────────┐
+│                    Test Execution &amp; Reporting               │
+│             (CI/CD Pipeline, Test Runner, Reports)          │
+├──────────────────────────────────────────────────────────────┤
+│                    Test Orchestration Layer                 │
+│        (Test Suites, Scheduling, Parallel Execution)       │
+├──────────┬──────────┬────────────┬───────────────────────────┤
+│  UI      │ SOAP/REST│  Data/ETL  │  Service Virtualisation  │
+│  Tests   │ Integr.  │  Tests     │  Layer                   │
+│          │ Tests    │            │                           │
+├──────────┴──────────┴────────────┴───────────────────────────┤
+│                    Common Framework Layer                   │
+│   (Utilities, Logging, Config, Data Factories, Assertions) │
+├──────────────────────────────────────────────────────────────┤
+│                    Test Data Management                     │
+│       (Data Provisioning, Cleanup, Anonymisation)          │
+├──────────────────────────────────────────────────────────────┤
+│                    Test Environment                         │
+│    (App1, App2, Siebel, Integration Layer, ETL Pipeline)   │
+└──────────────────────────────────────────────────────────────┘</p>
+<h3>7.5.2 Component Descriptions</h3>
+<table>
+<tr>
+<th>Component</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>Test Execution &amp; Reporting</td>
+<td>CI/CD integration (e.g., Azure DevOps, Jenkins) to trigger test execution, collect results, and generate dashboards and reports for stakeholders</td>
+</tr>
+<tr>
+<td>Test Orchestration</td>
+<td>Manages test suite composition, execution order, parallel execution, and retry logic for failed tests</td>
+</tr>
+<tr>
+<td>UI Test Module</td>
+<td>Selenium/Playwright-based UI tests using Page Object Model pattern, focused on cross-system user journeys</td>
+</tr>
+<tr>
+<td>SOAP/REST Integration Module</td>
+<td>SoapUI/ReadyAPI test projects for SOAP contract validation, message testing, and REST API verification</td>
+</tr>
+<tr>
+<td>Data/ETL Test Module</td>
+<td>SQL and Python-based data validation scripts for verifying data integrity across the Fivetran→Coalesce→Snowflake→Power BI pipeline</td>
+</tr>
+<tr>
+<td>Service Virtualisation Layer</td>
+<td>Virtual service definitions simulating Siebel, App2, and integration layer behaviour for isolated E2E test execution</td>
+</tr>
+<tr>
+<td>Common Framework Layer</td>
+<td>Shared utilities including logging, configuration management, reusable assertions, data factories, and helper functions</td>
+</tr>
+<tr>
+<td>Test Data Management</td>
+<td>Automated data provisioning, seeding, and cleanup capabilities integrated into the test lifecycle</td>
+</tr>
+</table>
+<h2>7.6 Test Automation Deployment Strategy</h2>
+<p>Following the guidance in ISTQB CT-TAS Section 4.2, a phased deployment strategy is adopted to manage risk and deliver value incrementally.</p>
+<h3>7.6.1 Phased Rollout</h3>
+<table>
+<tr>
+<th>Phase</th>
+<th>Focus Area</th>
+<th>Duration</th>
+<th>Key Activities</th>
+<th>Exit Criteria</th>
+</tr>
+<tr>
+<td>Phase 1 — Foundation</td>
+<td>Framework setup &amp; SOAP integration tests</td>
+<td>Weeks 1–4</td>
+<td>• Establish TAF and project structure
+• Set up CI/CD pipeline integration
+• Automate top 10 SOAP integration test cases (App1↔Siebel)
+• Configure initial service virtualisation</td>
+<td>• TAF operational in SIT environment
+• 10 SOAP tests executing in pipeline</td>
+</tr>
+<tr>
+<td>Phase 2 — Expand Integration</td>
+<td>Broader SOAP/REST testing + data testing</td>
+<td>Weeks 5–10</td>
+<td>• Expand SOAP test coverage (App1↔App2)
+• Implement ETL data validation tests
+• Build data provisioning automation
+• Expand service virtualisation catalogue</td>
+<td>• Full SOAP integration coverage
+• Data pipeline tests operational</td>
+</tr>
+<tr>
+<td>Phase 3 — E2E &amp; UI</td>
+<td>End-to-end scenarios &amp; UI automation</td>
+<td>Weeks 11–16</td>
+<td>• Automate E2E business use cases using service virtualisation
+• Implement UI tests for critical cross-system journeys
+• Enhance test data management
+• Optimise test execution time</td>
+<td>• E2E test suite executing reliably
+• UI regression suite operational</td>
+</tr>
+<tr>
+<td>Phase 4 — Optimise &amp; Scale</td>
+<td>Continuous improvement</td>
+<td>Ongoing</td>
+<td>• Expand test coverage based on risk analysis
+• Optimise test execution (parallel execution)
+• Refine metrics and reporting
+• Knowledge transfer and team upskilling</td>
+<td>• Defined ROI targets met
+• Self-sufficient team</td>
+</tr>
+</table>
+<h3>7.6.2 Deployment Risk Mitigation</h3>
+<p>As outlined in CT-TAS Sections 4.2.2 and 4.2.3, the following deployment risks and mitigations are identified:</p>
+<table>
+<tr>
+<th>Risk</th>
+<th>Impact</th>
+<th>Likelihood</th>
+<th>Mitigation</th>
+</tr>
+<tr>
+<td>Service virtualisation does not accurately represent real system behaviour</td>
+<td>High</td>
+<td>Medium</td>
+<td>Regularly validate virtual services against live system recordings; update virtual services with each system release</td>
+</tr>
+<tr>
+<td>Test data inconsistency across systems</td>
+<td>High</td>
+<td>High</td>
+<td>Implement automated data provisioning; assign Test Data Manager role; use data factories for synthetic data generation</td>
+</tr>
+<tr>
+<td>Test environment instability</td>
+<td>High</td>
+<td>Medium</td>
+<td>Implement environment health checks as pre-conditions; use service virtualisation to reduce environment dependencies</td>
+</tr>
+<tr>
+<td>SOAP/WSDL contract changes breaking tests</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Implement contract testing; subscribe to integration team change notifications; automate WSDL comparison checks</td>
+</tr>
+<tr>
+<td>Insufficient TAE skills in service virtualisation or ETL testing</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Invest in training; engage specialist consultants for initial setup; document patterns and playbooks</td>
+</tr>
+<tr>
+<td>Test execution time exceeds test cycle window</td>
+<td>Medium</td>
+<td>Low</td>
+<td>Implement parallel test execution; prioritise tests by risk; optimise test pyramid distribution (CT-TAS Section 3.1.1)</td>
+</tr>
+</table>
+<h2>7.7 Test Automation Metrics and Reporting</h2>
+<p>The ISTQB CT-TAS Syllabus (Section 5.2.1) classifies metrics for test automation that help drive decision-making. The following metrics will be collected, analysed, and reported.</p>
+<h3>7.7.1 Key Metrics</h3>
+<table>
+<tr>
+<th>Metric</th>
+<th>Description</th>
+<th>Target</th>
+<th>Reporting Frequency</th>
+</tr>
+<tr>
+<td>Pass/Fail Ratio</td>
+<td>Ratio of automated tests that passed to those that failed</td>
+<td>≥95% pass rate on stable builds</td>
+<td>Per test run</td>
+</tr>
+<tr>
+<td>Test Automation Execution Time</td>
+<td>Total time to execute the automated test suite</td>
+<td>Full regression &lt; 2 hours</td>
+<td>Per test run</td>
+</tr>
+<tr>
+<td>Number of Automated Test Cases</td>
+<td>Total count of automated tests by layer (UI, integration, data, E2E)</td>
+<td>As per coverage targets</td>
+<td>Weekly</td>
+</tr>
+<tr>
+<td>Functional Coverage</td>
+<td>Percentage of integration requirements covered by automated tests</td>
+<td>≥80% of critical integration paths</td>
+<td>Sprint/Release</td>
+</tr>
+<tr>
+<td>Defect Detection Rate</td>
+<td>Number of defects found by automated tests vs. total defects</td>
+<td>Increasing trend</td>
+<td>Sprint/Release</td>
+</tr>
+<tr>
+<td>Ratio of Failures to Defects</td>
+<td>Number of test failures per unique defect (CT-TAS Section 5.2.1)</td>
+<td>Decreasing trend (better test isolation)</td>
+<td>Sprint/Release</td>
+</tr>
+<tr>
+<td>Test Data Readiness</td>
+<td>Percentage of test runs with successful automated data provisioning</td>
+<td>≥95%</td>
+<td>Per test run</td>
+</tr>
+<tr>
+<td>Service Virtualisation Accuracy</td>
+<td>Percentage of virtual service responses matching real system behaviour</td>
+<td>≥98%</td>
+<td>Monthly</td>
+</tr>
+<tr>
+<td>ROI</td>
+<td>Return on investment calculated per CT-TAS Section 5.1.1</td>
+<td>Positive ROI within 6 months</td>
+<td>Quarterly</td>
+</tr>
+</table>
+<h3>7.7.2 Automation Reporting by Audience</h3>
+<p>As recommended in CT-TAS Section 5.4.1, test automation reports will be tailored to different stakeholder needs:</p>
+<table>
+<tr>
+<th>Audience</th>
+<th>Report Content</th>
+<th>Frequency</th>
+<th>Format</th>
+</tr>
+<tr>
+<td>Programme Leadership</td>
+<td>Executive summary: pass/fail rates, coverage trends, ROI, key risks</td>
+<td>Weekly / Release</td>
+<td>Dashboard + summary email</td>
+</tr>
+<tr>
+<td>Test Management</td>
+<td>Detailed test results, defect analysis, coverage gaps, data quality issues</td>
+<td>Per test run / Daily</td>
+<td>CI/CD dashboard + detailed report</td>
+</tr>
+<tr>
+<td>TAE Team</td>
+<td>Failed test analysis, framework health, maintenance backlog, service virtualisation updates</td>
+<td>Per test run</td>
+<td>CI/CD pipeline output</td>
+</tr>
+<tr>
+<td>Development Teams</td>
+<td>Integration test results, contract test outcomes, defect details with reproduction steps</td>
+<td>Per build / PR</td>
+<td>CI/CD pipeline integration</td>
+</tr>
+</table>
+<h2>7.8 Return on Investment (ROI)</h2>
+<p>Following the ISTQB CT-TAS ROI model (Section 5.1.1), the return on investment for the test automation initiative is calculated as:</p>
+<p>ROI = Savings / Investment</p>
+<h3>7.8.1 Investment Components</h3>
+<ul>
+<li>Test Automation Framework setup and configuration</li>
+<li>Service virtualisation tool licensing and configuration</li>
+<li>TAE time for test development, virtual service creation, and data automation</li>
+<li>Tool licenses (ReadyAPI, service virtualisation platform, etc.)</li>
+<li>Training for TAEs on service virtualisation and ETL testing tools</li>
+<li>Infrastructure costs (test environments, CI/CD resources)</li>
+<li>Ongoing maintenance of test scripts, virtual services, and test data</li>
+</ul>
+<h3>7.8.2 Savings Components</h3>
+<ul>
+<li>Reduced manual integration test execution time — automated tests run in significantly shorter time than manual equivalents</li>
+<li>Increased test frequency — regression tests can be executed on every build rather than at milestone releases</li>
+<li>Earlier defect detection — integration defects found during SIT rather than UAT or production</li>
+<li>Reduced environment wait time — service virtualisation eliminates dependency on shared environments</li>
+<li>Reduced data pipeline defects in production — automated ETL checks catch data issues before they reach Power BI</li>
+<li>Reduced defect investigation time — automated tests provide clear pass/fail outcomes with detailed logs</li>
+</ul>
+<p>Per CT-TAS Section 5.1.1, it is important to track these metrics over time to determine the point at which the investment in test automation achieves a positive return. The target is to reach a positive ROI within the first 6 months of operation.</p>
+<h2>7.9 Transition from Manual to Automated Testing</h2>
+<p>The ISTQB CT-TAS Syllabus (Section 6.1.1) identifies key factors and planning activities for transitioning from manual testing to test automation. For the Vector Programme, this transition is approached in a pragmatic, risk-based manner.</p>
+<h3>7.9.1 Transition Principles</h3>
+<ul>
+<li>Start with regression testing — As recommended in CT-TAS Section 6.1.1, the easiest opportunity for transitioning to test automation is to target regression testing, as regression suites grow over time</li>
+<li>Prioritise by risk and frequency — Automate tests that are high-risk, frequently executed, or span multiple integration points first</li>
+<li>Do not aim for 100% automation — As stated in CT-TAS Section 2.2.1, 100% test automation coverage is not achievable. Focus on the most impactful tests</li>
+<li>Maintain manual testing capability — Some exploratory and ad-hoc integration testing will remain manual (see Section 6)</li>
+<li>Measure and adjust — Use the metrics defined in Section 7.7 to continuously evaluate the effectiveness of automation and adjust the strategy accordingly</li>
+</ul>
+<h2>7.10 Continuous Testing and CI/CD Integration</h2>
+<p>The ISTQB CT-TAS Syllabus (Sections 3.2.3 and 6.1.2) emphasises the importance of preparing test automation to conform with DevOps best practices and achieve continuous testing. The Vector Programme will integrate automated tests into the CI/CD pipeline to provide continuous quality feedback.</p>
+<h3>7.10.1 Automation Pipeline Integration Model</h3>
+<p>┌──────────┐    ┌──────────┐    ┌───────────────┐    ┌──────────────┐    ┌──────────┐
+│  Code    │───►│  Build   │───►│  Integration  │───►│  E2E Tests   │───►│  Deploy  │
+│  Commit  │    │          │    │  Tests (SOAP, │    │  (Virtualised│    │  to SIT  │
+│          │    │          │    │   REST, Data) │    │   Scenarios) │    │          │
+└──────────┘    └──────────┘    └───────────────┘    └──────────────┘    └──────────┘
+                                       │                    │
+                                 Quality Gate         Quality Gate
+                                 (Must Pass)          (Must Pass)</p>
+<h3>7.10.2 Shift-Left and Shift-Right</h3>
+<p>Per CT-TAS Section 3.1.3:</p>
+<p>Shift Left:</p>
+<ul>
+<li>Introduce contract testing early to validate SOAP/REST interfaces during development</li>
+<li>Use service virtualisation to enable integration testing before dependent systems are available</li>
+<li>Automate data pipeline validation checks that can run on sample data during development</li>
+</ul>
+<p>Shift Right:</p>
+<ul>
+<li>Monitor integration health in pre-production using synthetic transactions</li>
+<li>Validate ETL pipeline data quality in production using automated checks</li>
+<li>Use production traffic patterns to update and validate service virtualisation accuracy</li>
+</ul>
+<h2>7.11 Organisational Considerations for Automation</h2>
+<p>The ISTQB CT-TAS Syllabus (Section 5.3.1) identifies organisational considerations for the use of test automation. Section 6.2.1 further recommends conducting evaluations of test automation assets and practices to identify improvement areas.</p>
+<h3>7.11.1 Cross-Team Collaboration</h3>
+<p>Given that App1, App2, and Siebel are developed and tested by separate teams, effective cross-team collaboration is essential for successful integration and E2E testing.</p>
+<ul>
+<li>Establish regular integration sync meetings between App1, App2, and Siebel teams</li>
+<li>Share service virtualisation definitions and test data catalogues across teams</li>
+<li>Coordinate release schedules to align integration test windows</li>
+<li>Create shared integration test case repositories</li>
+<li>Implement contract testing owned collaboratively by provider and consumer teams</li>
+</ul>
+<h3>7.11.2 Knowledge Sharing</h3>
+<ul>
+<li>Document all test automation patterns, virtual service configurations, and data management procedures in a shared wiki</li>
+<li>Conduct regular knowledge-sharing sessions on service virtualisation, ETL testing techniques, and SOAP testing patterns</li>
+<li>Pair experienced TAEs with team members new to test automation</li>
+<li>Maintain runbooks for common test automation tasks and troubleshooting guides</li>
+</ul>
+<h3>7.11.3 Continuous Improvement</h3>
+<p>Per CT-TAS Section 6.2.1, regular evaluations will be conducted to identify improvement areas:</p>
+<ul>
+<li>Quarterly review of test automation effectiveness using defined metrics</li>
+<li>Retrospectives on test automation practices after each major release</li>
+<li>Benchmark service virtualisation accuracy against real system behaviour</li>
+<li>Review and optimise test pyramid distribution based on defect analysis</li>
+<li>Evaluate new tools and techniques for potential adoption</li>
+</ul>
+<h1>8. Performance Testing Strategy</h1>
+<p>Performance testing validates that the Vector Programme&#x27;s systems meet non-functional requirements for responsiveness, throughput, scalability, and stability under expected and peak workloads. Performance issues at integration boundaries and in the ETL pipeline can have significant impact on business operations and user experience.</p>
+<h2>8.1 Objectives</h2>
+<ul>
+<li>Validate that SOAP/REST integration response times meet defined SLAs under normal and peak loads</li>
+<li>Determine the maximum throughput of the integration layer (messages per second)</li>
+<li>Verify that the ETL pipeline processes data within the required time windows</li>
+<li>Identify performance bottlenecks at integration boundaries before production deployment</li>
+<li>Ensure system stability under sustained load (endurance testing)</li>
+<li>Validate that the system recovers gracefully from overload conditions</li>
+<li>Establish baseline performance metrics for ongoing monitoring and comparison</li>
+</ul>
+<h2>8.2 Performance Test Types</h2>
+<table>
+<tr>
+<th>Test Type</th>
+<th>Objective</th>
+<th>Approach</th>
+<th>Environment</th>
+</tr>
+<tr>
+<td>Load Testing</td>
+<td>Validate system performance under expected normal load conditions</td>
+<td>Simulate expected concurrent users and transaction volumes for App1↔Siebel, App1↔App2 integrations. Measure response times, throughput, and resource utilisation.</td>
+<td>Pre-Prod (production-like)</td>
+</tr>
+<tr>
+<td>Stress Testing</td>
+<td>Determine system behaviour at and beyond capacity limits</td>
+<td>Gradually increase load beyond expected peak to identify breaking points, error thresholds, and degradation patterns. Focus on integration layer and message queues.</td>
+<td>Pre-Prod</td>
+</tr>
+<tr>
+<td>Endurance / Soak Testing</td>
+<td>Validate system stability under sustained load over time</td>
+<td>Run expected load for an extended period (8–24 hours) to identify memory leaks, connection pool exhaustion, and performance degradation. Focus on integration layer and Pub/Sub.</td>
+<td>Pre-Prod</td>
+</tr>
+<tr>
+<td>Scalability Testing</td>
+<td>Assess the system&#x27;s ability to scale to meet increased demand</td>
+<td>Incrementally increase load and measure the system&#x27;s ability to scale horizontally or vertically. Evaluate auto-scaling behaviour if applicable.</td>
+<td>Pre-Prod</td>
+</tr>
+<tr>
+<td>ETL Pipeline Performance</td>
+<td>Validate data processing capacity and throughput</td>
+<td>Test the ETL pipeline with realistic data volumes. Measure extraction time (Fivetran), transformation time (Coalesce), and query performance (Snowflake). Validate data refresh windows.</td>
+<td>Pre-Prod / dedicated ETL test</td>
+</tr>
+<tr>
+<td>Spike Testing</td>
+<td>Validate system response to sudden load increases</td>
+<td>Introduce sudden, sharp increases in transaction volume (e.g., simulating batch processing or event storms). Monitor system recovery and message queue behaviour.</td>
+<td>Pre-Prod</td>
+</tr>
+</table>
+<h2>8.3 Performance Test Scope</h2>
+<p>The following integration points and components are in scope for performance testing:</p>
+<table>
+<tr>
+<th>Component / Integration</th>
+<th>Key Metrics</th>
+<th>Indicative SLA Targets</th>
+</tr>
+<tr>
+<td>App1 → Siebel (SOAP via Integration Layer)</td>
+<td>Response time (p50, p90, p99), throughput (TPS), error rate</td>
+<td>p90 response &lt; 3s; error rate &lt; 0.1%</td>
+</tr>
+<tr>
+<td>App1 → App2 (SOAP)</td>
+<td>Response time, throughput, error rate</td>
+<td>p90 response &lt; 2s; error rate &lt; 0.1%</td>
+</tr>
+<tr>
+<td>Integration Layer (Pub/Sub)</td>
+<td>Message processing latency, queue depth, delivery success rate</td>
+<td>Event processing &lt; 5s; delivery rate &gt; 99.9%</td>
+</tr>
+<tr>
+<td>Fivetran → Coalesce → Snowflake (ETL)</td>
+<td>Data extraction time, transformation time, load time, total pipeline duration</td>
+<td>Full pipeline &lt; [X] hours; incremental load &lt; [X] minutes</td>
+</tr>
+<tr>
+<td>Snowflake → Power BI (Reporting)</td>
+<td>Query response time, report refresh time, concurrent user capacity</td>
+<td>Dashboard load &lt; 10s for typical queries; [X] concurrent users</td>
+</tr>
+<tr>
+<td>App1 / App2 UI</td>
+<td>Page load time, time to interactive, rendering performance</td>
+<td>Page load &lt; 3s; time to interactive &lt; 5s</td>
+</tr>
+</table>
+<p>Note: SLA targets marked [X] should be confirmed with business stakeholders and documented in the non-functional requirements specification.</p>
+<h2>8.4 Performance Test Approach</h2>
+<p>Workload Modelling:</p>
+<p>Performance test workload models will be based on:</p>
+<ul>
+<li>Expected transaction volumes from business forecasts and capacity planning</li>
+<li>Production usage patterns (where available) for realistic load profiles</li>
+<li>Peak load scenarios derived from business event calendars (e.g., month-end processing, campaign launches)</li>
+<li>Growth projections to validate scalability headroom</li>
+</ul>
+<p>Test Data:</p>
+<ul>
+<li>Performance tests require data volumes representative of production</li>
+<li>Synthetic data generation or anonymised production data subsets will be used</li>
+<li>Data variance must be sufficient to avoid caching effects that mask real performance</li>
+</ul>
+<p>Monitoring and Diagnostics:</p>
+<ul>
+<li>Application performance monitoring (APM) tools to capture server-side metrics</li>
+<li>Infrastructure monitoring (CPU, memory, disk I/O, network) for all systems under test</li>
+<li>Integration layer monitoring — message queue depths, processing rates, error rates</li>
+<li>Database monitoring — query execution times, connection pool utilisation, lock contention</li>
+<li>ETL pipeline monitoring — stage-by-stage timing, data volumes, error counts</li>
+</ul>
+<h2>8.5 Performance Test Environment</h2>
+<p>Performance testing will be conducted in a production-like environment (Pre-Production) to ensure results are representative. Key requirements:</p>
+<ul>
+<li>Environment must mirror production in terms of architecture, hardware configuration, and middleware settings</li>
+<li>Dedicated performance testing windows to avoid interference from other testing activities</li>
+<li>Monitoring agents deployed on all components (App1, App2, Siebel, integration layer, Snowflake)</li>
+<li>Network configuration should reflect production topology</li>
+<li>ETL pipeline connected to performance-scale data sources</li>
+</ul>
+<h2>8.6 Performance Testing Tools</h2>
+<table>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+</tr>
+<tr>
+<td>Apache JMeter / Gatling / k6</td>
+<td>Load generation for SOAP/REST APIs and web UI performance testing</td>
+</tr>
+<tr>
+<td>LoadRunner / NeoLoad</td>
+<td>Enterprise-grade load testing with protocol-level support for SOAP, web, and database testing</td>
+</tr>
+<tr>
+<td>Grafana / Prometheus</td>
+<td>Real-time monitoring and visualisation of performance metrics during tests</td>
+</tr>
+<tr>
+<td>APM Tool (Dynatrace / New Relic / AppDynamics)</td>
+<td>Application performance monitoring for server-side diagnostics and bottleneck identification</td>
+</tr>
+<tr>
+<td>Snowflake Query Profiler</td>
+<td>Analysing query performance and identifying optimisation opportunities in the data warehouse</td>
+</tr>
+</table>
+<h2>8.7 Performance Test Reporting</h2>
+<p>Performance test results will be documented in a Performance Test Report including:</p>
+<ul>
+<li>Test objectives and workload model description</li>
+<li>Environment configuration and deviations from production</li>
+<li>Results for each test type (load, stress, endurance, ETL)</li>
+<li>Response time distributions (p50, p90, p95, p99) for each integration point</li>
+<li>Throughput and error rate trends under increasing load</li>
+<li>Resource utilisation graphs (CPU, memory, disk, network)</li>
+<li>Identified bottlenecks with analysis and recommendations</li>
+<li>Comparison against SLA targets — pass/fail assessment</li>
+<li>Recommendations for production deployment or remediation actions</li>
+</ul>
+<h1>9. Security Testing Strategy</h1>
+<p>Security testing validates that the Vector Programme&#x27;s applications, integrations, and data handling are protected against unauthorised access, data breaches, and common security vulnerabilities. Given the SOAP-based integrations, the ETL data pipeline handling potentially sensitive business data, and multiple interconnected systems, a comprehensive security testing approach is essential.</p>
+<h2>9.1 Objectives</h2>
+<ul>
+<li>Identify and remediate security vulnerabilities in applications (App1, App2) and integration endpoints</li>
+<li>Validate that SOAP/REST APIs enforce proper authentication, authorisation, and input validation</li>
+<li>Ensure data in transit (SOAP messages, Pub/Sub events) and data at rest (Snowflake, databases) are adequately protected</li>
+<li>Validate compliance with applicable security standards, regulations, and organisational security policies</li>
+<li>Verify that the ETL pipeline handles sensitive data appropriately (masking, encryption, access control)</li>
+<li>Assess the integration layer&#x27;s resilience against injection, spoofing, and denial-of-service attacks</li>
+<li>Provide evidence of security posture for audit and compliance purposes</li>
+</ul>
+<h2>9.2 Security Testing Types</h2>
+<table>
+<tr>
+<th>Test Type</th>
+<th>Description</th>
+<th>Scope</th>
+<th>Timing</th>
+</tr>
+<tr>
+<td>Static Application Security Testing (SAST)</td>
+<td>Automated analysis of source code to identify security vulnerabilities (e.g., injection flaws, hardcoded credentials)</td>
+<td>App1 and App2 source code, integration layer components</td>
+<td>During development (CI/CD pipeline)</td>
+</tr>
+<tr>
+<td>Dynamic Application Security Testing (DAST)</td>
+<td>Testing running applications for vulnerabilities by simulating attacks against the live system</td>
+<td>App1 and App2 web interfaces, SOAP/REST API endpoints</td>
+<td>SIT and Pre-Prod environments</td>
+</tr>
+<tr>
+<td>API Security Testing</td>
+<td>Testing SOAP and REST APIs for authentication bypass, injection, XML External Entity (XXE), SOAP fault handling, and authorisation flaws</td>
+<td>All SOAP/REST integration points between App1, App2, and Siebel</td>
+<td>SIT environment</td>
+</tr>
+<tr>
+<td>Penetration Testing</td>
+<td>Manual expert-led security assessment simulating real-world attacks to identify exploitable vulnerabilities</td>
+<td>End-to-end application stack including integrations and data pipeline</td>
+<td>Pre-Prod — prior to major releases</td>
+</tr>
+<tr>
+<td>Data Security Testing</td>
+<td>Validating encryption, masking, access controls, and data classification for sensitive data throughout the pipeline</td>
+<td>Data at rest (databases, Snowflake), data in transit (SOAP, ETL), Power BI access controls</td>
+<td>SIT and Pre-Prod</td>
+</tr>
+<tr>
+<td>Infrastructure Security Review</td>
+<td>Assessment of network security, firewall rules, access management, and configuration hardening for test and production environments</td>
+<td>All environments hosting Vector Programme systems</td>
+<td>Prior to Go-Live and periodically</td>
+</tr>
+<tr>
+<td>Dependency / Supply Chain Scanning</td>
+<td>Scanning third-party libraries, frameworks, and components for known vulnerabilities (CVEs)</td>
+<td>App1, App2, integration layer, test automation framework</td>
+<td>CI/CD pipeline (every build)</td>
+</tr>
+</table>
+<h2>9.3 SOAP / API Security Focus Areas</h2>
+<p>Given the SOAP-based integrations are a core component of the Vector architecture, specific API security testing focus areas include:</p>
+<table>
+<tr>
+<th>Security Concern</th>
+<th>Testing Approach</th>
+</tr>
+<tr>
+<td>XML Injection / XXE</td>
+<td>Test SOAP endpoints with crafted XML payloads containing external entity references, deeply nested structures, and oversized documents</td>
+</tr>
+<tr>
+<td>SOAP Fault Information Disclosure</td>
+<td>Verify that SOAP fault responses do not expose internal system details, stack traces, or sensitive configuration information</td>
+</tr>
+<tr>
+<td>Authentication and Authorisation</td>
+<td>Test API endpoints for authentication bypass, token manipulation, privilege escalation, and session management vulnerabilities</td>
+</tr>
+<tr>
+<td>WS-Security Implementation</td>
+<td>If WS-Security is applied, validate correct implementation of message-level signing, encryption, and timestamp verification</td>
+</tr>
+<tr>
+<td>Input Validation</td>
+<td>Test SOAP message fields for SQL injection, command injection, and cross-site scripting (XSS) payloads that could traverse to backend systems</td>
+</tr>
+<tr>
+<td>Replay Attacks</td>
+<td>Test whether SOAP messages can be captured and replayed to execute duplicate transactions</td>
+</tr>
+<tr>
+<td>Rate Limiting / DoS Protection</td>
+<td>Validate that integration endpoints enforce rate limiting and are resilient to high-volume message flooding</td>
+</tr>
+<tr>
+<td>Transport Security</td>
+<td>Verify TLS configuration, certificate validation, and encryption of SOAP messages in transit</td>
+</tr>
+</table>
+<h2>9.4 Data Pipeline Security</h2>
+<p>The ETL pipeline (Fivetran → Coalesce → Snowflake → Power BI) processes business data that may include sensitive information. Security testing of the pipeline includes:</p>
+<ul>
+<li>Validate that data is encrypted in transit between each pipeline stage</li>
+<li>Verify access controls at each stage — only authorised service accounts and users can access data</li>
+<li>Test Snowflake role-based access controls (RBAC) to ensure proper data segregation and least-privilege access</li>
+<li>Verify that Power BI enforces row-level security (RLS) where applicable, ensuring users only see data they are authorised to view</li>
+<li>Validate data masking or anonymisation is applied to sensitive fields in non-production environments</li>
+<li>Test audit logging — verify that data access and modifications are logged for compliance and forensic purposes</li>
+<li>Verify Fivetran and Coalesce service account credentials are securely managed (e.g., key vault, secrets manager)</li>
+</ul>
+<h2>9.5 Security Testing Tools</h2>
+<table>
+<tr>
+<th>Tool Category</th>
+<th>Examples</th>
+<th>Purpose</th>
+</tr>
+<tr>
+<td>SAST</td>
+<td>SonarQube, Checkmarx, Fortify</td>
+<td>Static code analysis for security vulnerabilities during development</td>
+</tr>
+<tr>
+<td>DAST</td>
+<td>OWASP ZAP, Burp Suite, Acunetix</td>
+<td>Dynamic security testing of running web applications and APIs</td>
+</tr>
+<tr>
+<td>API Security</td>
+<td>SoapUI Security Testing, Postman, OWASP ZAP</td>
+<td>Specialised SOAP/REST API security checks including XXE, injection, auth testing</td>
+</tr>
+<tr>
+<td>Dependency Scanning</td>
+<td>Snyk, OWASP Dependency-Check, GitHub Dependabot</td>
+<td>Scanning third-party libraries for known CVEs</td>
+</tr>
+<tr>
+<td>Penetration Testing</td>
+<td>Burp Suite Professional, Metasploit, custom scripts</td>
+<td>Expert-led manual penetration testing toolkit</td>
+</tr>
+<tr>
+<td>Secrets Scanning</td>
+<td>GitLeaks, TruffleHog</td>
+<td>Detecting hardcoded secrets, credentials, and keys in source code and configuration</td>
+</tr>
+<tr>
+<td>Infrastructure</td>
+<td>Nessus, Qualys, AWS Inspector / Azure Defender</td>
+<td>Infrastructure vulnerability scanning and compliance assessment</td>
+</tr>
+</table>
+<h2>9.6 Compliance and Standards</h2>
+<p>Security testing activities are aligned with the following standards and guidelines:</p>
+<ul>
+<li>OWASP Top 10 — the most critical web application security risks</li>
+<li>OWASP API Security Top 10 — security risks specific to APIs</li>
+<li>OWASP Web Services Security Testing — specific guidance for SOAP/XML services</li>
+<li>Organisational security policies and standards</li>
+<li>Applicable regulatory requirements (e.g., Privacy Act, industry-specific regulations)</li>
+<li>ISO 27001 information security management principles</li>
+</ul>
+<h2>9.7 Security Test Reporting</h2>
+<p>Security test results are documented in a Security Test Report including:</p>
+<ul>
+<li>Summary of security tests conducted (SAST, DAST, API, pentest)</li>
+<li>Vulnerabilities identified, classified by severity (Critical, High, Medium, Low)</li>
+<li>CVSS scores for identified vulnerabilities where applicable</li>
+<li>Risk assessment for each vulnerability — likelihood and impact</li>
+<li>Remediation recommendations with priority and timelines</li>
+<li>Re-test results confirming vulnerability remediation</li>
+<li>Residual risk statement and accepted-risk register</li>
+<li>Compliance assessment against applicable standards</li>
+</ul>
+<h1>10. Test Data Management</h1>
+<p>Effective test data management is critical across all testing disciplines — manual testing, automation, performance, and security testing each have specific data requirements. The challenge of maintaining data consistency across App1, App2, Siebel, and the ETL pipeline makes this a programme-wide concern. Test data management is identified in the ISTQB CT-TAS Syllabus (Sections 4.2.1 and 4.3.3) as a critical component of a test automation deployment strategy.</p>
+<h2>10.1 Test Data Challenges</h2>
+<ul>
+<li>Data consistency across systems — A test scenario may require corresponding records to exist in App1, App2, and Siebel simultaneously</li>
+<li>Data dependencies — Integration tests require specific data states in source systems to trigger expected message flows</li>
+<li>ETL pipeline data — Data tests require known source data in App1 to validate transformation and loading through the pipeline</li>
+<li>Data refresh and reset — Tests must be repeatable, requiring mechanisms to provision and clean up test data between runs</li>
+<li>Sensitive data — Production data may contain PII or commercially sensitive information that cannot be used directly in test environments</li>
+<li>Data volume — ETL tests and performance tests may require realistic data volumes to validate performance and correctness at scale</li>
+</ul>
+<h2>10.2 Test Data Principles</h2>
+<ul>
+<li>Test data is treated as a programme asset and managed with the same rigour as test scripts</li>
+<li>No production data is used directly in test environments — all data is either synthetic or anonymised/masked</li>
+<li>Test data is provisioned automatically wherever possible to support repeatable execution</li>
+<li>Cross-system data consistency is maintained — test data required across App1, Siebel, and the ETL pipeline is coordinated centrally</li>
+<li>Data security and privacy requirements are enforced in all test environments</li>
+<li>Performance test data volumes are representative of production to ensure valid results</li>
+</ul>
+<h2>10.3 Test Data Strategy</h2>
+<table>
+<tr>
+<th>Approach</th>
+<th>Description</th>
+<th>Applicable To</th>
+</tr>
+<tr>
+<td>Synthetic Data Generation</td>
+<td>Generate test data programmatically using data factories or test data generation tools. Data is created to satisfy specific test conditions without reliance on production data.</td>
+<td>Integration tests, E2E tests, automation</td>
+</tr>
+<tr>
+<td>Data Subsetting</td>
+<td>Extract a representative subset of anonymised production data for use in test environments, ensuring referential integrity is maintained.</td>
+<td>ETL pipeline tests, performance tests</td>
+</tr>
+<tr>
+<td>API-driven Data Setup</td>
+<td>Use application APIs or service calls to create test data as a precondition before test execution. Automated setup scripts create the necessary data state (as recommended in CT-TAS Section 4.2.1).</td>
+<td>Integration tests, E2E tests, automation</td>
+</tr>
+<tr>
+<td>Database Seeding</td>
+<td>Directly populate databases with predefined data sets using SQL scripts or data loading tools. Used where API-driven setup is not feasible.</td>
+<td>System integration tests, manual testing</td>
+</tr>
+<tr>
+<td>Service Virtualisation Data</td>
+<td>Configure virtual services to return specific data responses that match expected test conditions, decoupling test data from live systems.</td>
+<td>E2E virtualised tests, automation</td>
+</tr>
+<tr>
+<td>Data Masking / Anonymisation</td>
+<td>Apply data masking techniques to production data copies to protect sensitive information while maintaining data relationships and realism.</td>
+<td>All test levels</td>
+</tr>
+</table>
+<h2>10.4 Test Data Requirements by Testing Discipline</h2>
+<table>
+<tr>
+<th>Testing Discipline</th>
+<th>Data Requirements</th>
+<th>Provisioning Approach</th>
+</tr>
+<tr>
+<td>Manual Functional Testing</td>
+<td>Specific business scenarios requiring known data states in App1, App2, and/or Siebel</td>
+<td>API-driven data setup, database seeding scripts, manual data entry for ad-hoc scenarios</td>
+</tr>
+<tr>
+<td>Test Automation</td>
+<td>Repeatable, consistent data sets that support automated test execution without manual intervention</td>
+<td>Data factories (synthetic generation), API-driven setup/teardown, service virtualisation data</td>
+</tr>
+<tr>
+<td>Performance Testing</td>
+<td>Production-representative data volumes with sufficient variety to avoid caching effects</td>
+<td>Anonymised production data subsets, bulk synthetic data generation, database snapshots</td>
+</tr>
+<tr>
+<td>Security Testing</td>
+<td>Test data with sensitive data patterns (PII, financial) to validate masking and protection controls</td>
+<td>Synthetic sensitive data with known patterns, purpose-built security test data sets</td>
+</tr>
+</table>
+<h2>10.5 Test Data Governance</h2>
+<ul>
+<li>A Test Data Manager role is appointed to coordinate data provisioning and management across the programme</li>
+<li>Test data requirements are identified during test planning and provisioned before each test cycle</li>
+<li>A test data catalogue is maintained documenting available data sets, their purpose, freshness, and ownership</li>
+<li>Implement automated data provisioning and teardown as part of the test automation framework</li>
+<li>Data refresh and reset procedures are documented and automated where feasible</li>
+<li>Establish data refresh schedules aligned with test execution cycles</li>
+<li>Compliance with data privacy regulations is verified for all test data activities</li>
+</ul>
+<h1>11. Test Environment Strategy</h1>
+<p>The ISTQB CT-TAS Syllabus (Sections 4.3.1 and 4.3.2) emphasises the importance of defining test automation components within the test environment and identifying infrastructure dependencies. A well-planned test environment is essential for reliable and repeatable test execution across all testing disciplines.</p>
+<h2>11.1 Environment Landscape</h2>
+<table>
+<tr>
+<th>Environment</th>
+<th>Purpose</th>
+<th>Systems Deployed</th>
+<th>Data</th>
+<th>Service Virtualisation</th>
+<th>Access</th>
+</tr>
+<tr>
+<td>Development (DEV)</td>
+<td>Developer testing and TAE script development</td>
+<td>App1 (DEV instance)</td>
+<td>Minimal synthetic data</td>
+<td>Full virtualisation of App2, Siebel, ETL pipeline</td>
+<td>Development and TAE teams</td>
+</tr>
+<tr>
+<td>System Test (ST)</td>
+<td>Independent system testing for each application</td>
+<td>Each application independently (App1-ST, App2-ST, Siebel-ST)</td>
+<td>Application-specific test data</td>
+<td>N/A</td>
+<td>Respective application test teams</td>
+</tr>
+<tr>
+<td>System Integration Test (SIT)</td>
+<td>Programme-level integration testing</td>
+<td>App1, App2, Siebel, Integration Layer, ETL pipeline (or virtualised where unavailable)</td>
+<td>Cross-system integrated test data</td>
+<td>Partial — virtualise systems not available in SIT</td>
+<td>Programme test team</td>
+</tr>
+<tr>
+<td>End-to-End (E2E)</td>
+<td>Full business process validation</td>
+<td>All systems (live or virtualised)</td>
+<td>Comprehensive business scenario data</td>
+<td>As needed for unavailable systems</td>
+<td>Programme test team + business testers</td>
+</tr>
+<tr>
+<td>Performance Test (PERF)</td>
+<td>Performance, load, and stress testing</td>
+<td>All systems — production-like configuration</td>
+<td>Production-representative volumes (anonymised)</td>
+<td>Minimal — real systems preferred</td>
+<td>Performance test team</td>
+</tr>
+<tr>
+<td>Pre-Production (Pre-Prod)</td>
+<td>Final validation, security testing, deployment rehearsal</td>
+<td>All systems — production-mirror</td>
+<td>Production-like (anonymised)</td>
+<td>Minimal — real systems preferred</td>
+<td>Programme test team + security team</td>
+</tr>
+<tr>
+<td>UAT</td>
+<td>Business acceptance validation</td>
+<td>All systems — production-like</td>
+<td>Business-relevant scenario data</td>
+<td>N/A</td>
+<td>Business stakeholders + support team</td>
+</tr>
+</table>
+<h2>11.2 Infrastructure Dependencies</h2>
+<p>As identified in CT-TAS Section 4.3.2, the following infrastructure components and dependencies must be in place:</p>
+<ul>
+<li>Host machines — Virtual machines or containers to execute test automation scripts and host service virtualisation tools</li>
+<li>Network access — Connectivity between test automation hosts and all target systems (App1, App2, Siebel, integration layer, Snowflake)</li>
+<li>CI/CD server — Pipeline infrastructure to trigger, execute, and report on automated tests</li>
+<li>Source control — Repository for test scripts, virtual service definitions, and test data configurations (e.g., Git)</li>
+<li>Test tool licenses — Licenses for commercial tools (e.g., ReadyAPI, service virtualisation tools) provisioned for all required environments</li>
+<li>Database access — Read/write access to test databases for data setup and verification</li>
+<li>Monitoring — Access to application logs, integration layer logs, and pipeline monitoring for debugging test failures</li>
+</ul>
+<h2>11.3 Environment Management</h2>
+<ul>
+<li>Each environment has a designated environment owner responsible for availability, access, and configuration management</li>
+<li>Environment booking procedures are in place for shared environments (SIT, E2E, PERF) to prevent contention</li>
+<li>Environment health checks (smoke tests) are executed after each deployment or refresh to confirm readiness</li>
+<li>Environment configurations are version-controlled and documented</li>
+<li>Service virtualisation is deployed in DEV and SIT environments to reduce dependency on system availability</li>
+<li>Environment issues are escalated through a defined support channel with agreed response SLAs</li>
+</ul>
+<h1>12. Roles and Responsibilities</h1>
+<p>The following roles are defined for the Vector Programme testing activities. As defined in ISTQB CT-TAS Section 2.2.1, a successful test automation solution requires clearly defined roles with appropriate skills.</p>
+<table>
+<tr>
+<th>Role</th>
+<th>Responsibilities</th>
+<th>Required Skills</th>
+</tr>
+<tr>
+<td>Programme Test Manager</td>
+<td>• Own and maintain the Programme Test Strategy
+• Oversee all programme-level testing (SIT, E2E, performance, security)
+• Report test progress, quality status, and risks to programme leadership
+• Coordinate across application test teams
+• Manage defect triage and resolution governance
+• Ensure entry/exit criteria are met at each test level
+• Report on test automation ROI and metrics</td>
+<td>• Test management expertise
+• Strategic planning
+• Risk management
+• Stakeholder management</td>
+</tr>
+<tr>
+<td>Test Lead (Integration / E2E)</td>
+<td>• Plan and manage SIT and E2E test execution
+• Design integration and E2E test scenarios
+• Coordinate test data provisioning for SIT/E2E
+• Manage test case reviews and traceability
+• Lead defect triage for integration testing</td>
+<td>• Integration test design
+• SOAP/REST domain knowledge
+• E2E test orchestration
+• Defect management</td>
+</tr>
+<tr>
+<td>Manual Test Analyst</td>
+<td>• Design and execute manual functional test cases for SIT and E2E
+• Conduct exploratory testing sessions
+• Raise and manage defects with full reproduction evidence
+• Support UAT execution
+• Identify candidate manual tests for automation</td>
+<td>• Test analysis and design
+• Business domain knowledge
+• Exploratory testing skills
+• Defect reporting</td>
+</tr>
+<tr>
+<td>Test Automation Architect</td>
+<td>• Define TAA and TAF design (Section 7.5)
+• Select tools and technologies for automation
+• Guide service virtualisation strategy
+• Review test automation code quality
+• Define automation standards and patterns</td>
+<td>• Deep technical knowledge of SOAP/REST testing
+• Service virtualisation expertise
+• CI/CD and DevOps experience
+• Architecture and design skills</td>
+</tr>
+<tr>
+<td>Test Automation Engineer (Integration)</td>
+<td>• Develop and maintain SOAP/REST integration tests
+• Create and update virtual services
+• Implement contract testing
+• Debug integration test failures
+• Integrate tests into CI/CD pipeline</td>
+<td>• SOAP/REST protocol expertise
+• SoapUI/ReadyAPI proficiency
+• Programming (Java/Python/C#)
+• Service virtualisation tools</td>
+</tr>
+<tr>
+<td>Test Automation Engineer (Data/ETL)</td>
+<td>• Develop ETL pipeline validation tests
+• Implement data reconciliation checks
+• Automate data provisioning
+• Validate Power BI report accuracy</td>
+<td>• SQL and data engineering skills
+• Snowflake, Fivetran, Coalesce knowledge
+• Python/dbt proficiency
+• Data quality frameworks</td>
+</tr>
+<tr>
+<td>Test Automation Engineer (UI/E2E)</td>
+<td>• Develop UI and E2E automated tests
+• Maintain Page Object Models
+• Integrate E2E tests with service virtualisation
+• Manage test data for E2E scenarios</td>
+<td>• Selenium/Playwright expertise
+• BDD frameworks (Cucumber/SpecFlow)
+• Cross-browser testing
+• Strong debugging skills</td>
+</tr>
+<tr>
+<td>Performance Test Engineer</td>
+<td>• Design and develop performance test scripts and workload models
+• Execute load, stress, endurance, and scalability tests
+• Monitor and analyse performance metrics
+• Produce performance test reports with recommendations
+• Collaborate with development teams on bottleneck remediation</td>
+<td>• Performance testing tools (JMeter/Gatling/k6)
+• APM and monitoring tools
+• SOAP/REST load testing
+• Results analysis and reporting</td>
+</tr>
+<tr>
+<td>Security Test Engineer / Specialist</td>
+<td>• Plan and execute security testing activities (SAST, DAST, API security)
+• Conduct or coordinate penetration testing
+• Assess data pipeline security controls
+• Produce security test reports with vulnerability classifications
+• Verify remediation of identified vulnerabilities</td>
+<td>• Security testing tools (OWASP ZAP, Burp Suite)
+• OWASP Top 10 / API Security Top 10
+• Penetration testing
+• Compliance and standards knowledge</td>
+</tr>
+<tr>
+<td>Test Data Manager</td>
+<td>• Coordinate test data provisioning across all systems and test levels
+• Maintain the test data catalogue
+• Implement data masking and anonymisation
+• Automate data provisioning and cleanup procedures
+• Ensure data privacy compliance
+• Manage data refresh schedules</td>
+<td>• Database administration
+• Data governance knowledge
+• Understanding of all system data models
+• Scripting and automation</td>
+</tr>
+<tr>
+<td>Application Test Leads (App1, App2, Siebel)</td>
+<td>• Manage system-level testing within their application
+• Coordinate with programme test team for SIT entry
+• Provide application expertise for integration test design
+• Support integration defect investigation</td>
+<td>• Application domain expertise
+• System test management
+• Cross-team coordination
+• Defect investigation</td>
+</tr>
+</table>
+<h1>13. CI/CD Integration and Quality Gates</h1>
+<h2>13.1 Pipeline Integration</h2>
+<p>The Vector Programme&#x27;s CI/CD pipeline integrates testing activities from all four testing pillars to provide continuous quality feedback and enforce quality gates before promotion between environments. As described in CT-TAS Section 4.1.1, quality gates are enforced measures that software must meet before proceeding.</p>
+<p>┌──────────┐   ┌──────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────┐   ┌──────────┐
+│  Code    │──►│  Build + │──►│ Integration  │──►│  E2E Tests   │──►│  Perf &amp;  │──►│ Deploy   │
+│  Commit  │   │  SAST +  │   │  Tests       │   │  (Virtual)   │   │  Security│   │  to Prod │
+│          │   │  Dep Scan│   │  + Data Tests│   │  + UI Regr   │   │  Tests   │   │          │
+└──────────┘   └──────────┘   └──────────────┘   └──────────────┘   └──────────┘   └──────────┘
+                    │                │                  │                 │
+                  QG-1             QG-2               QG-3             QG-4</p>
+<h2>13.2 Quality Gates</h2>
+<table>
+<tr>
+<th>Gate</th>
+<th>Stage</th>
+<th>Criteria</th>
+<th>Owner</th>
+</tr>
+<tr>
+<td>QG-1</td>
+<td>Post-Build</td>
+<td>• SAST scans pass with no critical/high findings
+• Dependency scan — no critical CVEs
+• Unit tests pass (application team)
+• All SOAP/REST contract tests pass</td>
+<td>Development Lead</td>
+</tr>
+<tr>
+<td>QG-2</td>
+<td>Post-Integration Testing</td>
+<td>• All SOAP/REST integration tests pass (≥95% pass rate)
+• Data pipeline validation tests pass
+• Contract tests pass
+• No critical data validation failures
+• No critical/high severity defects unresolved</td>
+<td>Test Lead (Integration)</td>
+</tr>
+<tr>
+<td>QG-3</td>
+<td>Post-E2E / Regression</td>
+<td>• All critical E2E business scenarios pass
+• UI regression suite passes
+• DAST security scan — no new critical/high findings
+• Performance baseline validated
+• No high-severity defects in virtualised test results</td>
+<td>Programme Test Manager</td>
+</tr>
+<tr>
+<td>QG-4</td>
+<td>Pre-Production Release</td>
+<td>• Performance test results within SLA
+• Penetration test findings remediated or risk-accepted
+• Full regression suite passes in production-like environment
+• UAT sign-off obtained
+• All critical/high defects resolved or risk-accepted
+• Go/No-Go approval documented</td>
+<td>Programme Manager</td>
+</tr>
+</table>
+<h1>14. Test Schedule and Phasing</h1>
+<p>The programme test schedule aligns testing activities with the programme&#x27;s delivery milestones. The following represents the typical phasing of testing activities within a release cycle.</p>
+<table>
+<tr>
+<th>Phase</th>
+<th>Activities</th>
+<th>Duration</th>
+<th>Dependencies</th>
+</tr>
+<tr>
+<td>Test Planning</td>
+<td>• Refine test strategy and plans for the release
+• Identify test data requirements
+• Design new test cases, review regression suite
+• Configure environments and service virtualisation
+• Update automation framework and virtual services</td>
+<td>[X] weeks</td>
+<td>Requirements baselined, design documents available</td>
+</tr>
+<tr>
+<td>System Testing</td>
+<td>• Application teams execute system tests independently
+• Defect fix and re-test cycles
+• System test exit criteria met</td>
+<td>[X] weeks per application</td>
+<td>Code complete, ST environment available</td>
+</tr>
+<tr>
+<td>System Integration Testing</td>
+<td>• Manual and automated SIT execution
+• Data pipeline testing (manual + automated)
+• Contract testing verification
+• Defect fix and re-test
+• Exploratory testing sessions</td>
+<td>[X] weeks</td>
+<td>System test sign-off, SIT environment available</td>
+</tr>
+<tr>
+<td>End-to-End Testing</td>
+<td>• E2E scenario execution (manual + automated)
+• Full regression suite execution (automated)
+• Service virtualisation for missing dependencies
+• UI regression suite execution</td>
+<td>[X] weeks</td>
+<td>SIT sign-off, E2E environment available</td>
+</tr>
+<tr>
+<td>Performance Testing</td>
+<td>• Performance test script development / update
+• Load, stress, endurance test execution
+• ETL pipeline performance validation
+• Results analysis and recommendations</td>
+<td>[X] weeks</td>
+<td>E2E testing substantially complete, PERF environment available</td>
+</tr>
+<tr>
+<td>Security Testing</td>
+<td>• DAST and API security testing
+• Penetration testing (if scheduled)
+• Security vulnerability remediation and re-test</td>
+<td>[X] weeks</td>
+<td>Application deployed to Pre-Prod, SAST completed earlier</td>
+</tr>
+<tr>
+<td>UAT</td>
+<td>• Business acceptance testing execution
+• Defect resolution and re-test
+• Business sign-off</td>
+<td>[X] weeks</td>
+<td>E2E sign-off, UAT environment provisioned</td>
+</tr>
+<tr>
+<td>Go-Live Readiness</td>
+<td>• Final regression (smoke) test — manual + automated
+• Go/No-Go assessment
+• Deployment verification testing</td>
+<td>[X] days</td>
+<td>UAT sign-off, all QG criteria met</td>
+</tr>
+</table>
+<p>Note: Durations marked [X] should be populated based on the programme&#x27;s agreed release schedule and delivery timeline.</p>
+<h1>15. Risk Management</h1>
+<p>The following programme-level testing risks have been identified along with mitigation strategies. This includes risks across all testing disciplines: manual, automation, performance, and security.</p>
+<table>
+<tr>
+<th>#</th>
+<th>Risk</th>
+<th>Impact</th>
+<th>Likelihood</th>
+<th>Mitigation</th>
+</tr>
+<tr>
+<td>R-01</td>
+<td>Integrated test environment instability or unavailability delays SIT/E2E testing</td>
+<td>High</td>
+<td>Medium</td>
+<td>• Implement environment health checks as pre-conditions for test execution
+• Use service virtualisation to reduce dependencies
+• Escalation path for environment issues with agreed SLAs</td>
+</tr>
+<tr>
+<td>R-02</td>
+<td>Test data inconsistency across systems causes false test failures</td>
+<td>High</td>
+<td>High</td>
+<td>• Appoint Test Data Manager role
+• Automate data provisioning and cleanup
+• Maintain cross-system data consistency checks</td>
+</tr>
+<tr>
+<td>R-03</td>
+<td>Application team system testing delays push out SIT entry</td>
+<td>High</td>
+<td>Medium</td>
+<td>• Monitor system test progress via regular cross-team status meetings
+• Prepare SIT to begin with partial integration scope
+• Leverage service virtualisation for systems not yet ready</td>
+</tr>
+<tr>
+<td>R-04</td>
+<td>Performance testing reveals significant bottlenecks close to go-live</td>
+<td>High</td>
+<td>Medium</td>
+<td>• Conduct early performance profiling during SIT
+• Include performance acceptance criteria in each quality gate
+• Allocate remediation buffer in the schedule</td>
+</tr>
+<tr>
+<td>R-05</td>
+<td>Security vulnerabilities found during penetration testing require significant rework</td>
+<td>High</td>
+<td>Low–Medium</td>
+<td>• Integrate SAST and dependency scanning into CI/CD from the start
+• Conduct incremental DAST during SIT (not just at the end)
+• Include security requirements in test planning</td>
+</tr>
+<tr>
+<td>R-06</td>
+<td>Insufficient skilled resources for specialised testing (performance, security, service virtualisation, ETL automation)</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>• Identify skill gaps early and engage specialist consultants
+• Invest in training for the core team
+• Document patterns and playbooks for knowledge transfer</td>
+</tr>
+<tr>
+<td>R-07</td>
+<td>SOAP/WSDL contract changes break automated integration tests, increasing maintenance burden</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>• Implement contract testing to detect changes early
+• Subscribe to integration team change notifications
+• Include contract test execution in CI/CD pipeline
+• Automate WSDL comparison checks</td>
+</tr>
+<tr>
+<td>R-08</td>
+<td>ETL pipeline testing blocked by data volume or data availability issues</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>• Implement synthetic data generation for ETL testing
+• Use data subsetting techniques for production-like volumes
+• Coordinate with ETL platform teams for test environment support</td>
+</tr>
+<tr>
+<td>R-09</td>
+<td>Service virtualisation does not accurately represent real system behaviour</td>
+<td>High</td>
+<td>Medium</td>
+<td>• Regularly validate virtual services against live system recordings
+• Update virtual services with each system release
+• Benchmark accuracy metrics monthly (target ≥98%)</td>
+</tr>
+<tr>
+<td>R-10</td>
+<td>Test automation execution time exceeds test cycle window</td>
+<td>Medium</td>
+<td>Low</td>
+<td>• Implement parallel test execution
+• Prioritise tests by risk (CT-TAS Section 3.1.1)
+• Optimise test pyramid distribution
+• Target full regression &lt; 2 hours</td>
+</tr>
+</table>
+<h1>16. Communication and Reporting</h1>
+<h2>16.1 Test Reporting Cadence</h2>
+<table>
+<tr>
+<th>Report</th>
+<th>Audience</th>
+<th>Frequency</th>
+<th>Content</th>
+</tr>
+<tr>
+<td>Programme Test Status Report</td>
+<td>Programme Manager, Steering Committee</td>
+<td>Weekly</td>
+<td>Overall test progress, quality metrics, risk status, defect trends, environment status, schedule adherence</td>
+</tr>
+<tr>
+<td>SIT / E2E Daily Status</td>
+<td>Test Manager, Test Leads, Development Leads</td>
+<td>Daily (during active test cycles)</td>
+<td>Test execution progress, new defects, blocked tests, data and environment issues</td>
+</tr>
+<tr>
+<td>Defect Triage Report</td>
+<td>Test Manager, Development Leads, Business Analysts</td>
+<td>Daily (during active test cycles)</td>
+<td>New defects, severity/priority classification, resolution status, aged defects</td>
+</tr>
+<tr>
+<td>Test Automation Dashboard</td>
+<td>Test Manager, TAE team, Development Leads</td>
+<td>Continuous (CI/CD)</td>
+<td>Automated test pass/fail rates, execution times, coverage metrics, framework health, ROI tracking</td>
+</tr>
+<tr>
+<td>Performance Test Report</td>
+<td>Programme Manager, Solution Architect, Development Leads</td>
+<td>Per test cycle</td>
+<td>Performance results, SLA compliance, bottleneck analysis, recommendations</td>
+</tr>
+<tr>
+<td>Security Test Report</td>
+<td>Programme Manager, Security Lead, Solution Architect</td>
+<td>Per assessment cycle</td>
+<td>Vulnerability findings, severity classification, remediation status, compliance assessment</td>
+</tr>
+<tr>
+<td>Test Completion / Exit Report</td>
+<td>Programme Manager, Steering Committee</td>
+<td>Per test level completion</td>
+<td>Summary of testing performed, quality assessment, defect summary, residual risks, recommendation to proceed</td>
+</tr>
+</table>
+<h2>16.2 Communication Channels</h2>
+<ul>
+<li>Daily stand-ups — Programme test team alignment during active test cycles</li>
+<li>Weekly test governance meeting — Cross-team test progress, risk review, and escalation</li>
+<li>Defect triage meetings — Daily during active testing, weekly in maintenance</li>
+<li>Integration sync meetings — Coordination between application teams for SIT readiness and defect resolution</li>
+<li>Ad-hoc escalation — Critical defects, environment failures, or blockers escalated immediately via agreed channels</li>
+</ul>
+<h1>17. Tooling Summary</h1>
+<table>
+<tr>
+<th>Category</th>
+<th>Tools</th>
+<th>Purpose</th>
+</tr>
+<tr>
+<td>Test Management</td>
+<td>Azure DevOps Test Plans / Xray / Zephyr</td>
+<td>Test case management, execution tracking, traceability, reporting</td>
+</tr>
+<tr>
+<td>Defect Management</td>
+<td>Azure DevOps / Jira</td>
+<td>Defect lifecycle management, triage, and tracking</td>
+</tr>
+<tr>
+<td>SOAP / API Testing</td>
+<td>SoapUI / ReadyAPI, Postman / Newman</td>
+<td>SOAP/REST API functional and contract testing</td>
+</tr>
+<tr>
+<td>Contract Testing</td>
+<td>Pact</td>
+<td>Consumer-driven and provider-driven contract testing between services</td>
+</tr>
+<tr>
+<td>UI Automation</td>
+<td>Selenium WebDriver / Playwright, Cucumber / SpecFlow</td>
+<td>Browser-based UI test automation with BDD specifications</td>
+</tr>
+<tr>
+<td>Data / ETL Testing</td>
+<td>Great Expectations, dbt tests, SQL scripts, Python</td>
+<td>Data quality validation, ETL pipeline testing, data reconciliation</td>
+</tr>
+<tr>
+<td>Service Virtualisation</td>
+<td>Broadcom SV / Parasoft Virtualize / WireMock / Traffic Parrot / Mountebank</td>
+<td>Simulating dependent system behaviour for isolated testing</td>
+</tr>
+<tr>
+<td>Performance Testing</td>
+<td>Apache JMeter / Gatling / k6 / LoadRunner / NeoLoad</td>
+<td>Load generation, performance measurement, analysis</td>
+</tr>
+<tr>
+<td>Security Testing (SAST)</td>
+<td>SonarQube / Checkmarx / Fortify</td>
+<td>Static code security analysis during development</td>
+</tr>
+<tr>
+<td>Security Testing (DAST)</td>
+<td>OWASP ZAP / Burp Suite / Acunetix</td>
+<td>Dynamic application and API security testing</td>
+</tr>
+<tr>
+<td>Dependency Scanning</td>
+<td>Snyk / OWASP Dependency-Check / Dependabot</td>
+<td>Third-party library vulnerability scanning</td>
+</tr>
+<tr>
+<td>Secrets Scanning</td>
+<td>GitLeaks / TruffleHog</td>
+<td>Detecting hardcoded secrets, credentials, and keys in source code</td>
+</tr>
+<tr>
+<td>Performance Monitoring / APM</td>
+<td>Grafana / Prometheus / Dynatrace / New Relic / AppDynamics</td>
+<td>Real-time performance monitoring, APM, dashboards</td>
+</tr>
+<tr>
+<td>Test Data Management</td>
+<td>Custom data factories, Delphix, SQL scripts</td>
+<td>Test data generation, provisioning, masking, and cleanup</td>
+</tr>
+<tr>
+<td>CI/CD Pipeline</td>
+<td>Azure DevOps / Jenkins / GitHub Actions</td>
+<td>Build automation, test orchestration, quality gates, deployment</td>
+</tr>
+<tr>
+<td>Source Control</td>
+<td>Git (Azure Repos / GitHub / Bitbucket)</td>
+<td>Version control for test scripts, configs, virtual services</td>
+</tr>
+<tr>
+<td>Reporting &amp; Dashboards</td>
+<td>Grafana, Power BI, CI/CD dashboards</td>
+<td>Test result visualisation, trend analysis, executive reporting</td>
+</tr>
+</table>
+<h1>18. Assumptions, Constraints, and Dependencies</h1>
+<h2>18.1 Assumptions</h2>
+<ul>
+<li>Each application team (App1, App2, Siebel) will complete their system testing and meet exit criteria before SIT commences</li>
+<li>Integration specifications (WSDLs, message schemas, interface documents) are available, up to date, and accessible to the TAE team</li>
+<li>Test environments will be provisioned and available according to the agreed schedule</li>
+<li>Budget is approved for required tool licenses, infrastructure, and specialist resources (including service virtualisation and performance testing tools)</li>
+<li>Business stakeholders are available for requirements clarification, test case review, and UAT participation</li>
+<li>Non-functional requirements (performance SLAs, security standards) are documented and agreed before testing begins</li>
+<li>The ETL pipeline (Fivetran, Coalesce, Snowflake) is available in non-production environments for testing</li>
+<li>TAEs with appropriate skills are available or can be recruited/trained within the timeline</li>
+<li>Each application team will provide support for integration test data provisioning in their respective systems</li>
+</ul>
+<h2>18.2 Constraints</h2>
+<ul>
+<li>Independent release schedules for App1, App2, and Siebel may limit integration test opportunities</li>
+<li>Production data cannot be used in test environments due to privacy regulations</li>
+<li>Shared test environments may have availability windows that limit parallel testing</li>
+<li>Performance testing requires a dedicated production-like environment that may have limited availability</li>
+<li>Penetration testing may require scheduling with the organisational security team and external providers</li>
+<li>Some legacy Siebel interfaces may have limited testability for automation</li>
+</ul>
+<h2>18.3 Dependencies</h2>
+<ul>
+<li>Availability and stability of SOAP/REST endpoints in test environments</li>
+<li>Integration layer deployment and configuration for SIT/E2E</li>
+<li>Fivetran, Coalesce, and Snowflake test environment provisioning</li>
+<li>Snowflake test instance with appropriate schemas and access</li>
+<li>Service virtualisation platform procurement, licensing, and configuration</li>
+<li>CI/CD pipeline infrastructure provisioning and access</li>
+<li>Security testing tool licensing and configuration</li>
+<li>Performance testing tool licensing and load generator infrastructure</li>
+<li>Cross-team coordination for defect resolution during SIT</li>
+</ul>
+<h1>19. Glossary</h1>
+<table>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+<tr>
+<td>API</td>
+<td>Application Programming Interface</td>
+</tr>
+<tr>
+<td>APM</td>
+<td>Application Performance Monitoring</td>
+</tr>
+<tr>
+<td>BDD</td>
+<td>Behaviour-Driven Development</td>
+</tr>
+<tr>
+<td>CI/CD</td>
+<td>Continuous Integration / Continuous Delivery</td>
+</tr>
+<tr>
+<td>CVE</td>
+<td>Common Vulnerabilities and Exposures</td>
+</tr>
+<tr>
+<td>CVSS</td>
+<td>Common Vulnerability Scoring System</td>
+</tr>
+<tr>
+<td>DAST</td>
+<td>Dynamic Application Security Testing</td>
+</tr>
+<tr>
+<td>E2E</td>
+<td>End-to-End</td>
+</tr>
+<tr>
+<td>ETL</td>
+<td>Extract, Transform, Load</td>
+</tr>
+<tr>
+<td>OWASP</td>
+<td>Open Web Application Security Project</td>
+</tr>
+<tr>
+<td>PII</td>
+<td>Personally Identifiable Information</td>
+</tr>
+<tr>
+<td>POM</td>
+<td>Page Object Model</td>
+</tr>
+<tr>
+<td>Pub/Sub</td>
+<td>Publish/Subscribe messaging pattern</td>
+</tr>
+<tr>
+<td>RBAC</td>
+<td>Role-Based Access Control</td>
+</tr>
+<tr>
+<td>REST</td>
+<td>Representational State Transfer</td>
+</tr>
+<tr>
+<td>RLS</td>
+<td>Row-Level Security</td>
+</tr>
+<tr>
+<td>ROI</td>
+<td>Return on Investment</td>
+</tr>
+<tr>
+<td>SAST</td>
+<td>Static Application Security Testing</td>
+</tr>
+<tr>
+<td>SDLC</td>
+<td>Software Development Lifecycle</td>
+</tr>
+<tr>
+<td>SIT</td>
+<td>System Integration Testing</td>
+</tr>
+<tr>
+<td>SLA</td>
+<td>Service Level Agreement</td>
+</tr>
+<tr>
+<td>SME</td>
+<td>Subject Matter Expert</td>
+</tr>
+<tr>
+<td>SOAP</td>
+<td>Simple Object Access Protocol</td>
+</tr>
+<tr>
+<td>SUT</td>
+<td>System Under Test</td>
+</tr>
+<tr>
+<td>TAA</td>
+<td>Test Automation Architecture</td>
+</tr>
+<tr>
+<td>TAE</td>
+<td>Test Automation Engineer</td>
+</tr>
+<tr>
+<td>TAF</td>
+<td>Test Automation Framework</td>
+</tr>
+<tr>
+<td>TAS</td>
+<td>Test Automation Solution</td>
+</tr>
+<tr>
+<td>TLS</td>
+<td>Transport Layer Security</td>
+</tr>
+<tr>
+<td>TPS</td>
+<td>Transactions Per Second</td>
+</tr>
+<tr>
+<td>UAT</td>
+<td>User Acceptance Testing</td>
+</tr>
+<tr>
+<td>WSDL</td>
+<td>Web Services Description Language</td>
+</tr>
+<tr>
+<td>XXE</td>
+<td>XML External Entity</td>
+</tr>
+</table>
+<h1>20. References</h1>
+<p>[1] ISTQB® Certified Tester – Test Automation Strategy Specialist (CT-TAS) Syllabus v1.0, 2024</p>
+<p>[2] ISTQB® Certified Tester Foundation Level (CTFL) Syllabus v4.0</p>
+<p>[3] ISTQB® Certified Tester – Advanced Level Test Automation Engineering (CTAL-TAE) Syllabus</p>
+<p>[4] ISTQB® Certified Tester – Performance Testing (CT-PT) Syllabus</p>
+<p>[5] ISTQB® Certified Tester – Security Testing (CT-SEC) Syllabus</p>
+<p>[6] ISO/IEC 25010:2011 — Systems and software Quality Requirements and Evaluation (SQuaRE)</p>
+<p>[7] ISO 27001 — Information Security Management</p>
+<p>[8] OWASP Top 10 — 2021</p>
+<p>[9] OWASP API Security Top 10 — 2023</p>
+<p>[10] OWASP Web Services Security Cheat Sheet</p>
+<p>[11] Mike Cohn — Succeeding with Agile: Software Development Using Scrum (Test Pyramid concept)</p>
+<p>[12] Martin Fowler — Contract Testing and Service Virtualisation patterns</p>
+    </div>
+    
+    <a href="#" class="back-to-top">↑</a>
+    
+    <script>
+        // Smooth scrolling for back to top
+        document.querySelector('.back-to-top').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // Show/hide back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.pageYOffset > 300) {
+                backToTop.style.opacity = '1';
+                backToTop.style.visibility = 'visible';
+            } else {
+                backToTop.style.opacity = '0';
+                backToTop.style.visibility = 'hidden';
+            }
+        });
+    </script>
+</body>
+</html>
