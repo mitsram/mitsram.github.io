@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programme Test Strategy — Vector Programme v3.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #003366;
+    --mid-blue: #006699;
+    --light-blue: #0099cc;
+    --accent: #e8f4f8;
+    --border: #c5dde8;
+    --text: #1a2a3a;
+    --muted: #5a6a7a;
+    --bg: #f7f9fb;
+    --white: #ffffff;
+    --table-head: #003366;
+    --table-alt: #eef5fa;
+    --code-bg: #f0f4f7;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  /* ── SIDEBAR NAV ── */
+  #sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 270px;
+    height: 100vh;
+    background: var(--navy);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 0 0 2rem 0;
+  }
+
+  #sidebar-header {
+    padding: 1.5rem 1.25rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  #sidebar-header .prog-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    font-weight: 500;
+  }
+
+  #sidebar-header h2 {
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-top: 4px;
+  }
+
+  #sidebar nav ul {
+    list-style: none;
+    padding: 0.5rem 0;
+  }
+
+  #sidebar nav ul li a {
+    display: block;
+    padding: 0.42rem 1.25rem;
+    color: rgba(255,255,255,0.72);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 400;
+    transition: background 0.15s, color 0.15s;
+    border-left: 3px solid transparent;
+  }
+
+  #sidebar nav ul li a:hover,
+  #sidebar nav ul li a.active {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border-left-color: var(--light-blue);
+  }
+
+  #sidebar nav ul li.nav-section > a {
+    font-weight: 600;
+    color: rgba(255,255,255,0.55);
+    font-size: 10.5px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding-top: 1rem;
+    pointer-events: none;
+  }
+
+  #sidebar nav ul li.nav-sub > a {
+    padding-left: 2rem;
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* ── MAIN CONTENT ── */
+  #main {
+    margin-left: 270px;
+    min-height: 100vh;
+  }
+
+  /* ── COVER PAGE ── */
+  #cover {
+    background: linear-gradient(160deg, #001f44 0%, #003366 55%, #004d80 100%);
+    padding: 5rem 4rem 4rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #cover::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: rgba(0, 153, 204, 0.08);
+  }
+
+  #cover::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 100px;
+    width: 350px; height: 350px;
+    border-radius: 50%;
+    background: rgba(0, 102, 153, 0.1);
+  }
+
+  .cover-eyebrow {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+  }
+
+  #cover h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
+  }
+
+  #cover .cover-subtitle {
+    font-size: 16px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 300;
+    margin-bottom: 0.75rem;
+  }
+
+  #cover .cover-tagline {
+    font-size: 14px;
+    color: rgba(255,255,255,0.45);
+    font-style: italic;
+    margin-bottom: 3rem;
+  }
+
+  .cover-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .cover-meta span {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+  }
+
+  .cover-meta .version-badge {
+    display: inline-block;
+    background: rgba(0,153,204,0.25);
+    border: 1px solid rgba(0,153,204,0.4);
+    color: #99d6f0;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 0.2rem 0.7rem;
+    border-radius: 3px;
+    margin-top: 0.5rem;
+    width: fit-content;
+  }
+
+  /* ── CONTENT WRAPPER ── */
+  .content-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 3rem;
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    margin-bottom: 3.5rem;
+  }
+
+  /* ── HEADINGS ── */
+  h1.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--navy);
+    border-bottom: 3px solid var(--navy);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    margin-top: 0;
+  }
+
+  h2 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 2rem 0 0.75rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--mid-blue);
+    margin: 1.5rem 0 0.6rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    color: var(--text);
+  }
+
+  /* ── BULLETS ── */
+  ul.doc-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 1rem;
+  }
+
+  ul.doc-list li {
+    position: relative;
+    padding-left: 1.4rem;
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+
+  ul.doc-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--mid-blue);
+    font-size: 11px;
+    top: 3px;
+  }
+
+  ul.doc-list.sub li {
+    padding-left: 2.5rem;
+  }
+
+  /* ── TABLES ── */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 1rem 0 1.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,51,102,0.06);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead tr {
+    background: var(--table-head);
+  }
+
+  thead th {
+    color: #fff;
+    font-weight: 600;
+    padding: 0.6rem 0.85rem;
+    text-align: left;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  tbody tr:nth-child(even) {
+    background: var(--table-alt);
+  }
+
+  tbody td {
+    padding: 0.55rem 0.85rem;
+    vertical-align: top;
+    line-height: 1.55;
+  }
+
+  /* ── MONOSPACE / CODE BLOCKS ── */
+  pre {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    line-height: 1.6;
+    color: #1a3050;
+    margin: 0.75rem 0 1rem;
+    white-space: pre;
+  }
+
+  /* ── CALLOUT / INFO BOXES ── */
+  .callout {
+    background: #e8f4f8;
+    border-left: 4px solid var(--mid-blue);
+    padding: 0.85rem 1.1rem;
+    border-radius: 0 5px 5px 0;
+    margin: 1rem 0;
+    font-size: 13.5px;
+  }
+
+  /* ── TOC ── */
+  .toc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem 2rem;
+    list-style: none;
+    padding: 1rem 0;
+  }
+
+  .toc-grid li a {
+    color: var(--mid-blue);
+    text-decoration: none;
+    font-size: 13.5px;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+
+  .toc-grid li a::before {
+    content: '§';
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .toc-grid li a:hover {
+    color: var(--navy);
+    text-decoration: underline;
+  }
+
+  /* ── ROI BOX ── */
+  .roi-formula {
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--navy);
+    background: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.85rem;
+    margin: 1rem 0;
+  }
+
+  /* ── BOLD INLINE ── */
+  strong.field-label {
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 0.3rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    border: none;
+    border-top: 2px solid var(--border);
+    margin: 2.5rem 0;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    #sidebar { display: none; }
+    #main { margin-left: 0; }
+  }
+
+  /* ── SCROLL BEHAVIOR ── */
+  html { scroll-behavior: smooth; }
+
+  /* ── SCROLLBAR ── */
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-track { background: transparent; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ SIDEBAR ══════════════════════════ -->
+<nav id="sidebar">
+  <div id="sidebar-header">
+    <div class="prog-label">Vector Programme</div>
+    <h2>Programme Test Strategy</h2>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="#cover">Cover</a></li>
+      <li><a href="#doc-control">Document Control</a></li>
+      <li><a href="#toc">Table of Contents</a></li>
+      <li><a href="#s1">1. Executive Summary</a></li>
+      <li><a href="#s2">2. Introduction</a></li>
+      <li><a href="#s3">3. Architecture Overview</a></li>
+      <li><a href="#s4">4. Test Levels &amp; Types</a></li>
+      <li><a href="#s5">5. Overall Test Approach</a></li>
+      <li><a href="#s6">6. Manual Testing Strategy</a></li>
+      <li><a href="#s7">7. Test Automation Strategy</a></li>
+      <li class="nav-sub"><a href="#s7-1">7.1 Objectives &amp; Goals</a></li>
+      <li class="nav-sub"><a href="#s7-2">7.2 Technology Stack</a></li>
+      <li class="nav-sub"><a href="#s7-3">7.3 Test Pyramid</a></li>
+      <li class="nav-sub"><a href="#s7-4">7.4 Approach by Layer</a></li>
+      <li class="nav-sub"><a href="#s7-5">7.5 Automation Balance</a></li>
+      <li class="nav-sub"><a href="#s7-6">7.6 TAA</a></li>
+      <li class="nav-sub"><a href="#s7-7">7.7 Deployment Strategy</a></li>
+      <li class="nav-sub"><a href="#s7-8">7.8 Metrics &amp; Reporting</a></li>
+      <li class="nav-sub"><a href="#s7-9">7.9 ROI</a></li>
+      <li class="nav-sub"><a href="#s7-10">7.10–7.13 Additional</a></li>
+      <li><a href="#s8">8. Performance Testing</a></li>
+      <li><a href="#s9">9. Security Testing</a></li>
+      <li><a href="#s10">10. Test Data Management</a></li>
+      <li><a href="#s11">11. Test Environments</a></li>
+      <li><a href="#s12">12. Roles &amp; Responsibilities</a></li>
+      <li><a href="#s13">13. CI/CD &amp; Quality Gates</a></li>
+      <li><a href="#s14">14. Test Schedule</a></li>
+      <li><a href="#s15">15. Risk Management</a></li>
+      <li><a href="#s16">16. Communication &amp; Reporting</a></li>
+      <li><a href="#s17">17. Tooling Summary</a></li>
+      <li><a href="#s18">18. Assumptions &amp; Constraints</a></li>
+      <li><a href="#s19">19. Glossary</a></li>
+      <li><a href="#s20">20. References</a></li>
+    </ul>
+  </nav>
+</nav>
+
+<!-- ══════════════════════════ MAIN ══════════════════════════ -->
+<div id="main">
+
+  <!-- COVER -->
+  <div id="cover">
+    <div class="cover-eyebrow">Confidential — Vector Programme</div>
+    <h1>Programme Test Strategy</h1>
+    <p class="cover-subtitle">Manual Testing · Test Automation · Performance Testing · Security Testing</p>
+    <p class="cover-tagline">Hybrid Real + Virtual Integration Testing with Schema-Driven Validation</p>
+    <div class="cover-meta">
+      <span>Vector Programme</span>
+      <span>Classification: Confidential</span>
+      <span class="version-badge">Version 3.0 — 24 February 2026</span>
+    </div>
+  </div>
+
+  <div class="content-wrap">
+
+    <!-- ── DOCUMENT CONTROL ── -->
+    <section id="doc-control">
+      <h1 class="section-title">Document Control</h1>
+
+      <h2>Revision History</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>1.0</td><td>2025-06-01</td><td>[Author Name]</td><td>Initial Programme Test Strategy</td></tr>
+            <tr><td>2.0</td><td>2025-09-01</td><td>[Author Name]</td><td>Consolidated release — full test automation strategy integrated</td></tr>
+            <tr><td>3.0</td><td>2026-02-24</td><td>[Author Name]</td><td>Updated to implement Hybrid Real + Virtual integration testing approach with Schema-Driven validation. Technology stack updated to Playwright (TypeScript), Pact, WireMock, Snowflake SDK. Dual-track CI/staging pipeline model introduced.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Distribution List</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Role</th><th>Organisation</th></tr></thead>
+          <tbody>
+            <tr><td>[Name]</td><td>Programme Manager</td><td>Vector Programme</td></tr>
+            <tr><td>[Name]</td><td>Test Manager</td><td>Vector Programme</td></tr>
+            <tr><td>[Name]</td><td>Solution Architect</td><td>Vector Programme</td></tr>
+            <tr><td>[Name]</td><td>Delivery Lead</td><td>Vector Programme</td></tr>
+            <tr><td>[Name]</td><td>Security Lead</td><td>Vector Programme</td></tr>
+            <tr><td>[Name]</td><td>App1 Test Lead</td><td>Vector Programme</td></tr>
+            <tr><td>[Name]</td><td>App2 Test Lead</td><td>Vector Programme</td></tr>
+            <tr><td>[Name]</td><td>Siebel Test Lead</td><td>Vector Programme</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Approvals</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Role</th><th>Signature</th><th>Date</th></tr></thead>
+          <tbody>
+            <tr><td>[Name]</td><td>Programme Manager</td><td></td><td></td></tr>
+            <tr><td>[Name]</td><td>Test Manager</td><td></td><td></td></tr>
+            <tr><td>[Name]</td><td>Security Lead</td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Related Documents</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Document</th><th>Version</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>[Project Test Plan — App1]</td><td>[x.x]</td><td>App1 system test plan</td></tr>
+            <tr><td>[Project Test Plan — App2]</td><td>[x.x]</td><td>App2 system test plan</td></tr>
+            <tr><td>[Project Test Plan — Siebel]</td><td>[x.x]</td><td>Siebel system test plan</td></tr>
+            <tr><td>[Requirements Specification]</td><td>[x.x]</td><td>Functional and non-functional requirements</td></tr>
+            <tr><td>[Solution Architecture Document]</td><td>[x.x]</td><td>System architecture and integration design</td></tr>
+            <tr><td>[Integration Testing Framework — Architecture Options]</td><td>1.0</td><td>Analysis of integration testing architecture options (basis for this strategy update)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── TABLE OF CONTENTS ── -->
+    <section id="toc">
+      <h1 class="section-title">Table of Contents</h1>
+      <ul class="toc-grid">
+        <li><a href="#s1">1. Executive Summary</a></li>
+        <li><a href="#s2">2. Introduction</a></li>
+        <li><a href="#s3">3. Programme Architecture Overview</a></li>
+        <li><a href="#s4">4. Test Levels and Test Types</a></li>
+        <li><a href="#s5">5. Overall Test Approach</a></li>
+        <li><a href="#s6">6. Manual Testing Strategy</a></li>
+        <li><a href="#s7">7. Test Automation Strategy</a></li>
+        <li><a href="#s8">8. Performance Testing Strategy</a></li>
+        <li><a href="#s9">9. Security Testing Strategy</a></li>
+        <li><a href="#s10">10. Test Data Management</a></li>
+        <li><a href="#s11">11. Test Environment Strategy</a></li>
+        <li><a href="#s12">12. Roles and Responsibilities</a></li>
+        <li><a href="#s13">13. CI/CD Integration and Quality Gates</a></li>
+        <li><a href="#s14">14. Test Schedule and Phasing</a></li>
+        <li><a href="#s15">15. Risk Management</a></li>
+        <li><a href="#s16">16. Communication and Reporting</a></li>
+        <li><a href="#s17">17. Tooling Summary</a></li>
+        <li><a href="#s18">18. Assumptions, Constraints, and Dependencies</a></li>
+        <li><a href="#s19">19. Glossary</a></li>
+        <li><a href="#s20">20. References</a></li>
+      </ul>
+    </section>
+
+    <!-- ── 1. EXECUTIVE SUMMARY ── -->
+    <section id="s1">
+      <h1 class="section-title">1. Executive Summary</h1>
+      <p>This Programme Test Strategy defines the overarching testing approach for the Vector Programme. It establishes a unified, risk-based testing framework that spans all testing disciplines — manual functional testing, test automation, performance testing, and security testing — across the programme's interconnected application landscape. This is a self-contained document; all testing disciplines, including the complete test automation strategy, are fully defined herein.</p>
+      <p>The Vector Programme comprises three core systems — App1, App2, and Siebel — that interact through SOAP-based integrations, a Pub/Sub integration layer, and an ETL reporting pipeline (Fivetran → Coalesce → Snowflake → Power BI). Each system maintains independent development and system testing activities. This strategy governs the programme-level testing that validates integration quality, end-to-end business process integrity, non-functional requirements, and overall production readiness.</p>
+      <p>Version 3.0 introduces a significant evolution in the integration testing approach. Following an architectural options analysis, the programme has adopted a Hybrid Real + Virtual integration testing model with Schema-Driven validation. This approach provides:</p>
+      <ul class="doc-list">
+        <li>Real staging tests for high confidence — leveraging the full staging environments available for all systems (App2, Siebel, ETL pipeline)</li>
+        <li>WireMock service virtualisation for fast CI feedback — eliminating staging dependencies for daily development cycles</li>
+        <li>Schema validation (WSDL + message schemas) for drift detection — using 3rd-party published schemas as the source of truth without requiring their cooperation</li>
+        <li>Consumer-side Pact contracts as living documentation of App1's expectations of external system interfaces</li>
+      </ul>
+      <p>The strategy is structured around four complementary testing pillars:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Pillar</th><th>Purpose</th><th>Scope</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Manual Testing</strong></td><td>Validate functional correctness, business logic, and user experience through structured and exploratory testing</td><td>System integration testing, E2E business scenarios, UAT support, exploratory testing</td></tr>
+            <tr><td><strong>Test Automation</strong></td><td>Deliver repeatable, efficient regression testing across integration, data, and UI layers using a hybrid real + virtual approach</td><td>SOAP integration tests (real staging + WireMock virtual), Pub/Sub integration tests, ETL data validation via Snowflake SDK, UI regression via Playwright, consumer-side Pact contracts, schema-driven drift detection</td></tr>
+            <tr><td><strong>Performance Testing</strong></td><td>Validate system responsiveness, scalability, and stability under expected and peak loads</td><td>Integration layer throughput, ETL pipeline performance, end-to-end response times, concurrent user capacity</td></tr>
+            <tr><td><strong>Security Testing</strong></td><td>Identify and mitigate security vulnerabilities across applications and integration points</td><td>Application security assessment, API security testing, data protection validation, penetration testing</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The test automation pillar is grounded in the principles of the ISTQB Certified Tester – Test Automation Strategy (CT-TAS) Syllabus v1.0, with objectives including improved test efficiency, broader test coverage, reduced total cost and time to market, increased test frequency, and the ability to perform tests that manual testers cannot practically execute — particularly across integration boundaries and data pipelines.</p>
+      <p>A key architectural constraint shaping this strategy is that App2 and Siebel are 3rd-party systems. We cannot run Pact provider verification or instrument these systems directly. All test infrastructure is therefore App1-centric — we test our side of every boundary. The hybrid approach addresses this by combining real staging validation with schema-driven contract assertions to achieve high confidence without requiring 3rd-party cooperation.</p>
+    </section>
+
+    <!-- ── 2. INTRODUCTION ── -->
+    <section id="s2">
+      <h1 class="section-title">2. Introduction</h1>
+
+      <h2>2.1 Purpose</h2>
+      <p>This document establishes the programme-wide test strategy for the Vector Programme. It provides a single, self-contained reference for all stakeholders to understand the testing approach, test levels, test types, test automation strategy, performance and security testing approaches, roles, environments, tooling, governance, and quality criteria that will be applied to deliver a production-ready solution.</p>
+
+      <h2>2.2 Scope</h2>
+      <p>This strategy covers all programme-level testing activities. Individual system testing (unit testing, component testing) within App1, App2, and Siebel is managed by each application team's own test plan and is referenced but not governed by this document.</p>
+      <p><strong>In scope:</strong></p>
+      <ul class="doc-list">
+        <li>System Integration Testing (SIT) — validating interactions between App1, App2, Siebel, and the integration layer</li>
+        <li>End-to-End Testing (E2E) — verifying complete business use cases across multiple systems</li>
+        <li>Regression Testing — both manual and automated regression for integration and E2E scope</li>
+        <li>Test Automation — comprehensive automated testing using a hybrid real + virtual approach with Playwright (TypeScript), Pact, WireMock, and Snowflake SDK</li>
+        <li>Consumer-Side Contract Testing — Pact consumer contracts documenting App1's expectations of App2 and Integration Layer interfaces</li>
+        <li>Schema-Driven Validation — WSDL and message schema validation for drift detection</li>
+        <li>Service Virtualisation — WireMock-based virtualisation of 3rd-party systems for fast CI feedback</li>
+        <li>Performance Testing — load, stress, endurance, and scalability testing</li>
+        <li>Security Testing — vulnerability assessment, API security, data protection, and penetration testing</li>
+        <li>User Acceptance Testing (UAT) support</li>
+        <li>Data/ETL Testing — validating the data pipeline from App1 through to Power BI using Snowflake SDK and SQL assertions</li>
+      </ul>
+      <p><strong>Out of scope:</strong></p>
+      <ul class="doc-list">
+        <li>Unit testing and component-level testing within individual applications</li>
+        <li>Development team code reviews and static analysis (except as CI/CD quality gates)</li>
+        <li>Infrastructure provisioning and configuration (referenced as dependencies)</li>
+        <li>Provider-side Pact verification (not possible for 3rd-party systems App2 and Siebel)</li>
+        <li>Instrumenting or modifying 3rd-party systems for testing purposes</li>
+      </ul>
+
+      <h2>2.3 Audience</h2>
+      <ul class="doc-list">
+        <li>Programme Manager and Steering Committee</li>
+        <li>Test Manager and Test Leads</li>
+        <li>Solution Architect and Technical Leads</li>
+        <li>Test Automation Engineers and Manual Test Analysts</li>
+        <li>Performance and Security Test Engineers</li>
+        <li>Application Teams (App1, App2, Siebel)</li>
+        <li>Business Stakeholders and UAT participants</li>
+      </ul>
+    </section>
+
+    <!-- ── 3. ARCHITECTURE OVERVIEW ── -->
+    <section id="s3">
+      <h1 class="section-title">3. Programme Architecture Overview</h1>
+
+      <h2>3.1 System Landscape</h2>
+      <p>The Vector Programme integrates three independent applications through SOAP-based web services, a Pub/Sub integration layer, and an ETL reporting pipeline.</p>
+      <pre>                        ┌──────────────┐
+                        │    App2      │
+                        │ (3rd party)  │
+                        └──────┬───────┘
+                               │ SOAP (bidirectional)
+                        ┌──────┴───────┐
+        Pub/Sub         │    App1      │──── Data Feed
+  ┌─────────────────────┤  (we own)    │
+  │                     └──────────────┘
+  │  Integration                          
+  │    Layer                          Fivetran → Coalesce → Snowflake → Power BI
+  │                            
+┌─┴────────────┐
+│   Siebel     │
+│ (3rd party)  │
+└──────────────┘</pre>
+
+      <h2>3.2 Application Descriptions</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>System</th><th>Description</th><th>Ownership</th><th>Integration Role</th></tr></thead>
+          <tbody>
+            <tr><td><strong>App1</strong></td><td>Core business application owned by the programme.</td><td>We own</td><td>Central hub — initiates and receives SOAP calls to/from App2, publishes/subscribes to Pub/Sub messages via the Integration Layer, and produces data feeds for the ETL pipeline.</td></tr>
+            <tr><td><strong>App2</strong></td><td>Third-party application providing complementary business capabilities.</td><td>3rd party</td><td>Bidirectional SOAP integration with App1. We cannot instrument, modify, or run provider-side tests against App2.</td></tr>
+            <tr><td><strong>Siebel</strong></td><td>Third-party CRM system.</td><td>3rd party</td><td>Communicates with App1 via Pub/Sub through the Integration Layer. We cannot instrument or run provider-side tests against Siebel.</td></tr>
+            <tr><td><strong>Integration Layer</strong></td><td>Middleware providing Pub/Sub messaging between App1 and Siebel.</td><td>We own</td><td>Message routing, transformation, and delivery. This is a boundary we control and can test directly.</td></tr>
+            <tr><td><strong>ETL Pipeline</strong></td><td>Fivetran → Coalesce → Snowflake → Power BI data pipeline.</td><td>Shared</td><td>Data feed from App1 is extracted, transformed, loaded, and visualised.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>3.3 Integration Points</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Integration</th><th>Protocol</th><th>Direction</th><th>Description</th><th>Test Approach</th></tr></thead>
+          <tbody>
+            <tr><td>App1 ↔ App2</td><td>SOAP</td><td>Bidirectional</td><td>Request/response and callback patterns via SOAP web services</td><td>Real staging tests + WireMock virtual stubs + WSDL schema validation</td></tr>
+            <tr><td>App1 ↔ Integration Layer ↔ Siebel</td><td>Pub/Sub</td><td>Bidirectional</td><td>Asynchronous message-based integration through the Integration Layer</td><td>Real staging tests + WireMock/Pub/Sub stubs + message schema validation</td></tr>
+            <tr><td>App1 → ETL Pipeline</td><td>Data Feed</td><td>Outbound</td><td>App1 produces data consumed by Fivetran for ETL processing</td><td>Snowflake SDK queries + SQL assertions + data reconciliation</td></tr>
+            <tr><td>ETL → Power BI</td><td>Query / Direct Query</td><td>Outbound</td><td>Snowflake serves as the data warehouse for Power BI reporting</td><td>Power BI API spot-checks + Snowflake query validation</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>3.4 Testing Boundaries and Constraints</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Constraint</th><th>Impact on Testing Strategy</th></tr></thead>
+          <tbody>
+            <tr><td>App2 is 3rd-party</td><td>We cannot run Pact provider verification on App2. We treat its SOAP interface as an external contract we consume and validate from our side only. WSDL schema validation serves as our primary drift detection mechanism.</td></tr>
+            <tr><td>Siebel is 3rd-party</td><td>We cannot instrument Siebel or run provider-side tests. The Integration Layer is the boundary we control. Consumer-side Pact contracts document our expectations of Siebel message formats.</td></tr>
+            <tr><td>We own only App1 + Integration Layer</td><td>All test infrastructure is App1-centric. We test our side of every boundary. WireMock virtualises 3rd-party interfaces for fast CI testing.</td></tr>
+            <tr><td>Full staging available</td><td>We can run integration tests against real staging environments for App2, Siebel, and the ETL pipeline. This provides high confidence and is used to validate virtual stubs remain accurate.</td></tr>
+            <tr><td>All integrations equally important</td><td>The framework covers SOAP, Pub/Sub, and ETL from day one. No integration type is deprioritised.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 4. TEST LEVELS AND TYPES ── -->
+    <section id="s4">
+      <h1 class="section-title">4. Test Levels and Test Types</h1>
+
+      <h2>4.1 Test Levels</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Test Level</th><th>Scope</th><th>Responsibility</th><th>Environments</th></tr></thead>
+          <tbody>
+            <tr><td>Unit / Component Testing</td><td>Individual application components and business logic</td><td>Application development teams (App1, App2, Siebel)</td><td>DEV</td></tr>
+            <tr><td>System Testing</td><td>Individual application functionality in isolation</td><td>Application test teams</td><td>System Test (ST)</td></tr>
+            <tr><td>System Integration Testing (SIT)</td><td>Interactions between systems: SOAP, Pub/Sub, data flows</td><td>Programme test team</td><td>SIT (real) + CI (virtual via WireMock)</td></tr>
+            <tr><td>End-to-End Testing (E2E)</td><td>Complete business processes spanning multiple systems</td><td>Programme test team + business SMEs</td><td>E2E (real staging) + CI (virtualised)</td></tr>
+            <tr><td>Performance Testing</td><td>Non-functional performance requirements: load, stress, endurance</td><td>Performance test engineer</td><td>Pre-Prod (production-like)</td></tr>
+            <tr><td>Security Testing</td><td>Security vulnerability assessment across applications and integrations</td><td>Security test engineer/specialist</td><td>Pre-Prod / SIT</td></tr>
+            <tr><td>User Acceptance Testing (UAT)</td><td>Business acceptance of system behaviour</td><td>Business stakeholders</td><td>UAT</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>4.2 Test Types</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Test Type</th><th>Description</th><th>Tools</th><th>Pipeline Stage</th></tr></thead>
+          <tbody>
+            <tr><td>Consumer Contract Testing</td><td>Record App1's expectations of App2 SOAP and Integration Layer messages using Pact consumer-side contracts. No provider verification — contracts validated against staging responses periodically.</td><td>Pact (TypeScript)</td><td>CI (fast)</td></tr>
+            <tr><td>SOAP Integration Testing (Virtual)</td><td>Stub App2 SOAP endpoints via WireMock for fast CI runs. Stubs derived from recorded staging traffic + WSDL schemas.</td><td>Playwright API + WireMock</td><td>CI (fast)</td></tr>
+            <tr><td>SOAP Integration Testing (Real)</td><td>Call App2 staging SOAP endpoints directly. Validate request/response against WSDL. Test both directions.</td><td>Playwright API</td><td>Staging pipeline</td></tr>
+            <tr><td>Pub/Sub Integration Testing (Virtual)</td><td>Simulate Integration Layer for CI. Publish synthetic messages to test App1's consumer logic.</td><td>WireMock + Custom Pub/Sub Stub</td><td>CI (fast)</td></tr>
+            <tr><td>Pub/Sub Integration Testing (Real)</td><td>Publish/consume messages to Integration Layer staging. Validate message delivery and processing.</td><td>Playwright API + Message Client</td><td>Staging pipeline</td></tr>
+            <tr><td>Schema Validation</td><td>Validate SOAP requests against WSDL, Pub/Sub messages against JSON Schema / AsyncAPI. Detect structural drift.</td><td>WSDL parser + JSON Schema + Playwright</td><td>CI + scheduled</td></tr>
+            <tr><td>ETL Data Validation</td><td>Trigger data feed from App1 → validate data in Snowflake → spot-check Power BI.</td><td>Playwright + Snowflake SDK</td><td>Staging pipeline</td></tr>
+            <tr><td>UI Regression Testing</td><td>Critical user journeys through App1 UI that trigger cross-system integrations.</td><td>Playwright UI (TypeScript)</td><td>Staging pipeline</td></tr>
+            <tr><td>Exploratory Testing</td><td>Session-based exploratory testing for integration scenarios.</td><td>Manual</td><td>SIT/E2E cycles</td></tr>
+            <tr><td>Performance Testing</td><td>Load, stress, endurance, scalability, and ETL performance testing.</td><td>k6 / JMeter / Gatling</td><td>Pre-Prod</td></tr>
+            <tr><td>Security Testing</td><td>SAST, DAST, API security, penetration testing.</td><td>OWASP ZAP, Burp Suite, SonarQube</td><td>CI + Pre-Prod</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 5. OVERALL TEST APPROACH ── -->
+    <section id="s5">
+      <h1 class="section-title">5. Overall Test Approach</h1>
+
+      <h2>5.1 Hybrid Real + Virtual Testing Philosophy</h2>
+      <p>This strategy adopts a Hybrid Real + Virtual integration testing approach with Schema-Driven validation. The philosophy is:</p>
+      <ul class="doc-list">
+        <li>Use real staging environments as the primary test target for high confidence — since full staging is available for App2, Siebel, and the ETL pipeline</li>
+        <li>Virtualise 3rd-party systems using WireMock for fast CI feedback and when staging is unavailable</li>
+        <li>Use consumer-side Pact contracts to document App1's expectations of external interfaces — serving as living documentation</li>
+        <li>Use schema validation (WSDL for SOAP, JSON Schema / AsyncAPI for Pub/Sub) as the drift detection mechanism</li>
+        <li>Periodically validate WireMock stubs and Pact contracts against real staging responses to ensure virtual tests remain accurate</li>
+      </ul>
+
+      <h2>5.2 Dual-Track Pipeline Model</h2>
+      <pre>CI Pipeline (fast, virtual — runs on every commit):
+  Pact consumer tests    ──→  generate contract files
+  WireMock SOAP stubs    ──→  Playwright API tests (App1↔App2 virtual)
+  Pub/Sub stubs          ──→  Playwright API tests (App1↔Integration Layer virtual)
+  Schema validation      ──→  WSDL + JSON Schema compliance checks
+
+Staging Pipeline (slower, real — runs nightly / pre-release):
+  Playwright API         ──→  real App2 SOAP staging
+  Message client         ──→  real Integration Layer staging
+  Snowflake queries      ──→  real ETL pipeline staging
+  Playwright UI          ──→  real App1 UI → cross-system flows
+
+Contract Drift Detection (scheduled — weekly):
+  Record staging responses ──→  compare against Pact contracts ──→  alert on drift
+  Fetch latest WSDL/schemas ──→ compare against stored versions ──→ alert on changes</pre>
+
+      <h2>5.3 Risk-Based Testing</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Risk Level</th><th>Testing Intensity</th><th>Examples</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Critical</strong></td><td>Full automated coverage (virtual + staging) + manual exploration + schema validation + performance + security</td><td>App1↔App2 SOAP (core business transactions), App1↔Siebel Pub/Sub (data synchronisation), ETL pipeline data integrity</td></tr>
+            <tr><td><strong>High</strong></td><td>Automated coverage (virtual + staging) + manual key scenarios + schema validation</td><td>Cross-system business processes, data feeds, error handling paths</td></tr>
+            <tr><td><strong>Medium</strong></td><td>Automated coverage (virtual) + manual spot-checks + staging validation</td><td>Secondary integration flows, edge cases, configuration-dependent paths</td></tr>
+            <tr><td><strong>Low</strong></td><td>Manual testing + basic automated smoke tests</td><td>Rarely-used features, informational integrations</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>5.4 Test Design Techniques</h2>
+      <ul class="doc-list">
+        <li>Equivalence partitioning and boundary value analysis for integration message fields</li>
+        <li>State transition testing for stateful SOAP and Pub/Sub interactions</li>
+        <li>Decision table testing for business rules applied during integration</li>
+        <li>Use case testing for end-to-end business scenarios</li>
+        <li>Error guessing and fault injection for resilience testing (using WireMock fault simulation)</li>
+        <li>Exploratory testing for undocumented integration behaviours</li>
+        <li>Schema-based test generation — deriving test cases from WSDL and message schemas to ensure structural coverage</li>
+      </ul>
+
+      <h2>5.5 Entry and Exit Criteria</h2>
+      <p><strong>Entry criteria for System Integration Testing:</strong></p>
+      <ul class="doc-list">
+        <li>All participating systems have completed system testing and met exit criteria</li>
+        <li>SIT environment available with all integration endpoints configured</li>
+        <li>WireMock stubs created and validated for virtualised test scenarios</li>
+        <li>Pact consumer contracts generated for all integration interfaces</li>
+        <li>WSDL and message schemas stored in the repository and versioned</li>
+        <li>Test data provisioned across all systems</li>
+        <li>CI pipeline configured with virtual integration tests passing</li>
+      </ul>
+      <p><strong>Exit criteria for System Integration Testing:</strong></p>
+      <ul class="doc-list">
+        <li>All critical and high-priority integration test cases executed and passed</li>
+        <li>Virtual CI tests passing at ≥95% pass rate</li>
+        <li>Staging integration tests passing at ≥90% pass rate</li>
+        <li>Pact contract validation against staging — no unexpected drift detected</li>
+        <li>Schema validation — no structural drift detected in WSDL or message schemas</li>
+        <li>No outstanding critical or high-severity defects</li>
+        <li>All data pipeline validation checks passing</li>
+        <li>Test completion report reviewed and approved</li>
+      </ul>
+    </section>
+
+    <!-- ── 6. MANUAL TESTING STRATEGY ── -->
+    <section id="s6">
+      <h1 class="section-title">6. Manual Testing Strategy</h1>
+      <p>While the test automation strategy provides comprehensive automated coverage for integration, data, and regression testing, manual testing remains essential for scenarios that require human judgement, exploratory investigation, and business context validation.</p>
+
+      <h2>6.1 Role of Manual Testing</h2>
+      <ul class="doc-list">
+        <li>Exploratory testing of integration behaviour — investigating edge cases, unusual data combinations, and undocumented system interactions</li>
+        <li>UAT support — assisting business stakeholders in validating acceptance criteria that require business domain judgement</li>
+        <li>New feature validation — testing newly developed integration flows before automation scripts are created</li>
+        <li>Usability and user experience assessment for App1 UI workflows</li>
+        <li>Ad-hoc investigation of defects and production incidents</li>
+        <li>Validation of complex business rules that span multiple systems</li>
+      </ul>
+
+      <h2>6.2 Manual Testing Approach by Test Level</h2>
+      <h3>6.2.1 System Integration Testing (Manual)</h3>
+      <ul class="doc-list">
+        <li>Execute integration test scenarios that cannot be automated or are pending automation</li>
+        <li>Validate SOAP request/response content against business requirements (beyond structural schema compliance)</li>
+        <li>Verify Pub/Sub message processing results in the expected business outcomes in downstream systems</li>
+        <li>Test error handling and recovery scenarios by manually triggering error conditions where automation is impractical</li>
+        <li>Validate integration behaviour against real staging using manual API tools (Postman, SoapUI)</li>
+      </ul>
+      <h3>6.2.2 End-to-End Testing (Manual)</h3>
+      <ul class="doc-list">
+        <li>Execute complete business use cases that span App1, App2, and Siebel</li>
+        <li>Validate data flow from App1 through the ETL pipeline to Power BI reports</li>
+        <li>Assess end-to-end user experience for critical business processes</li>
+        <li>Perform cross-system regression testing for scenarios not yet automated</li>
+      </ul>
+      <h3>6.2.3 User Acceptance Testing Support</h3>
+      <ul class="doc-list">
+        <li>Provide test environment setup and test data preparation support for UAT</li>
+        <li>Assist business users with test execution guidance</li>
+        <li>Facilitate defect triage between business-reported issues and integration defects</li>
+        <li>Document UAT feedback and coordinate resolution with development teams</li>
+      </ul>
+
+      <h2>6.3 Exploratory Testing</h2>
+      <p>Structured exploratory testing sessions will be conducted during SIT and E2E testing phases, targeting:</p>
+      <ul class="doc-list">
+        <li>Integration boundary behaviour under unexpected conditions</li>
+        <li>Data consistency across systems after complex transaction sequences</li>
+        <li>Error handling and recovery across integration points</li>
+        <li>Timeout and retry behaviour for SOAP and Pub/Sub integrations</li>
+        <li>ETL pipeline behaviour with edge-case data (nulls, special characters, maximum field lengths)</li>
+      </ul>
+
+      <h2>6.4 Test Case Management</h2>
+      <ul class="doc-list">
+        <li>Test cases are managed in Azure DevOps Test Plans (or equivalent tool)</li>
+        <li>Traceability is maintained between test cases, requirements, and defects</li>
+        <li>Test cases are reviewed and approved before execution</li>
+        <li>Automation candidates are flagged during manual test case design (as recommended in CT-TAS Section 6.1.1)</li>
+      </ul>
+
+      <h2>6.5 Defect Management</h2>
+      <ul class="doc-list">
+        <li>Defects are raised in Azure DevOps / Jira with full reproduction evidence</li>
+        <li>Defect severity and priority are classified using agreed taxonomy</li>
+        <li>Defect triage is conducted daily during active test cycles</li>
+        <li>Integration defects are assigned to the appropriate application team with cross-team coordination for root cause analysis</li>
+        <li>Defect resolution turnaround SLAs are agreed and tracked</li>
+      </ul>
+    </section>
+
+    <!-- ── 7. TEST AUTOMATION STRATEGY ── -->
+    <section id="s7">
+      <h1 class="section-title">7. Test Automation Strategy</h1>
+      <p>This section defines the complete test automation strategy for the Vector Programme. It implements the recommended Hybrid Real + Virtual approach with Schema-Driven validation, grounded in the ISTQB Certified Tester – Test Automation Strategy (CT-TAS) Syllabus v1.0.</p>
+      <p>The approach is designed around a key architectural constraint: App2 and Siebel are 3rd-party systems. We cannot run Pact provider verification, instrument their code, or require their cooperation for testing. All test infrastructure is App1-centric — we test our side of every integration boundary.</p>
+
+      <h2 id="s7-1">7.1 Objectives, Goals, and Success Factors</h2>
+      <h3>7.1.1 Goals and Objectives</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ref</th><th>Objective</th><th>Measure of Success</th></tr></thead>
+          <tbody>
+            <tr><td>OBJ-01</td><td>Validate integration flows between App1, App2 and Siebel through automated SOAP tests using both WireMock (virtual) and real staging</td><td>All critical integration paths covered with both virtual and staging tests</td></tr>
+            <tr><td>OBJ-02</td><td>Verify data integrity across the ETL pipeline (Fivetran → Coalesce → Snowflake → Power BI) using Snowflake SDK and SQL assertions</td><td>Automated data reconciliation checks pass for all key entities</td></tr>
+            <tr><td>OBJ-03</td><td>Enable repeatable end-to-end testing of core business use cases using WireMock service virtualisation</td><td>E2E test suite executes without dependency on external system availability</td></tr>
+            <tr><td>OBJ-04</td><td>Establish consumer-side Pact contracts as living documentation of App1's integration expectations</td><td>Pact contracts generated for all integration interfaces and validated against staging periodically</td></tr>
+            <tr><td>OBJ-05</td><td>Implement schema-driven drift detection using WSDL and message schemas to catch 3rd-party changes early</td><td>Schema drift detection running on schedule; alerts triggered on any structural changes</td></tr>
+            <tr><td>OBJ-06</td><td>Reduce regression test cycle time for integration testing</td><td>≥60% reduction in SIT regression test execution time through CI virtual tests</td></tr>
+            <tr><td>OBJ-07</td><td>Provide dual-track CI feedback: fast virtual tests on every commit, staging validation nightly/pre-release</td><td>CI pipeline completes virtual tests within 15 minutes; staging pipeline completes within 2 hours</td></tr>
+            <tr><td>OBJ-08</td><td>Establish a sustainable test data management approach</td><td>Test data provisioned automatically for each test run</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>7.1.2 Success Factors</h3>
+      <ul class="doc-list">
+        <li>SUT Testability — App1 must expose testable SOAP endpoints, APIs, and database access</li>
+        <li>Defined Test Automation Strategy — this section, kept current and aligned with programme evolution</li>
+        <li>Test Automation Architecture (TAA) — clear separation between virtual (CI) and real (staging) test execution paths</li>
+        <li>Test Automation Framework (TAF) — a Playwright + TypeScript framework with consistent patterns</li>
+        <li>Schema Availability — App2's WSDL and the Integration Layer's message schemas must be accessible and versioned</li>
+        <li>Staging Environment Stability — real staging tests depend on consistent environment availability</li>
+        <li>Stakeholder Buy-in — active support from project leadership, development teams, and business stakeholders</li>
+        <li>Skilled Test Automation Engineers — TAEs with expertise in Playwright, WireMock, Pact, Snowflake SDK, and schema validation</li>
+      </ul>
+
+      <h2 id="s7-2">7.2 Technology Stack</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Concern</th><th>Tool</th><th>Rationale</th></tr></thead>
+          <tbody>
+            <tr><td>UI &amp; API Testing</td><td>Playwright (TypeScript)</td><td>Unified framework for both UI browser testing and API-level integration testing. TypeScript provides type safety and excellent IDE support.</td></tr>
+            <tr><td>Consumer Contract Testing</td><td>Pact (consumer-side only)</td><td>Industry-standard contract testing tool. Used consumer-side only since providers (App2, Siebel) are 3rd-party and cannot run provider verification.</td></tr>
+            <tr><td>Service Virtualisation</td><td>WireMock</td><td>Lightweight, flexible HTTP/SOAP stubbing. Supports WSDL-based stub generation, recording mode for capturing real traffic, and fault injection for negative testing. No licensing cost.</td></tr>
+            <tr><td>Data Validation</td><td>Snowflake SDK / SQL assertions</td><td>Direct programmatic access to Snowflake for data validation. SQL assertions verify row counts, data types, referential integrity, and transformation correctness across the ETL pipeline.</td></tr>
+            <tr><td>Schema Validation</td><td>WSDL parser + JSON Schema validator</td><td>Validate SOAP requests/responses against App2's published WSDL. Validate Pub/Sub messages against JSON Schema / AsyncAPI definitions. Auto-generate WireMock stubs from schemas for consistency.</td></tr>
+            <tr><td>Test Runner &amp; Reporting</td><td>Playwright Test Runner + CI/CD dashboards</td><td>Built-in parallel execution, retry logic, HTML reporting, and CI/CD integration.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="s7-3">7.3 Test Automation Distribution (Test Pyramid)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Level</th><th>Test Type</th><th>Scope</th><th>Volume</th><th>Speed</th><th>Track</th></tr></thead>
+          <tbody>
+            <tr><td>Level 1 — Contracts &amp; Schemas</td><td>Pact Consumer Tests + Schema Validation</td><td>App1's expectations of App2 SOAP and Integration Layer messages. WSDL and JSON Schema compliance.</td><td>High</td><td>Fastest</td><td>CI (virtual)</td></tr>
+            <tr><td>Level 2 — API/Service (Virtual)</td><td>SOAP &amp; Pub/Sub Integration Tests via WireMock</td><td>Individual service endpoints and message flows tested against WireMock stubs derived from schemas and recorded traffic.</td><td>High</td><td>Fast</td><td>CI (virtual)</td></tr>
+            <tr><td>Level 3 — API/Service (Real)</td><td>SOAP &amp; Pub/Sub Integration Tests against Staging</td><td>Same test logic as Level 2 but executed against real staging endpoints for high confidence validation.</td><td>Medium</td><td>Medium</td><td>Staging</td></tr>
+            <tr><td>Level 4 — Data/ETL</td><td>Data Pipeline Validation Tests</td><td>Data extraction, transformation, and loading validation across Fivetran → Coalesce → Snowflake → Power BI using Snowflake SDK.</td><td>Medium</td><td>Medium</td><td>Staging</td></tr>
+            <tr><td>Level 5 — E2E (Virtualised)</td><td>End-to-End Scenario Tests with WireMock</td><td>Complete business use cases flowing across multiple systems, using WireMock virtualisation for 3rd-party systems.</td><td>Low–Medium</td><td>Slower</td><td>CI (virtual)</td></tr>
+            <tr><td>Level 6 — UI</td><td>UI Regression Tests</td><td>Critical user journeys through App1 UI triggering cross-system integrations. Executed against real staging.</td><td>Low</td><td>Slowest</td><td>Staging</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="s7-4">7.4 Test Automation Approach by Layer</h2>
+
+      <h3>7.4.1 Consumer Contract Testing (Pact)</h3>
+      <p>Since App2 and Siebel are 3rd-party systems, traditional bi-directional contract testing is not possible. Instead, consumer-side Pact contracts serve as living documentation of App1's expectations. These contracts are validated against real staging responses on a scheduled basis to detect behavioural drift.</p>
+      <strong class="field-label">Approach:</strong>
+      <ul class="doc-list">
+        <li>Generate Pact consumer contracts for every SOAP interaction App1 has with App2</li>
+        <li>Generate Pact consumer contracts for every Pub/Sub message App1 produces and consumes via the Integration Layer</li>
+        <li>Store Pact contract files in version control alongside test scripts</li>
+        <li>Periodically replay contracts against real staging responses and compare — flag any structural or behavioural drift</li>
+        <li>Use Pact contracts to auto-generate WireMock stubs, ensuring consistency between contracts and virtual services</li>
+      </ul>
+      <strong class="field-label">Benefits:</strong>
+      <ul class="doc-list">
+        <li>Living documentation of all integration expectations — always up to date</li>
+        <li>Drift detection without requiring 3rd-party cooperation</li>
+        <li>Foundation for WireMock stub generation — contracts drive virtualisation</li>
+        <li>Clear record of what App1 expects, enabling faster root-cause analysis when integrations break</li>
+      </ul>
+
+      <h3>7.4.2 Schema-Driven Validation (WSDL + AsyncAPI)</h3>
+      <p>Schema-driven validation uses the 3rd party's own published schemas as the source of truth. This complements Pact contracts by providing structural validation that is schema-authoritative rather than consumer-defined.</p>
+      <strong class="field-label">Schema Registry (maintained in repository):</strong>
+      <pre>  schemas/
+    ├── soap/
+    │   ├── app2-service-v1.wsdl       ← App2 SOAP WSDL (versioned)
+    │   └── app2-callbacks-v1.wsdl     ← App2 callback WSDL
+    ├── pubsub/
+    │   ├── siebel-inbound.schema.json ← Messages App1 sends to Siebel
+    │   └── siebel-outbound.schema.json← Messages App1 receives from Siebel
+    └── etl/
+        └── snowflake-ddl.sql          ← Snowflake table definitions</pre>
+
+      <h3>7.4.3 SOAP Integration Testing (App1 ↔ App2)</h3>
+      <p>SOAP integration testing follows a dual-track approach: fast virtual tests in CI using WireMock, and high-confidence real tests against App2 staging.</p>
+      <strong class="field-label">CI Track (Virtual — WireMock):</strong>
+      <ul class="doc-list">
+        <li>WireMock stubs simulate App2 SOAP endpoints, derived from recorded staging traffic and WSDL schema definitions</li>
+        <li>Playwright API tests call App1 endpoints that trigger SOAP interactions; WireMock intercepts and responds with schema-compliant stubs</li>
+        <li>Tests validate App1's SOAP request structure against WSDL</li>
+        <li>Tests validate App1's handling of App2 responses (happy path + error scenarios)</li>
+        <li>WireMock fault injection simulates timeouts, SOAP faults, partial responses, and malformed XML to test resilience</li>
+        <li>Runs on every commit — fast feedback within 5–10 minutes</li>
+      </ul>
+      <strong class="field-label">Staging Track (Real — App2 Staging):</strong>
+      <ul class="doc-list">
+        <li>Playwright API tests call real App2 staging SOAP endpoints directly</li>
+        <li>Validates request/response against WSDL and business requirements</li>
+        <li>Tests both directions: App1→App2 requests and App2→App1 callbacks</li>
+        <li>Results compared against Pact contract expectations to detect drift</li>
+        <li>Runs nightly and pre-release — provides high confidence validation</li>
+      </ul>
+
+      <h3>7.4.4 Pub/Sub Integration Testing</h3>
+      <strong class="field-label">CI Track (Virtual):</strong>
+      <ul class="doc-list">
+        <li>Custom Pub/Sub stub simulates the Integration Layer for CI</li>
+        <li>Publish synthetic messages conforming to message schemas to test App1's consumer logic</li>
+        <li>Validate messages App1 produces match the expected message schema</li>
+        <li>Test message acknowledgment, error handling, dead-letter scenarios</li>
+      </ul>
+      <strong class="field-label">Staging Track (Real):</strong>
+      <ul class="doc-list">
+        <li>Playwright API + message client publish and consume messages on the real Integration Layer staging</li>
+        <li>Validate Siebel-bound messages reach the Integration Layer correctly</li>
+        <li>Validate App1 processes Siebel-sourced messages as expected</li>
+        <li>Validate message ordering, idempotency, and delivery guarantees</li>
+        <li>Runs nightly and pre-release</li>
+      </ul>
+
+      <h3>7.4.5 Data Testing (ETL Pipeline)</h3>
+      <p>The ETL reporting pipeline (App1 → Fivetran → Coalesce → Snowflake → Power BI) is validated using Snowflake SDK and SQL assertions directly against the staging pipeline.</p>
+      <strong class="field-label">Approach:</strong>
+      <ul class="doc-list">
+        <li>Trigger data feed from App1 in the staging environment</li>
+        <li>Use Snowflake SDK (TypeScript/Python) to query Snowflake staging and validate data has landed correctly</li>
+        <li>SQL assertions validate: row counts, data types, null handling, referential integrity, transformation correctness</li>
+        <li>Validate data freshness — data appears within the expected time window</li>
+        <li>Spot-check Power BI reports via Power BI REST API to confirm accurate visualisation</li>
+        <li>Validate Snowflake table schemas against stored DDL definitions (schema-driven)</li>
+        <li>Test incremental and full-load scenarios</li>
+        <li>Data reconciliation checks compare source (App1) against destination (Snowflake)</li>
+      </ul>
+
+      <h3>7.4.6 UI Test Automation</h3>
+      <ul class="doc-list">
+        <li>Automate critical user journeys in App1 that trigger SOAP calls to App2 or Pub/Sub messages to Siebel</li>
+        <li>Use Playwright UI (TypeScript) with the Page Object Model design pattern</li>
+        <li>Focus on happy-path and high-priority regression scenarios at the UI level</li>
+        <li>Parameterise tests to run across environments with minimal configuration changes</li>
+        <li>UI tests run as part of the staging pipeline (nightly)</li>
+      </ul>
+
+      <h3>7.4.7 Service Virtualisation with WireMock</h3>
+      <p>WireMock is the primary service virtualisation tool, providing lightweight, flexible HTTP/SOAP stubbing for 3rd-party systems.</p>
+      <strong class="field-label">WireMock Stub Sources:</strong>
+      <ul class="doc-list">
+        <li>WSDL-generated stubs — auto-generated from App2's published WSDL for schema-compliant default responses</li>
+        <li>Recorded staging traffic — WireMock proxy/recording mode captures real App2 SOAP interactions and saves them as stub mappings</li>
+        <li>Pact contract-derived stubs — consumer Pact contracts translated to WireMock mappings for consistency</li>
+        <li>Manually crafted edge-case stubs — timeouts, SOAP faults, partial responses, malformed XML for negative/resilience testing</li>
+      </ul>
+      <strong class="field-label">Negative / Edge-Case Testing (Fault Injection):</strong>
+      <ul class="doc-list">
+        <li>WireMock simulates schema-valid but edge-case responses: timeouts, partial data, SOAP faults, HTTP errors</li>
+        <li>Test App1's retry logic, circuit breaker behaviour, and error handling paths</li>
+        <li>Simulate Integration Layer unavailability to test Pub/Sub resilience</li>
+        <li>Inject malformed messages to test App1's input validation and error recovery</li>
+      </ul>
+
+      <h2 id="s7-5">7.5 Automation vs. Manual Testing Balance</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Test Area</th><th>Automated</th><th>Manual</th><th>Rationale</th></tr></thead>
+          <tbody>
+            <tr><td>SOAP Integration — Regression</td><td>✅ Virtual (CI) + Real (staging)</td><td>Minimal</td><td>Highly repeatable; schema validation ensures structural correctness</td></tr>
+            <tr><td>SOAP Integration — New Features</td><td>After stabilisation</td><td>✅ Initial validation</td><td>Manual exploration first; automate once stable</td></tr>
+            <tr><td>Pub/Sub Integration — Regression</td><td>✅ Virtual (CI) + Real (staging)</td><td>Minimal</td><td>Message schemas provide clear test oracle</td></tr>
+            <tr><td>ETL Data Validation</td><td>✅ Snowflake SDK queries</td><td>Spot-check reports</td><td>SQL assertions are deterministic; Power BI requires visual inspection</td></tr>
+            <tr><td>UI Regression</td><td>✅ Critical journeys (Playwright)</td><td>✅ Broader UI validation</td><td>Automate critical paths; manual for visual and UX assessment</td></tr>
+            <tr><td>Exploratory Testing</td><td>N/A</td><td>✅ Session-based</td><td>Requires human insight and creativity</td></tr>
+            <tr><td>UAT</td><td>Partial (guided scripts)</td><td>✅ Business validation</td><td>UAT requires business domain judgement</td></tr>
+            <tr><td>Contract Drift Detection</td><td>✅ Pact + Schema validation</td><td>Investigation of detected drift</td><td>Automated detection; manual investigation and resolution</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="s7-6">7.6 Test Automation Architecture (TAA)</h2>
+      <pre>┌──────────────────────────────────────────────────────────────────────────┐
+│                    Test Execution &amp; Reporting                           │
+│        (CI/CD Pipeline, Playwright Test Runner, HTML Reports)           │
+├──────────────────────────┬───────────────────────────────────────────────┤
+│   CI Track (Virtual)    │   Staging Track (Real — Confidence)           │
+│   • WireMock SOAP stubs │   • Real App2 SOAP staging                   │
+│   • Pub/Sub stubs       │   • Real Integration Layer staging            │
+│   • Pact consumer tests │   • Real Snowflake staging                   │
+│   • Schema validation   │   • Real App1 UI                             │
+├──────────┬──────────┬───┴───────┬────────────┬──────────────────────────┤
+│  Pact    │ WireMock │ Schema    │ SOAP/REST  │  UI                     │
+│ Consumer │ SOAP &   │ Validator │ Real API   │ Playwright              │
+│  Tests   │ Pub/Sub  │ (WSDL/   │ Tests      │ Tests                   │
+│          │  Stubs   │ AsyncAPI) │            │                         │
+├──────────┴──────────┴───────────┴────────────┴──────────────────────────┤
+│              Shared Test Logic Layer (Playwright + TypeScript)          │
+├────────────────────────────────────────────────────────────────────────  ┤
+│              Data Validation Layer (Snowflake SDK + SQL Assertions)     │
+├──────────────────────────────────────────────────────────────────────────┤
+│              Common Framework Layer                                     │
+│   (Config, Logging, Env Switching, Data Factories, Schema Registry)    │
+├──────────────────────────────────────────────────────────────────────────┤
+│              Test Data Management                                       │
+│       (Data Provisioning, Cleanup, Anonymisation)                       │
+├──────────────────────────────────────────────────────────────────────────┤
+│              Test Environments                                          │
+│    (App1, App2 Staging, Siebel Staging, Integration Layer, Snowflake)  │
+└──────────────────────────────────────────────────────────────────────────┘</pre>
+
+      <h3>7.6.2 Key Architecture Principle: Shared Test Logic</h3>
+      <ul class="doc-list">
+        <li>Environment configuration determines whether tests hit WireMock stubs or real staging endpoints</li>
+        <li>The same Playwright API test that validates a SOAP interaction against WireMock in CI can be pointed at real App2 staging for the staging pipeline</li>
+        <li>This eliminates the need to maintain two separate test suites and ensures consistency between virtual and real test validation</li>
+      </ul>
+
+      <h3>7.6.3 Component Descriptions</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Component</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>Test Execution &amp; Reporting</td><td>CI/CD integration (Azure DevOps / GitHub Actions) to trigger dual-track test execution, collect results, and generate Playwright HTML reports and dashboards for stakeholders</td></tr>
+            <tr><td>Pact Consumer Tests</td><td>Consumer-side Pact contracts defining App1's expectations of App2 SOAP and Integration Layer messages. Validated against staging periodically.</td></tr>
+            <tr><td>WireMock SOAP &amp; Pub/Sub Stubs</td><td>WireMock stub definitions simulating App2 SOAP and Integration Layer endpoints. Generated from WSDL, recorded traffic, and Pact contracts.</td></tr>
+            <tr><td>Schema Validator</td><td>WSDL parser and JSON Schema validator that checks every outgoing SOAP request and Pub/Sub message against published schemas in the schema registry.</td></tr>
+            <tr><td>SOAP/REST Real API Tests</td><td>Playwright API tests executing against real App2 staging SOAP endpoints. Same test logic as virtual tests, different target.</td></tr>
+            <tr><td>Pub/Sub Real Message Tests</td><td>Tests that publish and consume real messages on the staging Integration Layer. Validates message delivery, processing, and business outcomes.</td></tr>
+            <tr><td>UI Playwright Tests</td><td>Playwright browser tests for critical App1 UI journeys that trigger cross-system integrations. Uses Page Object Model.</td></tr>
+            <tr><td>Shared Test Logic Layer</td><td>Reusable TypeScript modules: SOAP client wrappers, assertion helpers, data builders, response parsers. Used by both CI and staging tracks.</td></tr>
+            <tr><td>Data Validation Layer</td><td>Snowflake SDK connections and SQL assertion library for ETL pipeline validation. Queries Snowflake staging to verify data integrity.</td></tr>
+            <tr><td>Common Framework Layer</td><td>Configuration management (environment switching), logging, schema registry access, data factories, and utility functions.</td></tr>
+            <tr><td>Test Data Management</td><td>Automated data provisioning, seeding, and cleanup capabilities integrated into the test lifecycle.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="s7-7">7.7 Test Automation Deployment Strategy</h2>
+      <h3>7.7.1 Phased Rollout</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Phase</th><th>Focus Area</th><th>Duration</th><th>Key Activities</th><th>Exit Criteria</th></tr></thead>
+          <tbody>
+            <tr><td>Phase 1 — Foundation &amp; SOAP</td><td>Project scaffolding, Playwright setup, WireMock SOAP stubs for App1↔App2</td><td>Weeks 1–2</td><td>Establish Playwright + TypeScript project structure; set up WireMock with App2 WSDL-generated stubs; implement first SOAP integration tests (virtual); configure CI pipeline; generate initial Pact consumer contracts for SOAP</td><td>Playwright operational; WireMock stubs serving App2 SOAP responses; first 10 SOAP tests passing in CI; Pact contracts generated</td></tr>
+            <tr><td>Phase 2 — Pub/Sub &amp; Contracts</td><td>Pub/Sub integration tests (virtual + staging), Pact consumer contracts</td><td>Weeks 3–4</td><td>Implement Pub/Sub stubs; store message schemas; develop Pub/Sub integration tests; generate Pact contracts for Pub/Sub; implement schema validation in CI; begin staging pipeline execution for SOAP tests</td><td>Pub/Sub virtual tests passing in CI; Staging SOAP tests executing nightly; Schema validation integrated; Pact contracts covering all interfaces</td></tr>
+            <tr><td>Phase 3 — ETL Validation</td><td>ETL pipeline validation (Snowflake queries, data assertions)</td><td>Weeks 5–6</td><td>Set up Snowflake SDK connection; store Snowflake DDL; implement data validation test suite; implement data reconciliation; implement Power BI API spot-checks; integrate ETL tests into staging pipeline</td><td>ETL validation suite passing against staging; Data reconciliation checks operational; Power BI spot-checks passing</td></tr>
+            <tr><td>Phase 4 — E2E &amp; Drift Detection</td><td>E2E UI flows, schema drift detection, CI/CD integration hardening</td><td>Weeks 7–8</td><td>Implement Playwright UI tests; implement schema drift detection; implement Pact contract drift detection; harden CI/CD quality gates; optimise parallel test execution</td><td>UI regression suite operational; Schema drift detection running on schedule; Pact drift detection running; Quality gates enforced</td></tr>
+            <tr><td>Phase 5 — Hardening &amp; Reporting</td><td>Power BI validation, reporting dashboards, hardening</td><td>Weeks 9–10</td><td>Expand test coverage; refine reporting dashboards; document runbooks and playbooks; knowledge transfer; establish ongoing maintenance cadence</td><td>All coverage targets met; Reporting dashboards operational; Team self-sufficient; Runbooks documented</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>7.7.2 Deployment Risk Mitigation</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Risk</th><th>Impact</th><th>Likelihood</th><th>Mitigation</th></tr></thead>
+          <tbody>
+            <tr><td>WireMock stubs drift from real App2 / Siebel behaviour</td><td>High</td><td>Medium</td><td>Staging pipeline validates real behaviour nightly; schema drift detection alerts on structural changes; periodic re-recording from staging</td></tr>
+            <tr><td>3rd-party WSDL or message schemas not published or outdated</td><td>Medium</td><td>Medium</td><td>Request schemas from App2/Siebel vendors; record real traffic as fallback; use Pact contracts as alternative documentation</td></tr>
+            <tr><td>Test data inconsistency across systems</td><td>High</td><td>High</td><td>Implement automated data provisioning; assign Test Data Manager role; use data factories for synthetic data generation</td></tr>
+            <tr><td>Staging environment instability affects nightly tests</td><td>Medium</td><td>Medium</td><td>Implement environment health checks as pre-conditions; CI virtual tests provide a safety net when staging is unavailable</td></tr>
+            <tr><td>Schema compliance ≠ behavioural compliance</td><td>Medium</td><td>Low</td><td>Combine schema validation with Pact contract assertions and staging tests; three-layer detection approach provides defence in depth</td></tr>
+            <tr><td>Insufficient TAE skills</td><td>Medium</td><td>Medium</td><td>Invest in training; engage specialist consultants for Phase 1; document patterns and playbooks for knowledge transfer</td></tr>
+            <tr><td>Test execution time exceeds pipeline SLA</td><td>Medium</td><td>Low</td><td>Playwright parallel execution; risk-based test prioritisation; virtual CI tests are fast by design (target &lt;15 min)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="s7-8">7.8 Test Automation Metrics and Reporting</h2>
+      <h3>7.8.1 Key Metrics</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metric</th><th>Description</th><th>Target</th><th>Frequency</th></tr></thead>
+          <tbody>
+            <tr><td>CI Virtual Test Pass Rate</td><td>Pass rate of virtual integration tests in CI pipeline</td><td>≥98% on stable builds</td><td>Per commit</td></tr>
+            <tr><td>Staging Test Pass Rate</td><td>Pass rate of real staging integration tests</td><td>≥95% on stable builds</td><td>Nightly</td></tr>
+            <tr><td>CI Pipeline Duration</td><td>Total time for virtual test suite execution</td><td>&lt;15 minutes</td><td>Per commit</td></tr>
+            <tr><td>Staging Pipeline Duration</td><td>Total time for full staging test suite execution</td><td>&lt;2 hours</td><td>Nightly</td></tr>
+            <tr><td>Schema Drift Events</td><td>Number of WSDL/schema changes detected</td><td>Zero unexpected changes between releases</td><td>Weekly</td></tr>
+            <tr><td>Pact Contract Drift Events</td><td>Number of Pact contract mismatches against staging</td><td>Zero unexpected drift</td><td>Weekly</td></tr>
+            <tr><td>WireMock Stub Accuracy</td><td>Percentage of WireMock responses matching real staging responses</td><td>≥98%</td><td>Monthly</td></tr>
+            <tr><td>Functional Coverage</td><td>Percentage of critical integration paths covered by automated tests</td><td>≥80% of critical paths</td><td>Sprint/Release</td></tr>
+            <tr><td>ROI</td><td>Return on investment per CT-TAS Section 5.1.1</td><td>Positive ROI within 6 months</td><td>Quarterly</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="s7-9">7.9 Return on Investment (ROI)</h2>
+      <div class="roi-formula">ROI = Savings / Investment</div>
+      <h3>7.9.1 Investment Components</h3>
+      <ul class="doc-list">
+        <li>Playwright + TypeScript framework setup and configuration</li>
+        <li>WireMock configuration, stub creation, and WSDL-based stub generation tooling</li>
+        <li>Pact consumer contract development</li>
+        <li>Schema registry setup and drift detection tooling</li>
+        <li>Snowflake SDK integration and ETL test development</li>
+        <li>TAE time for test development, stub creation, and schema validation setup</li>
+        <li>Training for TAEs on Playwright, WireMock, Pact, and Snowflake SDK</li>
+        <li>Infrastructure costs (CI/CD resources, WireMock hosting)</li>
+        <li>Ongoing maintenance of test scripts, WireMock stubs, Pact contracts, and schemas</li>
+      </ul>
+      <h3>7.9.2 Savings Components</h3>
+      <ul class="doc-list">
+        <li>Reduced manual integration test execution time — virtual CI tests run in minutes, not hours</li>
+        <li>Increased test frequency — virtual regression tests execute on every commit</li>
+        <li>Earlier defect detection — integration defects found in CI rather than SIT or UAT</li>
+        <li>Reduced staging dependency — daily development unblocked by WireMock virtualisation</li>
+        <li>Proactive drift detection — schema and contract drift caught before it causes production incidents</li>
+        <li>Reduced ETL data issues in production — automated Snowflake checks catch problems early</li>
+      </ul>
+
+      <h2 id="s7-10">7.10 – 7.13 Additional Automation Topics</h2>
+
+      <h3>7.10 Transition from Manual to Automated Testing</h3>
+      <ul class="doc-list">
+        <li>Start with regression testing — automate existing SIT regression tests first using the virtual CI track</li>
+        <li>Use recorded staging traffic to bootstrap WireMock stubs — real behaviour from day one</li>
+        <li>Generate Pact contracts from existing integration documentation and validate against staging</li>
+        <li>Prioritise by risk and frequency — automate high-risk, frequently executed integration tests first</li>
+        <li>Do not aim for 100% automation — exploratory and ad-hoc testing remain manual</li>
+        <li>Measure and adjust — use dual-track metrics to continuously evaluate effectiveness</li>
+      </ul>
+
+      <h3>7.11 Continuous Testing and CI/CD Integration</h3>
+      <pre>═══════════════════════════════════════════════════════════════════════════════
+  CI TRACK (every commit — fast, virtual)
+═══════════════════════════════════════════════════════════════════════════════
+┌──────────┐  ┌──────────┐  ┌──────────────┐  ┌──────────────┐  ┌────────┐
+│  Code    │─►│  Build + │─►│ Pact Consumer│─►│ WireMock     │─►│ Schema │
+│  Commit  │  │  Lint +  │  │ Contract     │  │ Integration  │  │ Valid. │
+│          │  │  SAST    │  │ Tests        │  │ Tests (SOAP  │  │ (WSDL/ │
+│          │  │          │  │              │  │ + Pub/Sub)   │  │ JSON)  │
+└──────────┘  └──────────┘  └──────────────┘  └──────────────┘  └────────┘
+                   │              │                  │               │
+                 QG-1           QG-2              QG-2            QG-2
+
+═══════════════════════════════════════════════════════════════════════════════
+  STAGING TRACK (nightly / pre-release — real systems)
+═══════════════════════════════════════════════════════════════════════════════
+┌──────────┐  ┌──────────┐  ┌──────────────┐  ┌──────────────┐  ┌────────┐
+│ Trigger  │─►│ Real SOAP│─►│ Real Pub/Sub │─►│ ETL / Snow-  │─►│ UI     │
+│ (nightly │  │ Staging  │  │ Integration  │  │ flake Data   │  │ Regr.  │
+│ or PR)   │  │ Tests    │  │ Layer Tests  │  │ Validation   │  │ Tests  │
+└──────────┘  └──────────┘  └──────────────┘  └──────────────┘  └────────┘
+                   │              │                  │               │
+                 QG-3           QG-3              QG-3            QG-3</pre>
+
+      <h3>7.12 Contract and Schema Drift Detection</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mechanism</th><th>What It Detects</th><th>How It Works</th><th>Frequency</th></tr></thead>
+          <tbody>
+            <tr><td>Schema Drift Detection</td><td>Structural changes to WSDL or message schemas published by 3rd parties</td><td>1. Fetch latest WSDL/schemas from staging; 2. Compare against stored versions in schema registry; 3. Generate diff report highlighting additions, removals, and modifications; 4. Alert team and optionally fail CI on unexpected changes</td><td>Weekly (scheduled) + on-demand</td></tr>
+            <tr><td>Pact Contract Drift Detection</td><td>Behavioural changes — 3rd-party responses no longer match App1's documented expectations</td><td>1. Record real staging responses for interactions defined in Pact contracts; 2. Compare actual responses against Pact contract expectations; 3. Flag mismatches as potential drift; 4. Triage: intentional change (update contract) vs. regression (raise defect)</td><td>Weekly (scheduled) + pre-release</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>7.13 Organisational Considerations for Automation</h3>
+      <strong class="field-label">Cross-Team Collaboration:</strong>
+      <ul class="doc-list">
+        <li>Establish regular integration sync meetings between App1, App2, and Siebel teams</li>
+        <li>Share WireMock stub definitions and Pact contracts with 3rd-party teams as documentation of our expectations</li>
+        <li>Coordinate release schedules to align integration test windows and schema drift detection cycles</li>
+        <li>Request advance notice of WSDL/schema changes from 3rd-party teams to proactively update stubs</li>
+      </ul>
+      <strong class="field-label">Continuous Improvement:</strong>
+      <ul class="doc-list">
+        <li>Quarterly review of test automation effectiveness using defined metrics</li>
+        <li>Retrospectives on the hybrid approach after each major release</li>
+        <li>Benchmark WireMock stub accuracy against real staging behaviour</li>
+        <li>Review and optimise test pyramid distribution based on defect analysis</li>
+      </ul>
+    </section>
+
+    <!-- ── 8. PERFORMANCE TESTING ── -->
+    <section id="s8">
+      <h1 class="section-title">8. Performance Testing Strategy</h1>
+      <p>Performance testing validates that the Vector Programme's systems meet non-functional requirements for responsiveness, throughput, scalability, and stability under expected and peak workloads.</p>
+
+      <h2>8.1 Objectives</h2>
+      <ul class="doc-list">
+        <li>Validate that SOAP integration response times meet defined SLAs under normal and peak loads</li>
+        <li>Determine the maximum throughput of the integration layer (messages per second)</li>
+        <li>Verify that the ETL pipeline processes data within the required time windows</li>
+        <li>Identify performance bottlenecks at integration boundaries before production deployment</li>
+        <li>Ensure system stability under sustained load (endurance testing)</li>
+        <li>Validate that the system recovers gracefully from overload conditions</li>
+        <li>Establish baseline performance metrics for ongoing monitoring and comparison</li>
+      </ul>
+
+      <h2>8.2 Performance Test Types</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Test Type</th><th>Objective</th><th>Approach</th><th>Environment</th></tr></thead>
+          <tbody>
+            <tr><td>Load Testing</td><td>Validate system performance under expected normal load</td><td>Simulate expected concurrent users and transaction volumes for App1↔App2, App1↔Siebel integrations</td><td>Pre-Prod (production-like)</td></tr>
+            <tr><td>Stress Testing</td><td>Determine system behaviour at and beyond capacity limits</td><td>Gradually increase load beyond expected peak. Focus on integration layer and message queues.</td><td>Pre-Prod</td></tr>
+            <tr><td>Endurance / Soak Testing</td><td>Validate system stability under sustained load over time</td><td>Run expected load for 8–24 hours to identify memory leaks, connection pool exhaustion</td><td>Pre-Prod</td></tr>
+            <tr><td>Scalability Testing</td><td>Assess the system's ability to scale</td><td>Incrementally increase load and measure scaling behaviour</td><td>Pre-Prod</td></tr>
+            <tr><td>ETL Pipeline Performance</td><td>Validate data processing capacity</td><td>Test with realistic data volumes. Measure extraction, transformation, and query performance.</td><td>Pre-Prod / dedicated ETL test</td></tr>
+            <tr><td>Spike Testing</td><td>Validate response to sudden load increases</td><td>Introduce sudden, sharp increases in transaction volume</td><td>Pre-Prod</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>8.3 Performance Test Scope</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Component / Integration</th><th>Key Metrics</th><th>Indicative SLA Targets</th></tr></thead>
+          <tbody>
+            <tr><td>App1 → App2 (SOAP)</td><td>Response time (p50, p90, p99), throughput (TPS), error rate</td><td>p90 response &lt; 2s; error rate &lt; 0.1%</td></tr>
+            <tr><td>App1 ↔ Integration Layer (Pub/Sub)</td><td>Message processing latency, queue depth, delivery success rate</td><td>Event processing &lt; 5s; delivery rate &gt; 99.9%</td></tr>
+            <tr><td>ETL Pipeline (Fivetran → Coalesce → Snowflake)</td><td>Total pipeline duration, stage timing</td><td>Full pipeline &lt; [X] hours; incremental &lt; [X] minutes</td></tr>
+            <tr><td>Snowflake → Power BI</td><td>Query response time, report refresh time</td><td>Dashboard load &lt; 10s; [X] concurrent users</td></tr>
+            <tr><td>App1 UI</td><td>Page load time, time to interactive</td><td>Page load &lt; 3s; time to interactive &lt; 5s</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>8.5 Performance Testing Tools</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>k6 / Apache JMeter / Gatling</td><td>Load generation for SOAP/REST APIs and web UI</td></tr>
+            <tr><td>Grafana / Prometheus</td><td>Real-time monitoring and visualisation</td></tr>
+            <tr><td>APM (Dynatrace / New Relic / AppDynamics)</td><td>Application performance monitoring and diagnostics</td></tr>
+            <tr><td>Snowflake Query Profiler</td><td>Query performance analysis in the data warehouse</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 9. SECURITY TESTING ── -->
+    <section id="s9">
+      <h1 class="section-title">9. Security Testing Strategy</h1>
+      <p>Security testing validates that the Vector Programme's applications, integrations, and data handling are protected against unauthorised access, data breaches, and common security vulnerabilities.</p>
+
+      <h2>9.2 Security Testing Types</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Test Type</th><th>Description</th><th>Scope</th><th>Timing</th></tr></thead>
+          <tbody>
+            <tr><td>SAST</td><td>Static analysis of source code for security vulnerabilities</td><td>App1 source code, integration layer components</td><td>CI/CD pipeline (every build)</td></tr>
+            <tr><td>DAST</td><td>Dynamic testing of running applications</td><td>App1 web interface, SOAP API endpoints</td><td>SIT and Pre-Prod</td></tr>
+            <tr><td>API Security Testing</td><td>SOAP API testing for auth bypass, injection, XXE</td><td>All SOAP integration points</td><td>SIT environment</td></tr>
+            <tr><td>Penetration Testing</td><td>Expert-led security assessment</td><td>End-to-end application stack</td><td>Pre-Prod — prior to major releases</td></tr>
+            <tr><td>Data Security Testing</td><td>Encryption, masking, access controls for data pipeline</td><td>Databases, Snowflake, Power BI</td><td>SIT and Pre-Prod</td></tr>
+            <tr><td>Dependency Scanning</td><td>Scanning libraries for known CVEs</td><td>All application and framework dependencies</td><td>CI/CD pipeline (every build)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>9.3 SOAP / API Security Focus Areas</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Security Concern</th><th>Testing Approach</th></tr></thead>
+          <tbody>
+            <tr><td>XML Injection / XXE</td><td>Test SOAP endpoints with crafted XML payloads using WireMock fault injection and manual Burp Suite testing</td></tr>
+            <tr><td>SOAP Fault Information Disclosure</td><td>Verify fault responses do not expose internal system details</td></tr>
+            <tr><td>Authentication and Authorisation</td><td>Test for auth bypass, token manipulation, privilege escalation</td></tr>
+            <tr><td>WS-Security Implementation</td><td>Validate message signing, encryption, timestamp verification</td></tr>
+            <tr><td>Input Validation</td><td>Test SOAP fields for SQL injection, command injection, XSS</td></tr>
+            <tr><td>Replay Attacks</td><td>Test whether SOAP messages can be replayed for duplicate transactions</td></tr>
+            <tr><td>Rate Limiting / DoS</td><td>Validate rate limiting and resilience to message flooding</td></tr>
+            <tr><td>Transport Security</td><td>Verify TLS configuration and certificate validation</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>9.4 Security Testing Tools</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tool Category</th><th>Examples</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>SAST</td><td>SonarQube, Checkmarx, Fortify</td><td>Static code analysis</td></tr>
+            <tr><td>DAST</td><td>OWASP ZAP, Burp Suite</td><td>Dynamic security testing</td></tr>
+            <tr><td>API Security</td><td>OWASP ZAP, Burp Suite</td><td>SOAP/REST API security checks</td></tr>
+            <tr><td>Dependency Scanning</td><td>Snyk, OWASP Dependency-Check</td><td>CVE scanning</td></tr>
+            <tr><td>Secrets Scanning</td><td>GitLeaks, TruffleHog</td><td>Detecting hardcoded secrets</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 10. TEST DATA MANAGEMENT ── -->
+    <section id="s10">
+      <h1 class="section-title">10. Test Data Management</h1>
+
+      <h2>10.1 Test Data by Track</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Track</th><th>Data Source</th><th>Provisioning Approach</th></tr></thead>
+          <tbody>
+            <tr><td>CI (Virtual)</td><td>WireMock stub responses contain embedded test data; Pact contracts define expected data patterns</td><td>No external data dependency — data is built into stubs and test fixtures. Data factories generate synthetic request data.</td></tr>
+            <tr><td>Staging (Real)</td><td>Real data in staging environments for App2, Siebel, and Snowflake</td><td>API-driven data setup in App1; coordination with 3rd-party staging data; Snowflake test schemas pre-populated.</td></tr>
+            <tr><td>ETL Validation</td><td>App1 source data → Snowflake destination data</td><td>Known test records created in App1; SQL queries validate corresponding records appear in Snowflake after ETL processing.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>10.2 Test Data Principles</h2>
+      <ul class="doc-list">
+        <li>Test data is treated as a programme asset managed with the same rigour as test scripts</li>
+        <li>No production data is used directly — all data is synthetic or anonymised</li>
+        <li>CI track tests are fully self-contained — no external data dependencies</li>
+        <li>Staging track test data is provisioned automatically where possible</li>
+        <li>Cross-system data consistency is maintained for integration test scenarios</li>
+        <li>Performance test data volumes are representative of production</li>
+      </ul>
+
+      <h2>10.3 Test Data Strategy</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Approach</th><th>Description</th><th>Applicable To</th></tr></thead>
+          <tbody>
+            <tr><td>Synthetic Data Generation</td><td>Generate test data programmatically using TypeScript data factories</td><td>CI virtual tests, integration tests</td></tr>
+            <tr><td>WireMock Embedded Data</td><td>WireMock stub responses contain realistic test data derived from recorded staging traffic</td><td>CI virtual tests</td></tr>
+            <tr><td>API-driven Data Setup</td><td>Use App1 APIs to create test data preconditions before staging tests</td><td>Staging integration tests, E2E tests</td></tr>
+            <tr><td>Snowflake Test Schema</td><td>Dedicated Snowflake test schema pre-populated with known test data</td><td>ETL validation tests</td></tr>
+            <tr><td>Data Masking / Anonymisation</td><td>Apply masking to production data copies for realistic but safe test data</td><td>All test levels</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 11. TEST ENVIRONMENTS ── -->
+    <section id="s11">
+      <h1 class="section-title">11. Test Environment Strategy</h1>
+
+      <h2>11.1 Environment Landscape</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Environment</th><th>Purpose</th><th>Systems</th><th>Virtualisation</th><th>Access</th></tr></thead>
+          <tbody>
+            <tr><td>DEV</td><td>Developer testing and TAE script development</td><td>App1 (DEV instance)</td><td>Full WireMock virtualisation of App2, Siebel, Integration Layer</td><td>Dev + TAE teams</td></tr>
+            <tr><td>CI (Virtual)</td><td>Fast automated tests on every commit</td><td>App1 + WireMock stubs</td><td>Full — WireMock serves all 3rd-party interfaces</td><td>Automated (CI/CD pipeline)</td></tr>
+            <tr><td>SIT (Staging)</td><td>Real integration testing against staging</td><td>App1, App2 staging, Siebel staging, Integration Layer, Snowflake staging</td><td>None — all real systems</td><td>Programme test team</td></tr>
+            <tr><td>E2E</td><td>Full business process validation</td><td>All systems — real staging</td><td>Minimal — only for unavailable systems</td><td>Programme test team + business testers</td></tr>
+            <tr><td>PERF</td><td>Performance testing</td><td>All systems — production-like configuration</td><td>Minimal — real systems preferred</td><td>Performance test team</td></tr>
+            <tr><td>Pre-Prod</td><td>Final validation, security testing</td><td>All systems — production-mirror</td><td>None</td><td>Programme test team + security team</td></tr>
+            <tr><td>UAT</td><td>Business acceptance validation</td><td>All systems — production-like</td><td>None</td><td>Business stakeholders</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>11.2 WireMock Deployment</h2>
+      <ul class="doc-list">
+        <li>WireMock runs as a Docker container in the CI pipeline</li>
+        <li>Stub definitions are loaded from version control at pipeline startup</li>
+        <li>WireMock is configured to serve SOAP responses on the same ports App2 and Siebel would normally use, allowing App1 to connect without code changes</li>
+        <li>In recording mode, WireMock acts as a proxy between App1 and real staging to capture traffic for stub generation</li>
+        <li>WireMock admin API is used by tests to configure dynamic stubs for specific test scenarios (e.g., fault injection)</li>
+      </ul>
+
+      <h2>11.3 Environment Management</h2>
+      <ul class="doc-list">
+        <li>Each environment has a designated owner responsible for availability and configuration</li>
+        <li>CI environment is fully automated — no manual setup required</li>
+        <li>Staging environment booking procedures prevent contention during nightly test runs</li>
+        <li>Environment health checks (smoke tests) run after deployments to confirm readiness</li>
+        <li>Environment configurations are version-controlled</li>
+      </ul>
+    </section>
+
+    <!-- ── 12. ROLES AND RESPONSIBILITIES ── -->
+    <section id="s12">
+      <h1 class="section-title">12. Roles and Responsibilities</h1>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Role</th><th>Responsibilities</th><th>Required Skills</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Programme Test Manager</strong></td><td>Own and maintain the Programme Test Strategy; oversee all programme-level testing; monitor dual-track test results and drift detection alerts; report to programme leadership; manage defect triage and resolution governance</td><td>Test management expertise; strategic planning; risk management; stakeholder management</td></tr>
+            <tr><td><strong>Test Lead (Integration / E2E)</strong></td><td>Plan and manage SIT and E2E test execution (virtual + staging); design integration and E2E test scenarios; own Pact contract and schema drift detection processes; triage drift alerts and coordinate resolution</td><td>Integration test design; SOAP domain knowledge; contract testing concepts; schema validation understanding</td></tr>
+            <tr><td><strong>Manual Test Analyst</strong></td><td>Design and execute manual functional test cases for SIT and E2E; conduct exploratory testing sessions; raise and manage defects; support UAT execution; identify candidates for automation</td><td>Test analysis and design; business domain knowledge; exploratory testing; defect reporting</td></tr>
+            <tr><td><strong>Test Automation Architect</strong></td><td>Define TAA supporting dual-track execution model; design shared test logic architecture (Playwright + TypeScript); guide WireMock stub strategy and schema registry design; define Pact consumer contract patterns</td><td>Playwright + TypeScript expertise; WireMock and Pact knowledge; CI/CD and DevOps experience; architecture and design skills</td></tr>
+            <tr><td><strong>TAE — Integration (SOAP/Pub/Sub)</strong></td><td>Develop Playwright API tests for SOAP and Pub/Sub integrations; create and maintain WireMock stubs; develop and maintain Pact consumer contracts; implement schema validation checks; maintain schema registry</td><td>Playwright API testing; WireMock configuration; Pact consumer testing; SOAP/WSDL expertise; TypeScript proficiency</td></tr>
+            <tr><td><strong>TAE — Data/ETL</strong></td><td>Develop Snowflake SDK data validation tests; implement SQL assertions for ETL pipeline; automate data provisioning and reconciliation; validate Power BI report accuracy via API</td><td>SQL and data engineering; Snowflake SDK proficiency; Python/TypeScript; ETL concepts</td></tr>
+            <tr><td><strong>TAE — UI/E2E</strong></td><td>Develop Playwright UI tests for critical App1 journeys; maintain Page Object Models; integrate E2E tests with WireMock virtualisation; manage test data for E2E scenarios</td><td>Playwright UI automation; Page Object Model patterns; TypeScript proficiency; cross-browser testing</td></tr>
+            <tr><td><strong>Performance Test Engineer</strong></td><td>Design and execute performance test scripts; monitor and analyse performance metrics; produce performance reports</td><td>k6/JMeter/Gatling; APM tools; results analysis</td></tr>
+            <tr><td><strong>Security Test Engineer</strong></td><td>Execute SAST, DAST, API security testing; coordinate penetration testing; produce security reports</td><td>OWASP ZAP, Burp Suite; OWASP Top 10; compliance knowledge</td></tr>
+            <tr><td><strong>Test Data Manager</strong></td><td>Coordinate test data for both CI and staging tracks; manage WireMock stub data quality; ensure data provisioning in staging environments; maintain data privacy compliance</td><td>Database administration; data governance; scripting and automation</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 13. CI/CD AND QUALITY GATES ── -->
+    <section id="s13">
+      <h1 class="section-title">13. CI/CD Integration and Quality Gates</h1>
+
+      <h2>13.2 Quality Gates</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Gate</th><th>Stage</th><th>Criteria</th><th>Owner</th></tr></thead>
+          <tbody>
+            <tr><td><strong>QG-1</strong></td><td>Post-Build (CI)</td><td>SAST scans pass with no critical/high findings; dependency scan — no critical CVEs; unit tests pass; code compiles and lints cleanly</td><td>Development Lead</td></tr>
+            <tr><td><strong>QG-2</strong></td><td>Post Virtual Integration Tests (CI)</td><td>All Pact consumer contract tests pass; all WireMock integration tests pass (≥98% pass rate); schema validation — all SOAP requests conform to WSDL; schema validation — all Pub/Sub messages conform to JSON Schema; no schema drift detected</td><td>Test Lead (Integration)</td></tr>
+            <tr><td><strong>QG-3</strong></td><td>Post Staging Tests (Nightly/Pre-Release)</td><td>All real SOAP staging tests pass (≥95%); all real Pub/Sub staging tests pass; ETL data validation tests pass; UI regression suite passes; Pact contract validation against staging — no unexpected drift; no critical/high-severity defects unresolved</td><td>Programme Test Manager</td></tr>
+            <tr><td><strong>QG-4</strong></td><td>Pre-Production Release</td><td>Performance test results within SLA; penetration test findings remediated or risk-accepted; full regression passes in production-like environment; UAT sign-off obtained; all critical/high defects resolved or risk-accepted; Go/No-Go approval documented</td><td>Programme Manager</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 14. TEST SCHEDULE ── -->
+    <section id="s14">
+      <h1 class="section-title">14. Test Schedule and Phasing</h1>
+      <p>The programme test schedule aligns testing activities with delivery milestones. The automation build-up follows the 5-phase deployment plan (Section 7.7.1).</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Phase</th><th>Activities</th><th>Duration</th><th>Dependencies</th></tr></thead>
+          <tbody>
+            <tr><td>Test Planning</td><td>Refine test strategy and plans; identify test data requirements; design test cases, review regression suite; configure WireMock stubs and schema registry; update Pact contracts</td><td>[X] weeks</td><td>Requirements baselined, schemas available</td></tr>
+            <tr><td>System Testing</td><td>Application teams execute system tests independently; defect fix and re-test cycles</td><td>[X] weeks per application</td><td>Code complete, ST environment available</td></tr>
+            <tr><td>System Integration Testing</td><td>CI virtual tests running continuously; staging integration tests running nightly; manual SIT execution; schema and contract drift detection; exploratory testing sessions</td><td>[X] weeks</td><td>System test sign-off, SIT environment available</td></tr>
+            <tr><td>End-to-End Testing</td><td>E2E scenario execution (manual + automated); full regression suite execution; UI regression suite execution</td><td>[X] weeks</td><td>SIT sign-off, E2E environment available</td></tr>
+            <tr><td>Performance Testing</td><td>Performance script development; load, stress, endurance execution; ETL pipeline performance validation</td><td>[X] weeks</td><td>E2E substantially complete, PERF environment available</td></tr>
+            <tr><td>Security Testing</td><td>DAST and API security testing; penetration testing; remediation and re-test</td><td>[X] weeks</td><td>Pre-Prod available, SAST completed earlier</td></tr>
+            <tr><td>UAT</td><td>Business acceptance testing; defect resolution; business sign-off</td><td>[X] weeks</td><td>E2E sign-off, UAT environment provisioned</td></tr>
+            <tr><td>Go-Live Readiness</td><td>Final regression (smoke) test; Go/No-Go assessment; deployment verification testing</td><td>[X] days</td><td>UAT sign-off, all QG criteria met</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 15. RISK MANAGEMENT ── -->
+    <section id="s15">
+      <h1 class="section-title">15. Risk Management</h1>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Risk</th><th>Impact</th><th>Likelihood</th><th>Mitigation</th></tr></thead>
+          <tbody>
+            <tr><td>R-01</td><td>WireMock stubs drift from real 3rd-party behaviour, giving false confidence</td><td>High</td><td>Medium</td><td>Staging pipeline validates real behaviour nightly; schema drift detection alerts on structural changes; Pact contract drift detection alerts on behavioural changes; periodic re-recording from staging to refresh stubs</td></tr>
+            <tr><td>R-02</td><td>3rd-party WSDL/schemas not published, outdated, or informal</td><td>Medium</td><td>Medium</td><td>Record real traffic as fallback documentation; generate Pact contracts from real staging interactions; request schemas from vendors proactively</td></tr>
+            <tr><td>R-03</td><td>Staging environment instability affects nightly test confidence</td><td>High</td><td>Medium</td><td>CI virtual tests provide safety net when staging is unavailable; environment health checks as pre-conditions; escalation path with agreed SLAs</td></tr>
+            <tr><td>R-04</td><td>Test data inconsistency across systems causes false failures</td><td>High</td><td>High</td><td>Appoint Test Data Manager role; automate data provisioning and cleanup; CI track tests are fully self-contained (no external data dependency)</td></tr>
+            <tr><td>R-05</td><td>Schema compliance ≠ behavioural compliance (structurally valid, semantically wrong)</td><td>Medium</td><td>Low</td><td>Schema validation combined with Pact contracts (semantic) and staging tests (full validation); three-layer detection approach provides defence in depth</td></tr>
+            <tr><td>R-06</td><td>Application team system testing delays push out SIT entry</td><td>High</td><td>Medium</td><td>CI virtual tests enable integration testing before all systems are ready; WireMock virtualisation unblocks testing for unavailable systems</td></tr>
+            <tr><td>R-07</td><td>Performance testing reveals bottlenecks close to go-live</td><td>High</td><td>Medium</td><td>Early performance profiling during SIT; performance criteria in quality gates; remediation buffer in schedule</td></tr>
+            <tr><td>R-08</td><td>Security vulnerabilities found late requiring rework</td><td>High</td><td>Low–Medium</td><td>SAST and dependency scanning in CI from the start; incremental DAST during SIT</td></tr>
+            <tr><td>R-09</td><td>Insufficient TAE skills in Playwright, WireMock, Pact, or Snowflake SDK</td><td>Medium</td><td>Medium</td><td>Engage specialists for Phase 1; invest in training; document patterns and playbooks</td></tr>
+            <tr><td>R-10</td><td>CI virtual test execution time exceeds 15-minute target</td><td>Medium</td><td>Low</td><td>Playwright parallel execution; risk-based test prioritisation; WireMock stubs respond in milliseconds by design</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 16. COMMUNICATION AND REPORTING ── -->
+    <section id="s16">
+      <h1 class="section-title">16. Communication and Reporting</h1>
+
+      <h2>16.1 Test Reporting Cadence</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Report</th><th>Audience</th><th>Frequency</th><th>Content</th></tr></thead>
+          <tbody>
+            <tr><td>Programme Test Status Report</td><td>Programme Manager, Steering Committee</td><td>Weekly</td><td>Overall test progress, CI/staging pass rates, schema drift status, defect trends, schedule adherence</td></tr>
+            <tr><td>Daily Test Status</td><td>Test Manager, Test Leads, Development Leads</td><td>Daily (during active test cycles)</td><td>CI pipeline results, staging test progress, new defects, blocked tests</td></tr>
+            <tr><td>Drift Detection Report</td><td>Test Manager, TAE Team, Development Leads</td><td>Weekly (or on drift detection)</td><td>Schema changes detected, Pact contract mismatches, WireMock stub updates required</td></tr>
+            <tr><td>Test Automation Dashboard</td><td>Test Manager, TAE team, Development Leads</td><td>Continuous (CI/CD)</td><td>CI pass/fail rates, staging pass/fail rates, coverage metrics, pipeline duration, WireMock stub accuracy</td></tr>
+            <tr><td>Performance Test Report</td><td>Programme Manager, Solution Architect</td><td>Per test cycle</td><td>Performance results, SLA compliance, bottleneck analysis</td></tr>
+            <tr><td>Security Test Report</td><td>Programme Manager, Security Lead</td><td>Per assessment cycle</td><td>Vulnerability findings, severity, remediation status</td></tr>
+            <tr><td>Test Completion Report</td><td>Programme Manager, Steering Committee</td><td>Per test level completion</td><td>Summary, quality assessment, residual risks, recommendation to proceed</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>16.2 Communication Channels</h2>
+      <ul class="doc-list">
+        <li>Daily stand-ups — Programme test team alignment during active test cycles</li>
+        <li>Weekly test governance meeting — Cross-team progress, risk review, escalation</li>
+        <li>Defect triage meetings — Daily during active testing, weekly in maintenance</li>
+        <li>Integration sync meetings — Coordination between application teams</li>
+        <li>Drift alert notifications — Automated alerts to TAE team when drift is detected</li>
+        <li>Ad-hoc escalation — Critical blockers escalated immediately</li>
+      </ul>
+    </section>
+
+    <!-- ── 17. TOOLING SUMMARY ── -->
+    <section id="s17">
+      <h1 class="section-title">17. Tooling Summary</h1>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Category</th><th>Tools</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>UI &amp; API Testing</td><td>Playwright (TypeScript)</td><td>Unified framework for browser UI testing and API-level SOAP/REST integration testing. Primary test execution engine.</td></tr>
+            <tr><td>Consumer Contract Testing</td><td>Pact (TypeScript — consumer-side)</td><td>Consumer-side contract testing. Documents App1's expectations of App2 and Integration Layer interfaces. Validated against staging.</td></tr>
+            <tr><td>Service Virtualisation</td><td>WireMock</td><td>HTTP/SOAP stubbing for 3rd-party systems. Supports WSDL-based stub generation, recording mode, and fault injection.</td></tr>
+            <tr><td>Schema Validation</td><td>WSDL parser + JSON Schema validator</td><td>Validates SOAP requests against WSDL; Pub/Sub messages against JSON Schema / AsyncAPI. Detects structural drift.</td></tr>
+            <tr><td>Data / ETL Testing</td><td>Snowflake SDK + SQL assertions</td><td>Direct Snowflake queries for data validation. Row counts, data types, referential integrity, transformation correctness.</td></tr>
+            <tr><td>Test Management</td><td>Azure DevOps Test Plans / Xray / Zephyr</td><td>Test case management, execution tracking, traceability, reporting.</td></tr>
+            <tr><td>Defect Management</td><td>Azure DevOps / Jira</td><td>Defect lifecycle management, triage, and tracking.</td></tr>
+            <tr><td>Performance Testing</td><td>k6 / Apache JMeter / Gatling</td><td>Load generation and performance measurement.</td></tr>
+            <tr><td>Performance Monitoring</td><td>Grafana / Prometheus / Dynatrace / New Relic</td><td>Real-time monitoring, APM, dashboards.</td></tr>
+            <tr><td>Security Testing (SAST)</td><td>SonarQube / Checkmarx / Fortify</td><td>Static code security analysis.</td></tr>
+            <tr><td>Security Testing (DAST)</td><td>OWASP ZAP / Burp Suite</td><td>Dynamic application and API security testing.</td></tr>
+            <tr><td>Dependency Scanning</td><td>Snyk / OWASP Dependency-Check</td><td>Third-party library vulnerability scanning.</td></tr>
+            <tr><td>Secrets Scanning</td><td>GitLeaks / TruffleHog</td><td>Detecting hardcoded secrets and credentials.</td></tr>
+            <tr><td>CI/CD Pipeline</td><td>Azure DevOps / GitHub Actions</td><td>Dual-track pipeline: CI (virtual) + staging (real). Quality gate enforcement.</td></tr>
+            <tr><td>Source Control</td><td>Git (Azure Repos / GitHub)</td><td>Version control for test scripts, WireMock stubs, Pact contracts, schemas, and configurations.</td></tr>
+            <tr><td>Reporting &amp; Dashboards</td><td>Playwright HTML Reports + CI/CD dashboards</td><td>Test result visualisation, trend analysis, executive reporting.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 18. ASSUMPTIONS, CONSTRAINTS, DEPENDENCIES ── -->
+    <section id="s18">
+      <h1 class="section-title">18. Assumptions, Constraints, and Dependencies</h1>
+
+      <h2>18.1 Assumptions</h2>
+      <ul class="doc-list">
+        <li>Each application team will complete system testing before SIT commences</li>
+        <li>App2's WSDL is published, accessible, and versioned. If not, recorded staging traffic will be used to generate schemas.</li>
+        <li>Integration Layer message schemas (JSON Schema / AsyncAPI) are available</li>
+        <li>Full staging environments for App2, Siebel, and Integration Layer are accessible for nightly test runs</li>
+        <li>Snowflake staging is available with appropriate test schemas and access</li>
+        <li>Budget is approved for CI/CD infrastructure, WireMock hosting, and TAE resources</li>
+        <li>Business stakeholders are available for requirements clarification and UAT</li>
+        <li>Non-functional requirements (performance SLAs) are documented before testing</li>
+        <li>TAEs with Playwright, WireMock, and Pact skills are available or can be trained within the Phase 1 timeline</li>
+      </ul>
+
+      <h2>18.2 Constraints</h2>
+      <ul class="doc-list">
+        <li>App2 and Siebel are 3rd-party — no provider-side Pact verification, no instrumentation, no code access</li>
+        <li>Independent release schedules for App2 and Siebel may cause unexpected schema or behavioural changes</li>
+        <li>Production data cannot be used in test environments due to privacy regulations</li>
+        <li>Staging environments may have limited availability windows</li>
+        <li>Performance testing requires a dedicated production-like environment</li>
+        <li>Pub/Sub message schemas may be informal or undocumented — requiring reverse-engineering from traffic</li>
+      </ul>
+
+      <h2>18.3 Dependencies</h2>
+      <ul class="doc-list">
+        <li>Availability of App2 and Siebel SOAP/Pub/Sub endpoints in staging</li>
+        <li>Integration Layer deployment and configuration for staging tests</li>
+        <li>Snowflake test instance provisioning with appropriate schemas and access</li>
+        <li>WireMock Docker container infrastructure in CI pipeline</li>
+        <li>WSDL and message schema availability from 3rd-party teams</li>
+        <li>CI/CD pipeline infrastructure (Azure DevOps / GitHub Actions)</li>
+        <li>Cross-team coordination for defect resolution during SIT</li>
+      </ul>
+    </section>
+
+    <!-- ── 19. GLOSSARY ── -->
+    <section id="s19">
+      <h1 class="section-title">19. Glossary</h1>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td>API</td><td>Application Programming Interface</td></tr>
+            <tr><td>APM</td><td>Application Performance Monitoring</td></tr>
+            <tr><td>AsyncAPI</td><td>Specification for defining asynchronous message-driven APIs</td></tr>
+            <tr><td>CI/CD</td><td>Continuous Integration / Continuous Delivery</td></tr>
+            <tr><td>Consumer Contract</td><td>A contract defined by the consumer (App1) documenting its expectations of a provider's interface</td></tr>
+            <tr><td>CVE</td><td>Common Vulnerabilities and Exposures</td></tr>
+            <tr><td>DAST</td><td>Dynamic Application Security Testing</td></tr>
+            <tr><td>Drift Detection</td><td>The process of detecting changes in 3rd-party schemas or behaviour that deviate from documented expectations</td></tr>
+            <tr><td>E2E</td><td>End-to-End</td></tr>
+            <tr><td>ETL</td><td>Extract, Transform, Load</td></tr>
+            <tr><td>JSON Schema</td><td>A vocabulary for annotating and validating JSON documents</td></tr>
+            <tr><td>OWASP</td><td>Open Web Application Security Project</td></tr>
+            <tr><td>Pact</td><td>A consumer-driven contract testing tool</td></tr>
+            <tr><td>PII</td><td>Personally Identifiable Information</td></tr>
+            <tr><td>POM</td><td>Page Object Model</td></tr>
+            <tr><td>Pub/Sub</td><td>Publish/Subscribe messaging pattern</td></tr>
+            <tr><td>REST</td><td>Representational State Transfer</td></tr>
+            <tr><td>ROI</td><td>Return on Investment</td></tr>
+            <tr><td>SAST</td><td>Static Application Security Testing</td></tr>
+            <tr><td>Schema Registry</td><td>A version-controlled repository of WSDL, JSON Schema, and DDL definitions used for validation and stub generation</td></tr>
+            <tr><td>SDLC</td><td>Software Development Lifecycle</td></tr>
+            <tr><td>SIT</td><td>System Integration Testing</td></tr>
+            <tr><td>SLA</td><td>Service Level Agreement</td></tr>
+            <tr><td>SOAP</td><td>Simple Object Access Protocol</td></tr>
+            <tr><td>TAA</td><td>Test Automation Architecture</td></tr>
+            <tr><td>TAE</td><td>Test Automation Engineer</td></tr>
+            <tr><td>TAF</td><td>Test Automation Framework</td></tr>
+            <tr><td>TLS</td><td>Transport Layer Security</td></tr>
+            <tr><td>UAT</td><td>User Acceptance Testing</td></tr>
+            <tr><td>WireMock</td><td>A flexible API mocking tool for HTTP-based APIs</td></tr>
+            <tr><td>WSDL</td><td>Web Services Description Language</td></tr>
+            <tr><td>XXE</td><td>XML External Entity</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 20. REFERENCES ── -->
+    <section id="s20">
+      <h1 class="section-title">20. References</h1>
+      <ol style="padding-left:1.5rem; line-height:2; font-size:13.5px; color:var(--text);">
+        <li>ISTQB® Certified Tester – Test Automation Strategy Specialist (CT-TAS) Syllabus v1.0, 2024</li>
+        <li>ISTQB® Certified Tester Foundation Level (CTFL) Syllabus v4.0</li>
+        <li>ISTQB® Certified Tester – Advanced Level Test Automation Engineering (CTAL-TAE) Syllabus</li>
+        <li>ISTQB® Certified Tester – Performance Testing (CT-PT) Syllabus</li>
+        <li>ISTQB® Certified Tester – Security Testing (CT-SEC) Syllabus</li>
+        <li>ISO/IEC 25010:2011 — Systems and software Quality Requirements and Evaluation (SQuaRE)</li>
+        <li>ISO 27001 — Information Security Management</li>
+        <li>OWASP Top 10 — 2021</li>
+        <li>OWASP API Security Top 10 — 2023</li>
+        <li>Integration Testing Framework — Architecture Options (Vector Programme, 2026)</li>
+        <li>Pact Documentation — <a href="https://docs.pact.io/" style="color:var(--mid-blue)">https://docs.pact.io/</a></li>
+        <li>WireMock Documentation — <a href="https://wiremock.org/" style="color:var(--mid-blue)">https://wiremock.org/</a></li>
+        <li>Playwright Documentation — <a href="https://playwright.dev/" style="color:var(--mid-blue)">https://playwright.dev/</a></li>
+        <li>Martin Fowler — Contract Testing and Service Virtualisation patterns</li>
+        <li>Mike Cohn — Succeeding with Agile: Software Development Using Scrum (Test Pyramid concept)</li>
+      </ol>
+    </section>
+
+  </div><!-- /content-wrap -->
+</div><!-- /main -->
+
+<script>
+  // Active nav highlight on scroll
+  const sections = document.querySelectorAll('[id]');
+  const navLinks = document.querySelectorAll('#sidebar nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const match = document.querySelector(`#sidebar nav a[href="#${entry.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-10% 0px -80% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

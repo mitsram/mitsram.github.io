@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integration Testing Framework — Architecture Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --fg: #1a1a2e;
+            --accent: #4361ee;
+            --border: #dee2e6;
+            --table-stripe: #f8f9fa;
+            --code-bg: #f4f5f7;
+            --blockquote-bg: #eef2ff;
+            --blockquote-border: #4361ee;
+            --hr-color: #dee2e6;
+            --link: #4361ee;
+            --heading: #16213e;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--fg);
+            background: var(--bg);
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+        h1 { font-size: 2rem; color: var(--heading); margin: 0 0 0.25rem; border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; }
+        h2 { font-size: 1.55rem; color: var(--heading); margin: 2.5rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.35rem; }
+        h3 { font-size: 1.25rem; color: var(--heading); margin: 2rem 0 0.75rem; }
+        h4 { font-size: 1.05rem; color: var(--heading); margin: 1.5rem 0 0.5rem; }
+        p { margin: 0.6rem 0; }
+        a { color: var(--link); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        blockquote {
+            margin: 1rem 0;
+            padding: 0.75rem 1.25rem;
+            background: var(--blockquote-bg);
+            border-left: 4px solid var(--blockquote-border);
+            border-radius: 4px;
+            font-style: italic;
+        }
+        blockquote strong { font-style: normal; }
+        hr { border: none; border-top: 1px solid var(--hr-color); margin: 2rem 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0 1.5rem;
+            font-size: 0.92rem;
+        }
+        th, td {
+            padding: 0.55rem 0.75rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+        }
+        th { background: var(--accent); color: #fff; font-weight: 600; }
+        tr:nth-child(even) { background: var(--table-stripe); }
+        code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.88em;
+            background: var(--code-bg);
+            padding: 0.15em 0.4em;
+            border-radius: 3px;
+        }
+        pre {
+            background: var(--code-bg);
+            padding: 1rem 1.25rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+        pre code { background: none; padding: 0; }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            margin: 1.5rem 0;
+            background: #fafbfc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem 1rem;
+        }
+        ul, ol { margin: 0.5rem 0 0.5rem 1.5rem; }
+        li { margin: 0.25rem 0; }
+        .toc { background: var(--table-stripe); padding: 1.25rem 1.5rem; border-radius: 8px; margin: 1.5rem 0 2rem; }
+        .toc ul { list-style: none; margin: 0; padding: 0; }
+        .toc > ul > li { margin: 0.3rem 0; }
+        .toc ul ul { margin-left: 1.25rem; margin-top: 0.15rem; }
+        .toc a { font-weight: 500; }
+        .toc ul ul a { font-weight: 400; }
+        @media print {
+            body { max-width: 100%; padding: 0.5cm; }
+            .mermaid { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Integration Testing Framework — Architecture Documentation</h1>
+
+<blockquote><strong>Hybrid Real + Virtual with Schema-Driven Validation</strong></blockquote>
+
+<p>This document provides a comprehensive architectural overview of the integration testing framework for App1's integrations with App2 (SOAP), Siebel (Pub/Sub via Integration Layer), and the ETL pipeline (Fivetran → Coalesce → Snowflake → Power BI).</p>
+
+<hr>
+
+<!-- Table of Contents -->
+<nav class="toc">
+<h3 style="margin-top:0">Table of Contents</h3>
+<ul>
+    <li><a href="#s1">1. Solution Overview</a></li>
+    <li><a href="#s2">2. System Landscape</a></li>
+    <li><a href="#s3">3. Test Automation Framework</a>
+        <ul>
+            <li><a href="#s31">3.1 Framework Architecture</a></li>
+            <li><a href="#s32">3.2 Component Breakdown</a></li>
+            <li><a href="#s33">3.3 Test Pyramid</a></li>
+        </ul>
+    </li>
+    <li><a href="#s4">4. Test Layers In Detail</a>
+        <ul>
+            <li><a href="#s41">4.1 Pact Consumer Contracts</a></li>
+            <li><a href="#s42">4.2 Schema Validation</a></li>
+            <li><a href="#s43">4.3 Virtual Integration (WireMock)</a></li>
+            <li><a href="#s44">4.4 Staging Integration</a></li>
+            <li><a href="#s45">4.5 E2E UI Tests</a></li>
+            <li><a href="#s46">4.6 Schema Drift Detection</a></li>
+        </ul>
+    </li>
+    <li><a href="#s5">5. Test Infrastructure</a>
+        <ul>
+            <li><a href="#s51">5.1 Infrastructure Overview</a></li>
+            <li><a href="#s52">5.2 WireMock Service Virtualization</a></li>
+            <li><a href="#s53">5.3 CI/CD Pipeline</a></li>
+        </ul>
+    </li>
+    <li><a href="#s6">6. Data Flow: "Create Customer Order"</a></li>
+    <li><a href="#s7">7. Technology Stack</a></li>
+    <li><a href="#s8">8. Project Structure</a></li>
+</ul>
+</nav>
+
+<hr>
+
+<!-- ================================================================== -->
+<!-- SECTION 1 -->
+<!-- ================================================================== -->
+<h2 id="s1">1. Solution Overview</h2>
+
+<p>The framework implements <strong>Option 1 (Hybrid Real + Virtual) + Option 4 (Schema-Driven)</strong> testing strategy. It exercises one end-to-end use case — <strong>"Create Customer Order"</strong> — across all three integration boundaries: SOAP, Pub/Sub, and ETL.</p>
+
+<pre class="mermaid">
+graph LR
+    subgraph "Testing Strategy"
+        A["Hybrid Real + Virtual&lt;br/&gt;(Option 1)"] --> C["Integration Testing&lt;br/&gt;Framework"]
+        B["Schema-Driven Validation&lt;br/&gt;(Option 4)"] --> C
+    end
+    C --> D["SOAP Integration&lt;br/&gt;App1 ↔ App2"]
+    C --> E["Pub/Sub Integration&lt;br/&gt;App1 ↔ Siebel"]
+    C --> F["ETL Pipeline&lt;br/&gt;App1 → Snowflake"]
+</pre>
+
+<h3>Key Design Decisions</h3>
+
+<table>
+<thead><tr><th>Decision</th><th>Rationale</th></tr></thead>
+<tbody>
+<tr><td><strong>Consumer-side contracts only</strong></td><td>App2 and Siebel are 3rd-party — no provider verification possible</td></tr>
+<tr><td><strong>WireMock for CI virtualization</strong></td><td>Fast feedback without staging dependency</td></tr>
+<tr><td><strong>Schema as source of truth</strong></td><td>Use WSDL and JSON Schema published by 3rd parties</td></tr>
+<tr><td><strong>Playwright as primary runner</strong></td><td>Unified API + UI testing in TypeScript</td></tr>
+<tr><td><strong>Layered test pyramid</strong></td><td>Balance speed and confidence across commit, nightly, and deploy triggers</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<!-- ================================================================== -->
+<!-- SECTION 2 -->
+<!-- ================================================================== -->
+<h2 id="s2">2. System Landscape</h2>
+
+<pre class="mermaid">
+graph TB
+    subgraph "Owned Systems"
+        APP1["🏢 App1&lt;br/&gt;(Our Application)"]
+        IL["🔗 Integration Layer&lt;br/&gt;(Middleware)"]
+    end
+
+    subgraph "3rd-Party Systems"
+        APP2["🏭 App2&lt;br/&gt;(SOAP Service)"]
+        SIEBEL["📋 Siebel&lt;br/&gt;(CRM)"]
+    end
+
+    subgraph "ETL Pipeline"
+        FT["📥 Fivetran&lt;br/&gt;(Ingestion)"]
+        CO["⚙️ Coalesce&lt;br/&gt;(Transformation)"]
+        SF["❄️ Snowflake&lt;br/&gt;(Data Warehouse)"]
+        PBI["📊 Power BI&lt;br/&gt;(Reporting)"]
+    end
+
+    APP1 -- "SOAP&lt;br/&gt;CreateOrder / GetOrderStatus" --> APP2
+    APP2 -- "SOAP Response&lt;br/&gt;/ Callback" --> APP1
+    APP1 -- "Publish&lt;br/&gt;OrderCreated" --> IL
+    IL -- "Forward" --> SIEBEL
+    SIEBEL -- "OrderUpdated" --> IL
+    IL -- "Subscribe" --> APP1
+    APP1 -- "Data Feed" --> FT
+    FT --> CO --> SF --> PBI
+
+    style APP1 fill:#4CAF50,color:#fff
+    style IL fill:#4CAF50,color:#fff
+    style APP2 fill:#FF9800,color:#fff
+    style SIEBEL fill:#FF9800,color:#fff
+    style FT fill:#2196F3,color:#fff
+    style CO fill:#2196F3,color:#fff
+    style SF fill:#2196F3,color:#fff
+    style PBI fill:#2196F3,color:#fff
+</pre>
+
+<h3>Integration Boundaries</h3>
+
+<table>
+<thead><tr><th>Boundary</th><th>Protocol</th><th>Direction</th><th>Owned Side</th></tr></thead>
+<tbody>
+<tr><td>App1 ↔ App2</td><td>SOAP/XML over HTTP</td><td>Bidirectional</td><td>App1 (consumer)</td></tr>
+<tr><td>App1 ↔ Siebel</td><td>JSON over HTTP (Pub/Sub via Integration Layer)</td><td>Bidirectional</td><td>App1 + Integration Layer</td></tr>
+<tr><td>App1 → Snowflake</td><td>ETL Pipeline (Fivetran → Coalesce → Snowflake)</td><td>Unidirectional</td><td>Data feed from App1</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<!-- ================================================================== -->
+<!-- SECTION 3 -->
+<!-- ================================================================== -->
+<h2 id="s3">3. Test Automation Framework</h2>
+
+<h3 id="s31">3.1 Framework Architecture</h3>
+
+<pre class="mermaid">
+graph TB
+    subgraph "Test Suites"
+        PACT["🤝 Pact Consumer&lt;br/&gt;Contract Tests"]
+        SCHEMA["📐 Schema&lt;br/&gt;Validation Tests"]
+        VIRTUAL["🔌 Virtual Integration&lt;br/&gt;Tests (WireMock)"]
+        STAGING["🌐 Staging Integration&lt;br/&gt;Tests (Real)"]
+        E2E["🖥️ E2E UI&lt;br/&gt;Tests"]
+        DRIFT["🔍 Schema Drift&lt;br/&gt;Detection"]
+    end
+
+    subgraph "Framework Core"
+        SOAP_C["SoapClient"]
+        PUBSUB_C["PubSubClient"]
+        SF_C["SnowflakeClient"]
+        SCHEMA_V["SchemaValidator&lt;br/&gt;(AJV)"]
+        WSDL_V["WsdlValidator&lt;br/&gt;(XML Parser)"]
+        HELPERS["TestHelpers&lt;br/&gt;(Factories)"]
+    end
+
+    subgraph "Schemas (Source of Truth)"
+        WSDL["order-service.wsdl"]
+        JSON_S1["order-created-event&lt;br/&gt;.schema.json"]
+        JSON_S2["order-updated-event&lt;br/&gt;.schema.json"]
+    end
+
+    subgraph "Infrastructure"
+        WM["WireMock&lt;br/&gt;(Docker)"]
+        PW["Playwright&lt;br/&gt;(Test Runner)"]
+        JEST["Jest&lt;br/&gt;(Pact Runner)"]
+    end
+
+    PACT --> JEST
+    SCHEMA --> PW
+    VIRTUAL --> PW
+    STAGING --> PW
+    E2E --> PW
+
+    VIRTUAL --> SOAP_C
+    VIRTUAL --> PUBSUB_C
+    STAGING --> SOAP_C
+    STAGING --> PUBSUB_C
+    STAGING --> SF_C
+    SCHEMA --> SCHEMA_V
+    SCHEMA --> WSDL_V
+    E2E --> PUBSUB_C
+
+    SCHEMA_V --> JSON_S1
+    SCHEMA_V --> JSON_S2
+    WSDL_V --> WSDL
+
+    SOAP_C --> WM
+    PUBSUB_C --> WM
+    HELPERS --> SOAP_C
+    HELPERS --> PUBSUB_C
+
+    style PACT fill:#E1BEE7
+    style SCHEMA fill:#C8E6C9
+    style VIRTUAL fill:#BBDEFB
+    style STAGING fill:#FFE0B2
+    style E2E fill:#FFCDD2
+    style DRIFT fill:#F0F4C3
+</pre>
+
+<h3 id="s32">3.2 Component Breakdown</h3>
+
+<pre class="mermaid">
+classDiagram
+    class SoapClient {
+        -request: APIRequestContext
+        -baseUrl: string
+        +createOrder(req: CreateOrderRequest) CreateOrderResponse
+        +getOrderStatus(orderId: string) GetOrderStatusResponse
+    }
+
+    class PubSubClient {
+        -request: APIRequestContext
+        -baseUrl: string
+        +publishOrderCreated(event: OrderCreatedEvent) PublishResponse
+        +subscribeOrderUpdated(consumerId: string) SubscribeResponse
+        +acknowledgeMessage(messageId: string) void
+        +healthCheck() HealthResponse
+    }
+
+    class SnowflakeClient {
+        -connection: Connection
+        -config: SnowflakeConfig
+        +connect() void
+        +disconnect() void
+        +query~T~(sql: string, binds: any[]) T[]
+        +getOrderById(orderId: string) OrderRow
+        +getOrderItems(orderId: string) OrderItemRow[]
+        +getRowCount(tableName: string) number
+        +isDataFresh(table: string, col: string, mins: number) boolean
+    }
+
+    class SchemaValidator {
+        -ajv: Ajv
+        -validators: Map~string, ValidateFunction~
+        +loadSchema(path: string, id: string) void
+        +loadAllMessageSchemas(dir: string) void
+        +validate(schemaId: string, payload: unknown) ValidationResult
+        +assertValid(schemaId: string, payload: unknown) void
+    }
+
+    class WsdlValidator {
+        -operations: Map~string, WsdlOperation~
+        -rawElements: Map~string, any~
+        +loadWsdl(path: string) void
+        +getOperations() WsdlOperation[]
+        +validateSoapBody(xml: string, op: string, dir: string) WsdlValidationResult
+    }
+
+    class TestHelpers {
+        +createSampleOrderItems() OrderItem[]
+        +createSampleOrderRequest(overrides) CreateOrderRequest
+        +createSampleOrderCreatedEvent(overrides) OrderCreatedEvent
+        +isValidISODateTime(value: string) boolean
+        +isValidOrderId(value: string) boolean
+        +isValidConfirmationNumber(value: string) boolean
+    }
+
+    SoapClient ..> TestHelpers : uses factories
+    PubSubClient ..> TestHelpers : uses factories
+    SchemaValidator ..> OrderCreatedEvent : validates
+    SchemaValidator ..> OrderUpdatedEvent : validates
+    WsdlValidator ..> SoapClient : validates envelopes
+</pre>
+
+<h3 id="s33">3.3 Test Pyramid</h3>
+
+<pre class="mermaid">
+graph TB
+    subgraph pyramid ["Test Pyramid"]
+        direction TB
+        L1["🔺 E2E UI Tests&lt;br/&gt;Playwright browser • staging only&lt;br/&gt;~10 min • highest confidence"]
+        L2["🔸 Staging Integration Tests&lt;br/&gt;Real App2 SOAP • Real Integration Layer • Real Snowflake&lt;br/&gt;~5 min • nightly / on deploy"]
+        L3["🔹 Virtual Integration Tests&lt;br/&gt;WireMock stubs • no staging dependency&lt;br/&gt;~2 min • every CI build"]
+        L4["🔻 Schema + Contract Tests&lt;br/&gt;WSDL compliance • JSON Schema • Pact contracts&lt;br/&gt;~30 sec • every commit"]
+    end
+
+    L1 --- L2
+    L2 --- L3
+    L3 --- L4
+
+    style L1 fill:#FFCDD2,color:#000
+    style L2 fill:#FFE0B2,color:#000
+    style L3 fill:#BBDEFB,color:#000
+    style L4 fill:#C8E6C9,color:#000
+</pre>
+
+<table>
+<thead><tr><th>Layer</th><th>Runner</th><th>Trigger</th><th>Duration</th><th>Staging Required</th></tr></thead>
+<tbody>
+<tr><td>Schema + Contract</td><td>Jest (Pact) + Playwright</td><td>Every commit</td><td>~30 sec</td><td>No</td></tr>
+<tr><td>Virtual Integration</td><td>Playwright</td><td>Every CI build</td><td>~2 min</td><td>No (WireMock)</td></tr>
+<tr><td>Staging Integration</td><td>Playwright</td><td>Nightly / deploy</td><td>~5 min</td><td>Yes</td></tr>
+<tr><td>E2E UI</td><td>Playwright (Chromium)</td><td>Nightly / deploy</td><td>~10 min</td><td>Yes</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<!-- ================================================================== -->
+<!-- SECTION 4 -->
+<!-- ================================================================== -->
+<h2 id="s4">4. Test Layers In Detail</h2>
+
+<h3 id="s41">4.1 Pact Consumer Contracts</h3>
+
+<pre class="mermaid">
+sequenceDiagram
+    participant Test as Pact Test (Jest)
+    participant Pact as Pact Mock Server
+    participant File as Pact Contract File
+
+    Note over Test,File: Consumer-side only — no provider verification&lt;br/&gt;(App2 and Siebel are 3rd-party)
+
+    Test->>Pact: Define interaction (given, request, response)
+    Pact->>Pact: Start mock server
+    Test->>Pact: Execute HTTP request
+    Pact-->>Test: Return mocked response
+    Test->>Test: Assert response matches expectations
+    Pact->>File: Write contract (pacts/*.json)
+
+    Note over File: Contracts serve as:&lt;br/&gt;• Living documentation&lt;br/&gt;• Drift detection baseline
+</pre>
+
+<p><strong>Covered Interactions:</strong></p>
+
+<table>
+<thead><tr><th>Consumer</th><th>Provider</th><th>Interaction</th></tr></thead>
+<tbody>
+<tr><td>App1</td><td>App2-OrderService</td><td><code>CreateOrder</code> SOAP request/response</td></tr>
+<tr><td>App1</td><td>App2-OrderService</td><td><code>GetOrderStatus</code> SOAP request/response</td></tr>
+<tr><td>App1</td><td>IntegrationLayer-PubSub</td><td>Publish <code>OrderCreated</code> event</td></tr>
+<tr><td>App1</td><td>IntegrationLayer-PubSub</td><td>Subscribe <code>OrderUpdated</code> events</td></tr>
+</tbody>
+</table>
+
+<h3 id="s42">4.2 Schema Validation</h3>
+
+<pre class="mermaid">
+graph LR
+    subgraph "WSDL Validation"
+        WSDL_FILE["order-service.wsdl&lt;br/&gt;(App2 published)"]
+        WSDL_V2["WsdlValidator"]
+        SOAP_ENV["SOAP Envelopes&lt;br/&gt;(App1's requests)"]
+
+        WSDL_FILE --> WSDL_V2
+        SOAP_ENV --> WSDL_V2
+        WSDL_V2 --> R1{"✅ Valid&lt;br/&gt;❌ Missing/Extra elements"}
+    end
+
+    subgraph "JSON Schema Validation"
+        JS1["order-created-event&lt;br/&gt;.schema.json"]
+        JS2["order-updated-event&lt;br/&gt;.schema.json"]
+        SV["SchemaValidator&lt;br/&gt;(AJV)"]
+        EVT["Pub/Sub Events&lt;br/&gt;(App1 produces/consumes)"]
+
+        JS1 --> SV
+        JS2 --> SV
+        EVT --> SV
+        SV --> R2{"✅ Valid&lt;br/&gt;❌ Schema violations"}
+    end
+
+    style R1 fill:#E8F5E9
+    style R2 fill:#E8F5E9
+</pre>
+
+<p><strong>What is validated:</strong></p>
+
+<table>
+<thead><tr><th>Schema</th><th>Validates</th><th>Assertions</th></tr></thead>
+<tbody>
+<tr><td><code>order-service.wsdl</code></td><td>SOAP operations exist, required fields present</td><td>Operation names, SOAP actions, input/output elements</td></tr>
+<tr><td><code>order-created-event.schema.json</code></td><td><code>OrderCreated</code> events from App1</td><td>Required fields, types, enums (<code>eventType=OrderCreated</code>, <code>source=App1</code>), constraints (<code>quantity ≥ 1</code>)</td></tr>
+<tr><td><code>order-updated-event.schema.json</code></td><td><code>OrderUpdated</code> events from Siebel</td><td>Required fields, status enum, source constraint</td></tr>
+</tbody>
+</table>
+
+<h3 id="s43">4.3 Virtual Integration (WireMock)</h3>
+
+<pre class="mermaid">
+sequenceDiagram
+    participant Test as Playwright Test
+    participant Client as SoapClient / PubSubClient
+    participant WM as WireMock (Docker)
+
+    Note over WM: Stubs loaded from&lt;br/&gt;wiremock/mappings/*.json
+
+    rect rgb(232, 245, 253)
+        Note over Test,WM: SOAP Flow
+        Test->>Client: createOrder(request)
+        Client->>WM: POST /ws/orders (SOAP XML)
+        WM-->>Client: SOAP Response (Confirmed)
+        Client-->>Test: CreateOrderResponse
+        Test->>Test: Assert orderId, status, totalAmount
+    end
+
+    rect rgb(232, 253, 232)
+        Note over Test,WM: Pub/Sub Flow
+        Test->>Client: publishOrderCreated(event)
+        Client->>WM: POST /api/events/publish (JSON)
+        WM-->>Client: 202 Accepted
+        Client-->>Test: PublishResponse
+
+        Test->>Client: subscribeOrderUpdated("app1")
+        Client->>WM: GET /api/events/subscribe?topic=orders.updated
+        WM-->>Client: OrderUpdated messages
+        Client-->>Test: SubscribeResponse
+
+        Test->>Client: acknowledgeMessage(messageId)
+        Client->>WM: POST /api/events/acknowledge
+        WM-->>Client: 200 OK
+    end
+</pre>
+
+<p><strong>WireMock Stub Mappings:</strong></p>
+
+<table>
+<thead><tr><th>Mapping</th><th>Endpoint</th><th>Trigger Condition</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>CreateOrder Success</td><td><code>POST /ws/orders</code></td><td>SOAPAction=<code>CreateOrder</code>, valid customer</td><td>SOAP response with <code>ORD-2026-00042</code></td></tr>
+<tr><td>CreateOrder Fault</td><td><code>POST /ws/orders</code></td><td>Body contains <code>INVALID-CUSTOMER</code></td><td>SOAP Fault: <code>Customer not found</code></td></tr>
+<tr><td>GetOrderStatus</td><td><code>POST /ws/orders</code></td><td>SOAPAction=<code>GetOrderStatus</code></td><td>Status <code>Confirmed</code></td></tr>
+<tr><td>Publish Event</td><td><code>POST /api/events/publish</code></td><td>JSON with <code>eventType: OrderCreated</code></td><td>202 with <code>messageId</code></td></tr>
+<tr><td>Subscribe Events</td><td><code>GET /api/events/subscribe</code></td><td>topic=<code>orders.updated</code></td><td>Array of <code>OrderUpdated</code> messages</td></tr>
+<tr><td>Acknowledge</td><td><code>POST /api/events/acknowledge</code></td><td>JSON with <code>messageId</code></td><td>200 OK</td></tr>
+<tr><td>Health Check</td><td><code>GET /api/health</code></td><td>Any</td><td><code>healthy</code> status</td></tr>
+</tbody>
+</table>
+
+<h3 id="s44">4.4 Staging Integration</h3>
+
+<pre class="mermaid">
+graph TB
+    subgraph "Staging Integration Tests"
+        S_SOAP["SOAP Staging Tests"]
+        S_PUBSUB["Pub/Sub Staging Tests"]
+        S_ETL["ETL Staging Tests"]
+    end
+
+    subgraph "Real Staging Environments"
+        R_APP2["App2 Staging&lt;br/&gt;SOAP Endpoint"]
+        R_IL["Integration Layer&lt;br/&gt;Staging"]
+        R_SIEBEL["Siebel&lt;br/&gt;Staging"]
+        R_SF["Snowflake&lt;br/&gt;Staging"]
+    end
+
+    S_SOAP -- "CreateOrder&lt;br/&gt;GetOrderStatus" --> R_APP2
+    S_PUBSUB -- "Publish OrderCreated" --> R_IL
+    R_IL -- "Forward" --> R_SIEBEL
+    R_SIEBEL -- "OrderUpdated" --> R_IL
+    S_PUBSUB -- "Subscribe OrderUpdated" --> R_IL
+    S_ETL -- "SQL Queries" --> R_SF
+
+    subgraph "Staging Assertions"
+        A1["Response structure drift detection"]
+        A2["Round-trip: publish → Siebel ack → subscribe"]
+        A3["Data landing, freshness, quality"]
+    end
+
+    S_SOAP --> A1
+    S_PUBSUB --> A2
+    S_ETL --> A3
+
+    style R_APP2 fill:#FF9800,color:#fff
+    style R_IL fill:#4CAF50,color:#fff
+    style R_SIEBEL fill:#FF9800,color:#fff
+    style R_SF fill:#2196F3,color:#fff
+</pre>
+
+<p><strong>ETL Validation Checks:</strong></p>
+
+<table>
+<thead><tr><th>Check Category</th><th>Assertions</th></tr></thead>
+<tbody>
+<tr><td><strong>Data Landing</strong></td><td>ORDERS and ORDER_ITEMS tables populated, specific order findable by ID</td></tr>
+<tr><td><strong>Data Freshness</strong></td><td>Data synced within last 24 hours</td></tr>
+<tr><td><strong>Data Quality</strong></td><td>No NULL order IDs, no negative amounts, valid status values only</td></tr>
+<tr><td><strong>Referential Integrity</strong></td><td>No orphan ORDER_ITEMS without matching ORDERS</td></tr>
+<tr><td><strong>Power BI</strong></td><td>Orders dataset available via Power BI REST API (when configured)</td></tr>
+</tbody>
+</table>
+
+<h3 id="s45">4.5 E2E UI Tests</h3>
+
+<pre class="mermaid">
+sequenceDiagram
+    actor User as Playwright (Browser)
+    participant App1 as App1 UI
+    participant App2 as App2 (SOAP)
+    participant IL as Integration Layer
+    participant Siebel as Siebel
+
+    User->>App1: Navigate to /orders/new
+    User->>App1: Fill customer ID, address, items
+    User->>App1: Click "Submit Order"
+
+    App1->>App2: SOAP CreateOrder
+    App2-->>App1: Order Confirmed (orderId, confirmationNumber)
+
+    App1->>IL: Publish OrderCreated event
+    IL->>Siebel: Forward event
+
+    App1-->>User: Show success message
+    User->>User: Assert confirmation number visible
+    User->>User: Assert order status = "Confirmed"
+
+    Note over User,Siebel: Uses Page Object pattern (OrderPage class)
+</pre>
+
+<p><strong>Page Object — <code>OrderPage</code>:</strong></p>
+
+<table>
+<thead><tr><th>Method</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><code>navigate()</code></td><td>Go to <code>/orders/new</code></td></tr>
+<tr><td><code>fillCustomerId(id)</code></td><td>Fill customer ID field</td></tr>
+<tr><td><code>fillShippingAddress(addr)</code></td><td>Fill shipping address</td></tr>
+<tr><td><code>addItem(productId, name, qty, price)</code></td><td>Add order item row</td></tr>
+<tr><td><code>submitOrder()</code></td><td>Click submit button</td></tr>
+<tr><td><code>getConfirmationNumber()</code></td><td>Read confirmation from UI</td></tr>
+<tr><td><code>getOrderId()</code></td><td>Read order ID from UI</td></tr>
+<tr><td><code>getOrderStatus()</code></td><td>Read status from UI</td></tr>
+</tbody>
+</table>
+
+<h3 id="s46">4.6 Schema Drift Detection</h3>
+
+<pre class="mermaid">
+graph LR
+    subgraph "Stored Schemas"
+        LOCAL_WSDL["schemas/wsdl/&lt;br/&gt;order-service.wsdl"]
+        LOCAL_JSON["schemas/messages/&lt;br/&gt;*.schema.json"]
+    end
+
+    subgraph "Live APIs (Staging)"
+        LIVE_WSDL["App2: /ws/orders?wsdl"]
+        LIVE_JSON["Integration Layer:&lt;br/&gt;/api/schemas/order-events"]
+    end
+
+    subgraph "Drift Check Script"
+        FETCH["Fetch live schemas"]
+        COMPARE["Compare operations&lt;br/&gt;&amp; required fields"]
+        REPORT["Generate report"]
+    end
+
+    LIVE_WSDL --> FETCH
+    LIVE_JSON --> FETCH
+    FETCH --> COMPARE
+    LOCAL_WSDL --> COMPARE
+    LOCAL_JSON --> COMPARE
+    COMPARE --> REPORT
+
+    REPORT -->|No drift| OK["✅ All schemas match"]
+    REPORT -->|Drift detected| ALERT["⚠️ Exit code 1&lt;br/&gt;Alert team"]
+
+    style OK fill:#C8E6C9
+    style ALERT fill:#FFCDD2
+</pre>
+
+<p><strong>Drift Detection Logic:</strong></p>
+
+<table>
+<thead><tr><th>Check</th><th>Comparison</th></tr></thead>
+<tbody>
+<tr><td>WSDL Operations</td><td>Local vs. live operation names — detect added/removed operations</td></tr>
+<tr><td>WSDL Elements</td><td>Local vs. live element structure — detect field changes</td></tr>
+<tr><td>Message Schema Fields</td><td>Local <code>required</code> fields vs. live <code>required</code> fields</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<!-- ================================================================== -->
+<!-- SECTION 5 -->
+<!-- ================================================================== -->
+<h2 id="s5">5. Test Infrastructure</h2>
+
+<h3 id="s51">5.1 Infrastructure Overview</h3>
+
+<pre class="mermaid">
+graph TB
+    subgraph "Developer Machine"
+        DEV_NODE["Node.js 20+"]
+        DEV_DOCKER["Docker"]
+        DEV_WM["WireMock Container&lt;br/&gt;:8080"]
+        DEV_TEST["Test Runner&lt;br/&gt;(Playwright + Jest)"]
+
+        DEV_NODE --> DEV_TEST
+        DEV_DOCKER --> DEV_WM
+        DEV_TEST --> DEV_WM
+    end
+
+    subgraph "GitHub Actions CI/CD"
+        GH_TRIGGER["Triggers:&lt;br/&gt;push, PR, nightly,&lt;br/&gt;manual dispatch"]
+        GH_CI["CI Job&lt;br/&gt;(contract + schema + virtual)"]
+        GH_STAGING["Staging Job&lt;br/&gt;(real integrations)"]
+        GH_E2E["E2E Job&lt;br/&gt;(browser tests)"]
+        GH_DRIFT["Drift Check Job&lt;br/&gt;(schema comparison)"]
+
+        GH_TRIGGER --> GH_CI
+        GH_CI --> GH_STAGING
+        GH_STAGING --> GH_E2E
+        GH_TRIGGER --> GH_DRIFT
+    end
+
+    subgraph "Artifacts &amp; Reporting"
+        PACT_FILES["Pact Contracts&lt;br/&gt;(pacts/*.json)"]
+        REPORTS["Test Reports&lt;br/&gt;(HTML + JUnit XML)"]
+        PACT_BROKER["Pact Broker&lt;br/&gt;(optional)"]
+    end
+
+    GH_CI --> PACT_FILES
+    GH_CI --> REPORTS
+    PACT_FILES --> PACT_BROKER
+
+    style DEV_WM fill:#2196F3,color:#fff
+    style GH_CI fill:#C8E6C9
+    style GH_STAGING fill:#FFE0B2
+    style GH_E2E fill:#FFCDD2
+    style GH_DRIFT fill:#F0F4C3
+</pre>
+
+<h3 id="s52">5.2 WireMock Service Virtualization</h3>
+
+<pre class="mermaid">
+graph TB
+    subgraph "Docker Compose"
+        WM["WireMock 3.9.1&lt;br/&gt;Container: integration-wiremock&lt;br/&gt;Port: 8080"]
+    end
+
+    subgraph "Stub Mappings (Volume Mount)"
+        SOAP_STUB["soap-order-service.json&lt;br/&gt;• CreateOrder Success&lt;br/&gt;• CreateOrder SOAP Fault&lt;br/&gt;• GetOrderStatus&lt;br/&gt;• Timeout Simulation"]
+        PUBSUB_STUB["pubsub-integration-layer.json&lt;br/&gt;• Publish OrderCreated&lt;br/&gt;• Subscribe OrderUpdated&lt;br/&gt;• Acknowledge Message&lt;br/&gt;• Health Check"]
+    end
+
+    subgraph "Test Consumers"
+        VIRTUAL_TESTS["Virtual Integration Tests"]
+        SCHEMA_TESTS["Schema Validation Tests"]
+    end
+
+    SOAP_STUB --> WM
+    PUBSUB_STUB --> WM
+    VIRTUAL_TESTS --> WM
+    SCHEMA_TESTS --> WM
+
+    style WM fill:#2196F3,color:#fff
+</pre>
+
+<table>
+<thead><tr><th>Configuration</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Image</td><td><code>wiremock/wiremock:3.9.1</code></td></tr>
+<tr><td>Port</td><td><code>8080</code></td></tr>
+<tr><td>Health check</td><td><code>GET /__admin/health</code> (5s interval, 3s timeout, 10 retries)</td></tr>
+<tr><td>Mappings</td><td>Volume-mounted from <code>./wiremock/mappings/</code></td></tr>
+<tr><td>Restart policy</td><td><code>unless-stopped</code></td></tr>
+</tbody>
+</table>
+
+<h3 id="s53">5.3 CI/CD Pipeline</h3>
+
+<pre class="mermaid">
+graph LR
+    subgraph "Triggers"
+        T1["Push to main/develop"]
+        T2["Pull Request"]
+        T3["Nightly (2 AM UTC)"]
+        T4["Manual dispatch"]
+    end
+
+    subgraph "Pipeline Stages"
+        CI["🟢 CI Tests&lt;br/&gt;~2 min&lt;br/&gt;Contract + Schema + Virtual"]
+        STG["🟡 Staging Tests&lt;br/&gt;~5 min&lt;br/&gt;Real App2 + IL + Snowflake"]
+        E2E_J["🔴 E2E UI Tests&lt;br/&gt;~10 min&lt;br/&gt;Browser through App1"]
+        DRIFT_J["🟣 Drift Detection&lt;br/&gt;~1 min&lt;br/&gt;Compare schemas"]
+    end
+
+    T1 --> CI
+    T2 --> CI
+    T3 --> CI
+    T3 --> DRIFT_J
+    T4 --> CI
+
+    CI -->|"nightly/manual&lt;br/&gt;only"| STG
+    STG --> E2E_J
+
+    style CI fill:#C8E6C9,color:#000
+    style STG fill:#FFE0B2,color:#000
+    style E2E_J fill:#FFCDD2,color:#000
+    style DRIFT_J fill:#E1BEE7,color:#000
+</pre>
+
+<p><strong>Pipeline Trigger Matrix:</strong></p>
+
+<table>
+<thead><tr><th>Trigger</th><th>CI Tests</th><th>Staging</th><th>E2E</th><th>Drift Check</th></tr></thead>
+<tbody>
+<tr><td>Push to <code>main</code>/<code>develop</code></td><td>✅</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>Pull Request</td><td>✅</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>Nightly (2 AM UTC)</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+<tr><td>Manual (<code>workflow_dispatch</code>)</td><td>✅</td><td>Selectable</td><td>Selectable</td><td>Selectable</td></tr>
+</tbody>
+</table>
+
+<p><strong>NPM Script Mapping:</strong></p>
+
+<table>
+<thead><tr><th>Script</th><th>What It Runs</th><th>Layer</th></tr></thead>
+<tbody>
+<tr><td><code>npm run test:ci</code></td><td>Contract + Schema + Virtual</td><td>CI (no staging)</td></tr>
+<tr><td><code>npm run test:contract</code></td><td>Pact consumer tests (Jest)</td><td>Contracts</td></tr>
+<tr><td><code>npm run test:schema</code></td><td>Schema validation (Playwright)</td><td>Schema</td></tr>
+<tr><td><code>npm run test:virtual</code></td><td>Virtual integration (Playwright)</td><td>Virtual</td></tr>
+<tr><td><code>npm run test:staging</code></td><td>Staging integration (Playwright)</td><td>Staging</td></tr>
+<tr><td><code>npm run test:e2e</code></td><td>E2E UI (Playwright + Chromium)</td><td>E2E</td></tr>
+<tr><td><code>npm run schema:drift-check</code></td><td>Nightly drift detection script</td><td>Drift</td></tr>
+<tr><td><code>npm run pact:publish</code></td><td>Publish Pact contracts to broker</td><td>Utility</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<!-- ================================================================== -->
+<!-- SECTION 6 -->
+<!-- ================================================================== -->
+<h2 id="s6">6. Data Flow: "Create Customer Order"</h2>
+
+<pre class="mermaid">
+sequenceDiagram
+    actor User
+    participant App1 as App1
+    participant App2 as App2 (3rd Party)
+    participant IL as Integration Layer
+    participant Siebel as Siebel (3rd Party)
+    participant FT as Fivetran
+    participant CO as Coalesce
+    participant SF as Snowflake
+    participant PBI as Power BI
+
+    Note over User,PBI: End-to-End "Create Customer Order" Flow
+
+    User->>App1: 1. Create order in UI
+    App1->>App2: 2. SOAP CreateOrder request
+    App2-->>App1: 3. Order confirmation (orderId, status)
+
+    App1->>IL: 4. Publish OrderCreated event
+    IL->>Siebel: Forward event
+    Siebel-->>IL: 5. OrderUpdated (Acknowledged)
+    IL-->>App1: Subscribe → receive acknowledgment
+
+    App1->>FT: 6. Data feed (order data)
+    FT->>CO: Ingest raw data
+    CO->>SF: Transform &amp; load
+    SF->>PBI: Serve to reports
+
+    rect rgb(200, 230, 201)
+        Note over User,PBI: Test Coverage Map
+        Note over App1,App2: Covered by: SOAP Contract + Schema + Virtual + Staging
+        Note over App1,Siebel: Covered by: Pub/Sub Contract + Schema + Virtual + Staging
+        Note over FT,PBI: Covered by: ETL Staging Tests (Snowflake queries)
+        Note over User,App1: Covered by: E2E UI Tests (Playwright browser)
+    end
+</pre>
+
+<hr>
+
+<!-- ================================================================== -->
+<!-- SECTION 7 -->
+<!-- ================================================================== -->
+<h2 id="s7">7. Technology Stack</h2>
+
+<pre class="mermaid">
+graph TB
+    subgraph "Test Runners"
+        PW["Playwright 1.49+&lt;br/&gt;UI + API Testing"]
+        JEST_T["Jest 25+&lt;br/&gt;Pact Contract Testing"]
+    end
+
+    subgraph "Contract &amp; Schema"
+        PACT_T["Pact v16&lt;br/&gt;Consumer Contracts"]
+        AJV["AJV 8&lt;br/&gt;JSON Schema Validation"]
+        FXP["fast-xml-parser 5&lt;br/&gt;WSDL/XML Parsing"]
+    end
+
+    subgraph "Clients &amp; SDKs"
+        SF_SDK["snowflake-sdk 2.3&lt;br/&gt;Data Warehouse Queries"]
+        UUID["uuid&lt;br/&gt;Test Data Generation"]
+    end
+
+    subgraph "Infrastructure"
+        DOCKER["Docker&lt;br/&gt;Container Runtime"]
+        WM_T["WireMock 3.9&lt;br/&gt;Service Virtualization"]
+        GHA["GitHub Actions&lt;br/&gt;CI/CD Pipeline"]
+    end
+
+    subgraph "Language &amp; Build"
+        TS["TypeScript 5.6&lt;br/&gt;Language"]
+        NODE["Node.js 20+&lt;br/&gt;Runtime"]
+    end
+
+    PW --> TS
+    JEST_T --> TS
+    TS --> NODE
+    WM_T --> DOCKER
+
+    style PW fill:#45ba4b,color:#fff
+    style PACT_T fill:#2c97de,color:#fff
+    style WM_T fill:#f39c12,color:#fff
+    style GHA fill:#24292e,color:#fff
+</pre>
+
+<table>
+<thead><tr><th>Tool</th><th>Version</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><a href="https://playwright.dev/">Playwright</a></td><td>^1.49.0</td><td>UI and API testing (schema, virtual, staging, E2E)</td></tr>
+<tr><td><a href="https://pact.io/">Pact</a></td><td>^16.2.0</td><td>Consumer-side contract testing</td></tr>
+<tr><td><a href="https://wiremock.org/">WireMock</a></td><td>3.9.1</td><td>Service virtualization (SOAP + REST stubs)</td></tr>
+<tr><td><a href="https://ajv.js.org/">AJV</a></td><td>^8.17.0</td><td>JSON Schema validation for Pub/Sub messages</td></tr>
+<tr><td><a href="https://github.com/NaturalIntelligence/fast-xml-parser">fast-xml-parser</a></td><td>^5.3.7</td><td>SOAP XML parsing and WSDL validation</td></tr>
+<tr><td><a href="https://docs.snowflake.com/en/developer-guide/node-js/nodejs-driver">Snowflake SDK</a></td><td>^2.3.4</td><td>ETL data warehouse queries</td></tr>
+<tr><td><a href="https://jestjs.io/">Jest</a></td><td>^25.0.0</td><td>Test runner for Pact contract tests</td></tr>
+<tr><td><a href="https://www.typescriptlang.org/">TypeScript</a></td><td>^5.6.0</td><td>Language for all test code</td></tr>
+<tr><td><a href="https://www.docker.com/">Docker</a></td><td>—</td><td>WireMock containerization</td></tr>
+<tr><td><a href="https://github.com/features/actions">GitHub Actions</a></td><td>—</td><td>CI/CD pipeline</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<!-- ================================================================== -->
+<!-- SECTION 8 -->
+<!-- ================================================================== -->
+<h2 id="s8">8. Project Structure</h2>
+
+<pre class="mermaid">
+graph TB
+    subgraph "Root"
+        DC["docker-compose.yml"]
+        JC["jest.config.ts"]
+        PC["playwright.config.ts"]
+        PKG["package.json"]
+        TSC["tsconfig.json"]
+    end
+
+    subgraph "schemas/"
+        WSDL_DIR["wsdl/&lt;br/&gt;order-service.wsdl"]
+        MSG_DIR["messages/&lt;br/&gt;order-created-event.schema.json&lt;br/&gt;order-updated-event.schema.json"]
+    end
+
+    subgraph "src/"
+        CLIENTS["clients/&lt;br/&gt;soap-client.ts&lt;br/&gt;pubsub-client.ts&lt;br/&gt;snowflake-client.ts"]
+        SCHEMAS_SRC["schemas/&lt;br/&gt;schema-validator.ts&lt;br/&gt;wsdl-validator.ts"]
+        UTILS["utils/&lt;br/&gt;test-helpers.ts"]
+    end
+
+    subgraph "tests/"
+        CONTRACT["contract/&lt;br/&gt;soap-consumer.pact.spec.ts&lt;br/&gt;pubsub-consumer.pact.spec.ts"]
+        SCHEMA_T["schema/&lt;br/&gt;soap-schema.spec.ts&lt;br/&gt;message-schema.spec.ts"]
+        INT_V["integration/virtual/&lt;br/&gt;soap-virtual.spec.ts&lt;br/&gt;pubsub-virtual.spec.ts"]
+        INT_S["integration/staging/&lt;br/&gt;soap-staging.spec.ts&lt;br/&gt;pubsub-staging.spec.ts&lt;br/&gt;etl-staging.spec.ts"]
+        E2E_T["e2e/&lt;br/&gt;order-flow.spec.ts"]
+    end
+
+    subgraph "wiremock/"
+        MAPPINGS["mappings/&lt;br/&gt;soap-order-service.json&lt;br/&gt;pubsub-integration-layer.json"]
+    end
+
+    subgraph "scripts/"
+        DRIFT_S["schema-drift-check.ts"]
+        PACT_PUB["publish-pacts.ts"]
+    end
+
+    PC --> SCHEMA_T
+    PC --> INT_V
+    PC --> INT_S
+    PC --> E2E_T
+    JC --> CONTRACT
+    DC --> MAPPINGS
+    CLIENTS --> INT_V
+    CLIENTS --> INT_S
+    SCHEMAS_SRC --> SCHEMA_T
+    UTILS --> CONTRACT
+    UTILS --> INT_V
+</pre>
+
+<h3>Directory Purpose Map</h3>
+
+<table>
+<thead><tr><th>Directory</th><th>Purpose</th><th>Runner</th></tr></thead>
+<tbody>
+<tr><td><code>schemas/wsdl/</code></td><td>App2 WSDL (source of truth for SOAP)</td><td>—</td></tr>
+<tr><td><code>schemas/messages/</code></td><td>JSON Schema definitions (source of truth for Pub/Sub)</td><td>—</td></tr>
+<tr><td><code>src/clients/</code></td><td>Integration clients (SOAP, Pub/Sub, Snowflake)</td><td>—</td></tr>
+<tr><td><code>src/schemas/</code></td><td>Schema/WSDL validation logic</td><td>—</td></tr>
+<tr><td><code>src/utils/</code></td><td>Test data factories and assertion helpers</td><td>—</td></tr>
+<tr><td><code>tests/contract/</code></td><td>Pact consumer contract tests</td><td>Jest</td></tr>
+<tr><td><code>tests/schema/</code></td><td>Schema compliance validation tests</td><td>Playwright</td></tr>
+<tr><td><code>tests/integration/virtual/</code></td><td>Integration tests against WireMock</td><td>Playwright</td></tr>
+<tr><td><code>tests/integration/staging/</code></td><td>Integration tests against real staging</td><td>Playwright</td></tr>
+<tr><td><code>tests/e2e/</code></td><td>Browser-based E2E tests</td><td>Playwright (Chromium)</td></tr>
+<tr><td><code>wiremock/mappings/</code></td><td>WireMock stub definitions</td><td>WireMock (Docker)</td></tr>
+<tr><td><code>scripts/</code></td><td>Drift detection and Pact publishing utilities</td><td>ts-node</td></tr>
+</tbody>
+</table>
+
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'default',
+        securityLevel: 'loose',
+        flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+        sequence: { useMaxWidth: true, mirrorActors: false },
+        themeVariables: { fontSize: '14px' }
+    });
+</script>
+
+</body>
+</html>
