@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Strategy — AWS Integration Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #0066cc;
+            --accent-color: #0099ff;
+            --text-color: #333;
+            --bg-color: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --table-header-bg: #003366;
+            --table-odd-row: #f8f9fa;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+        .cover { min-height: 50vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white; padding: 60px 20px; margin: -40px -20px 40px -20px; }
+        .cover h1 { font-size: 2.8rem; margin-bottom: 15px; }
+        .cover .subtitle { font-size: 1.2rem; opacity: 0.95; }
+        .cover .meta { font-size: 1rem; margin-top: 25px; opacity: 0.9; }
+        .cover .meta p { margin: 5px 0; }
+        h1 { color: var(--primary-color); font-size: 2.2rem; margin: 45px 0 20px; padding-bottom: 10px; border-bottom: 3px solid var(--accent-color); }
+        h2 { color: var(--primary-color); font-size: 1.7rem; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
+        h3 { color: var(--secondary-color); font-size: 1.35rem; margin: 25px 0 12px; }
+        h4 { font-size: 1.15rem; margin: 20px 0 10px; }
+        p { margin: 12px 0; }
+        ul { margin: 12px 0 12px 24px; }
+        li { margin: 6px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        th { background: var(--table-header-bg); color: white; padding: 12px; text-align: left; font-weight: 600; font-size: 0.9rem; }
+        td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+        tr:nth-child(even) { background: var(--table-odd-row); }
+        tr:hover { background: #e9ecef; }
+        code { font-family: monospace; font-size: 0.88em; background: #f4f4f4; padding: 0.15em 0.35em; border-radius: 3px; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 15px 0; font-size: 0.85rem; line-height: 1.5; }
+        pre code { background: none; padding: 0; }
+        .mermaid { display: flex; justify-content: center; margin: 20px 0; background: #fafbfc; border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; }
+        hr { border: none; border-top: 1px solid var(--border-color); margin: 30px 0; }
+        .toc { background: var(--light-bg); padding: 1.5rem; border-radius: 8px; margin: 25px 0; }
+        .toc ol { margin: 10px 0 0 20px; padding-left: 0; }
+        .toc li { margin: 6px 0; }
+        .toc a { color: var(--secondary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        @media (max-width: 768px) { .cover h1 { font-size: 2rem; } h1 { font-size: 1.8rem; } table { font-size: 0.9rem; } }
+        @media print { .cover { page-break-after: always; } h1, h2, h3 { page-break-after: avoid; } table { page-break-inside: avoid; } .mermaid { break-inside: avoid; } }
+    </style>
+</head>
+<body>
+    <div class="cover">
+        <h1>Test Strategy</h1>
+        <p class="subtitle">AWS Integration Example — SOAP/Event-Driven Integration Platform</p>
+        <div class="meta">
+            <p><strong>Version:</strong> 1.0</p>
+            <p><strong>Date:</strong> 2026-02-27</p>
+            <p><strong>Standard Reference:</strong> IEEE 829 / ISTQB Test Strategy Guidelines</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Table of Contents</h1>
+        <div class="toc">
+            <ol>
+                <li><a href="#1-scope-objectives">Scope &amp; Objectives</a></li>
+                <li><a href="#2-system-under-test">System Under Test</a></li>
+                <li><a href="#3-test-approach">Test Approach</a></li>
+                <li><a href="#4-test-levels-types">Test Levels &amp; Types</a></li>
+                <li><a href="#5-tooling">Tooling &amp; Test Management</a></li>
+                <li><a href="#6-manual-testing">Manual Testing</a></li>
+                <li><a href="#7-automation-testing">Automation Testing</a></li>
+                <li><a href="#8-performance-testing">Performance Testing</a></li>
+                <li><a href="#9-test-environment">Test Environment Strategy</a></li>
+                <li><a href="#10-test-data">Test Data Strategy</a></li>
+                <li><a href="#11-entry-exit">Entry &amp; Exit Criteria</a></li>
+                <li><a href="#12-risk-based">Risk-Based Testing</a></li>
+                <li><a href="#13-defect-management">Defect Management</a></li>
+                <li><a href="#14-cicd">CI/CD Integration</a></li>
+                <li><a href="#15-team-structure">Team Structure &amp; Responsibilities</a></li>
+                <li><a href="#16-test-schedule">Test Schedule</a></li>
+                <li><a href="#17-metrics">Metrics &amp; Reporting</a></li>
+            </ol>
+        </div>
+
+        <hr>
+
+        <h1 id="1-scope-objectives">1. Scope &amp; Objectives</h1>
+        <h2>1.1 Purpose</h2>
+        <p>This document defines the test strategy for the AWS Integration Example platform — a SOAP-based, event-driven integration system that connects client applications (core-app-1, siebel) to a shared integration layer via API Gateway, message queues, and pub/sub eventing.</p>
+        <h2>1.2 Objectives</h2>
+        <table>
+            <tr><th>#</th><th>Objective</th><th>Measurable Target</th></tr>
+            <tr><td>O1</td><td>Verify functional correctness of all integration points</td><td>100% of SOAP request/response contracts pass</td></tr>
+            <tr><td>O2</td><td>Validate end-to-end message pipeline integrity</td><td>Events arrive within 15s with zero data loss</td></tr>
+            <tr><td>O3</td><td>Ensure backward compatibility across consumer/provider versions</td><td>All Pact contracts verified before each release</td></tr>
+            <tr><td>O4</td><td>Establish performance baselines for throughput and latency</td><td>P95 latency &lt; 2s under normal load</td></tr>
+            <tr><td>O5</td><td>Minimize regression risk through automation</td><td>≥ 90% of repeatable test cases automated</td></tr>
+        </table>
+        <h2>1.3 In Scope</h2>
+        <ul>
+            <li>Client applications: <strong>core-app-1</strong> (PlannedOutage sender), <strong>siebel</strong> (ServiceRequest/AccountUpdate sender + event listener)</li>
+            <li>Integration layer: API Gateway (Nginx), soap-processor, ElasticMQ/SQS, event-publisher, Redis Pub/Sub, pubsub-subscriber</li>
+            <li>SOAP XML contract validation (structure, namespaces, encoding)</li>
+            <li>Async message pipeline (SQS polling, Redis event publishing)</li>
+            <li>IntegrationEvent schema conformance</li>
+            <li>Docker Compose infrastructure orchestration</li>
+        </ul>
+        <h2>1.4 Out of Scope</h2>
+        <ul>
+            <li>AWS-native deployment (Lambda, SNS, real SQS) — tested separately in staging</li>
+            <li>UI/front-end — no UI exists in this system</li>
+            <li>core-app-2 — placeholder, not yet implemented</li>
+            <li>Third-party SaaS integrations beyond the local stack</li>
+        </ul>
+
+        <hr>
+
+        <h1 id="2-system-under-test">2. System Under Test</h1>
+        <div class="mermaid">
+flowchart LR
+    subgraph Clients["Client Applications"]
+        CA1["core-app-1\n(Express :4001)\nPlannedOutage"]
+        SBL["siebel\n(Express :3002)\nServiceRequest +\nEvent Listener"]
+    end
+    subgraph IL["Integration Layer (Docker)"]
+        GW["API Gateway\nNginx :8080"]
+        SP["soap-processor\nExpress :5000"]
+        SQS["ElasticMQ\n:9424"]
+        EP["event-publisher\nNode.js poller"]
+        RD["Redis\n:6380"]
+        PS["pubsub-subscriber\nNode.js"]
+    end
+    CA1 -- "SOAP XML" --> GW
+    SBL -- "SOAP XML" --> GW
+    GW -- "/soap proxy" --> SP
+    SP -- "JSON" --> SQS
+    SQS -- "poll" --> EP
+    EP -- "IntegrationEvent" --> RD
+    RD -- "subscribe" --> PS
+    RD -. "subscribe" .-> SBL
+        </div>
+        <h2>2.1 Integration Points (Testable Interfaces)</h2>
+        <table>
+            <tr><th>ID</th><th>Interface</th><th>Protocol</th><th>Direction</th><th>Data Format</th></tr>
+            <tr><td>IF-01</td><td>core-app-1 → API Gateway</td><td>HTTP POST /soap</td><td>Sync</td><td>SOAP XML</td></tr>
+            <tr><td>IF-02</td><td>siebel → API Gateway</td><td>HTTP POST /soap</td><td>Sync</td><td>SOAP XML</td></tr>
+            <tr><td>IF-03</td><td>API Gateway → soap-processor</td><td>HTTP reverse proxy</td><td>Sync</td><td>SOAP XML</td></tr>
+            <tr><td>IF-04</td><td>soap-processor → ElasticMQ</td><td>AWS SDK SendMessage</td><td>Sync</td><td>JSON</td></tr>
+            <tr><td>IF-05</td><td>ElasticMQ → event-publisher</td><td>AWS SDK ReceiveMessage (poll)</td><td>Async</td><td>JSON</td></tr>
+            <tr><td>IF-06</td><td>event-publisher → Redis</td><td>PUBLISH integration-events</td><td>Async</td><td>JSON</td></tr>
+            <tr><td>IF-07</td><td>Redis → siebel event-listener</td><td>SUBSCRIBE integration-events</td><td>Async</td><td>JSON</td></tr>
+            <tr><td>IF-08</td><td>Redis → pubsub-subscriber</td><td>SUBSCRIBE integration-events</td><td>Async</td><td>JSON</td></tr>
+            <tr><td>IF-09</td><td>core-app-1 /health</td><td>HTTP GET</td><td>Sync</td><td>JSON</td></tr>
+            <tr><td>IF-10</td><td>siebel /health</td><td>HTTP GET</td><td>Sync</td><td>JSON</td></tr>
+            <tr><td>IF-11</td><td>API Gateway /health</td><td>HTTP GET</td><td>Sync</td><td>JSON</td></tr>
+        </table>
+
+        <hr>
+
+        <h1 id="3-test-approach">3. Test Approach</h1>
+        <h2>3.1 Strategy Overview</h2>
+        <p>The strategy follows a <strong>risk-based, shift-left</strong> approach using the <strong>Test Pyramid</strong> model adapted for integration-heavy systems:</p>
+        <div class="mermaid">
+graph TB
+    subgraph Pyramid["Test Pyramid (adapted for integration systems)"]
+        direction TB
+        E2E["🔺 E2E Pipeline\n(9 tests)\nFull async flow"]
+        INT["🔷 Integration API\n(12 tests)\nHTTP request/response"]
+        CON["🟠 Contract\n(12 tests)\nConsumer + Provider"]
+        INF["🟢 Infrastructure\n(5 tests)\nHealth + connectivity"]
+    end
+    E2E --- INT
+    INT --- CON
+    CON --- INF
+    style E2E fill:#e1bee7,stroke:#6a1b9a
+    style INT fill:#bbdefb,stroke:#1565c0
+    style CON fill:#ffe0b2,stroke:#e65100
+    style INF fill:#c8e6c9,stroke:#2e7d32
+        </div>
+        <table>
+            <tr><th>Principle</th><th>Application</th></tr>
+            <tr><td><strong>Shift-Left</strong></td><td>Contract consumer tests run without Docker — ideal for pre-commit</td></tr>
+            <tr><td><strong>Risk-Based</strong></td><td>More tests at the async boundary (SQS→Redis) where failures are hardest to detect</td></tr>
+            <tr><td><strong>Automation-First</strong></td><td>75 automated tests across TypeScript + Java; manual testing reserved for exploratory and edge cases</td></tr>
+            <tr><td><strong>Dual-Stack</strong></td><td>TypeScript (Vitest + Pact) for fast dev feedback; Java (JUnit 5 + Playwright + Pact JVM + Cucumber) for enterprise CI</td></tr>
+        </table>
+        <h2>3.2 Test Types Matrix</h2>
+        <table>
+            <tr><th>Test Type</th><th>Manual</th><th>Automated</th><th>Performance</th></tr>
+            <tr><td>Infrastructure health</td><td>—</td><td>✅</td><td>—</td></tr>
+            <tr><td>API integration (SOAP)</td><td>✅ Exploratory</td><td>✅</td><td>✅ Load</td></tr>
+            <tr><td>E2E async pipeline</td><td>✅ Smoke</td><td>✅</td><td>✅ Throughput</td></tr>
+            <tr><td>Contract (consumer)</td><td>—</td><td>✅</td><td>—</td></tr>
+            <tr><td>Contract (provider)</td><td>—</td><td>✅</td><td>—</td></tr>
+            <tr><td>BDD scenarios</td><td>✅ Review</td><td>✅ Cucumber</td><td>—</td></tr>
+            <tr><td>Negative/error paths</td><td>✅ Exploratory</td><td>✅ Partial</td><td>✅ Stress</td></tr>
+            <tr><td>Security (SOAP injection)</td><td>✅</td><td>🔜 Planned</td><td>—</td></tr>
+            <tr><td>Reliability (chaos)</td><td>✅</td><td>🔜 Planned</td><td>✅ Soak</td></tr>
+        </table>
+
+        <hr>
+
+        <h1 id="4-test-levels-types">4. Test Levels &amp; Types</h1>
+        <h2>4.1 Test Levels</h2>
+        <div class="mermaid">
+flowchart TB
+    subgraph L1["Level 1: Component"]
+        direction LR
+        L1a["Contract Consumer Tests\n(no infra needed)"]
+        L1b["Message Provider Tests\n(pure function)"]
+    end
+    subgraph L2["Level 2: Integration"]
+        direction LR
+        L2a["Infrastructure Health"]
+        L2b["API Gateway Routing"]
+        L2c["Client → Gateway → SOAP Processor"]
+        L2d["Contract Provider HTTP"]
+    end
+    subgraph L3["Level 3: System (E2E)"]
+        direction LR
+        L3a["Full Pipeline\n(HTTP → SQS → Redis)"]
+        L3b["Cross-App Round Trip"]
+    end
+    subgraph L4["Level 4: Acceptance"]
+        direction LR
+        L4a["Cucumber BDD Scenarios"]
+        L4b["Manual Smoke Tests"]
+    end
+    L1 --> L2 --> L3 --> L4
+        </div>
+        <h2>4.2 Test Types</h2>
+        <table>
+            <tr><th>Type</th><th>Purpose</th><th>Automation Tool</th><th>Frequency</th></tr>
+            <tr><td><strong>Functional</strong></td><td>Verify all interfaces produce correct outputs</td><td>Vitest, JUnit 5</td><td>Every commit</td></tr>
+            <tr><td><strong>Contract</strong></td><td>Lock consumer/provider schemas</td><td>Pact (TS + JVM)</td><td>Every commit</td></tr>
+            <tr><td><strong>Integration</strong></td><td>Verify multi-service interactions</td><td>Vitest, JUnit 5 + Playwright</td><td>Every PR</td></tr>
+            <tr><td><strong>End-to-End</strong></td><td>Validate full async pipeline</td><td>Vitest, JUnit 5 + EventCollector</td><td>Every PR</td></tr>
+            <tr><td><strong>Acceptance (BDD)</strong></td><td>Business-readable validations</td><td>Cucumber 7</td><td>Every sprint</td></tr>
+            <tr><td><strong>Exploratory</strong></td><td>Discover unknown edge cases</td><td>Manual</td><td>Weekly sessions</td></tr>
+            <tr><td><strong>Performance</strong></td><td>Measure throughput, latency, stability</td><td>k6 / Artillery</td><td>Weekly + pre-release</td></tr>
+            <tr><td><strong>Security</strong></td><td>SOAP injection, payload size limits</td><td>Manual + OWASP ZAP</td><td>Per release</td></tr>
+            <tr><td><strong>Reliability</strong></td><td>Chaos/fault injection</td><td>Manual + Toxiproxy</td><td>Monthly</td></tr>
+        </table>
+
+        <hr>
+
+        <h1 id="5-tooling">5. Tooling &amp; Test Management</h1>
+        <h2>5.1 Current State Assessment</h2>
+        <table>
+            <tr><th>Area</th><th>Current Tool</th><th>Gap</th></tr>
+            <tr><td>Test Case Management</td><td>Excel spreadsheets, Word documents</td><td>No traceability, version control, or audit trail</td></tr>
+            <tr><td>Test Execution Tracking</td><td>Manual email / spreadsheet updates</td><td>No real-time visibility; duplication of effort</td></tr>
+            <tr><td>Requirements Traceability</td><td>Ad-hoc manual mapping</td><td>Cannot demonstrate coverage completeness</td></tr>
+            <tr><td>Defect Tracking</td><td>Jira (tickets only)</td><td>No linkage from defects back to test cases</td></tr>
+            <tr><td>Test Reporting</td><td>Manual creation in Word / PowerPoint</td><td>Time-consuming; data often stale</td></tr>
+        </table>
+        <h2>5.2 Recommended Tooling Stack</h2>
+        <div class="mermaid">
+flowchart TB
+    subgraph TM["Test Management"]
+        XRAY["Xray for Jira\n(Test Management)"]
+    end
+    subgraph AUTO["Automation Frameworks"]
+        VT["Vitest\n(TS Unit/Integration)"]
+        JU["JUnit 5\n(Java Unit/Integration)"]
+        PW["Playwright\n(Browser / API)"]
+        PACT["Pact\n(Contract Testing)"]
+        CUC["Cucumber 7\n(BDD)"]
+    end
+    subgraph PERF["Performance"]
+        K6["k6\n(Load Testing)"]
+        ART["Artillery\n(Alt Load Testing)"]
+    end
+    subgraph INFRA["Infrastructure & CI"]
+        DC["Docker Compose\n(Local Environments)"]
+        GHA["GitHub Actions\n(CI/CD Pipeline)"]
+        EMQX["ElasticMQ\n(Local SQS)"]
+        RED["Redis\n(Pub/Sub)"]
+    end
+    subgraph SEC["Security & Resilience"]
+        ZAP["OWASP ZAP\n(Security Scanning)"]
+        TOX["Toxiproxy\n(Fault Injection)"]
+    end
+    subgraph MON["Monitoring"]
+        DS["Docker Stats"]
+        GK["Grafana + k6 Cloud\n(Perf Dashboards)"]
+    end
+    XRAY --> VT
+    XRAY --> JU
+    XRAY --> PW
+    XRAY --> PACT
+    XRAY --> CUC
+    VT --> GHA
+    JU --> GHA
+    K6 --> GK
+    GHA --> DC
+        </div>
+        <h2>5.3 Test Management — Xray for Jira</h2>
+        <p><strong>Why Xray:</strong> Xray integrates natively with Jira, providing test case management, execution tracking, requirements traceability, and CI/CD reporting — replacing the current Excel/Word-based process.</p>
+        <h3>5.3.1 Migration from Excel/Word to Xray</h3>
+        <table>
+            <tr><th>Phase</th><th>Activity</th><th>Timeline</th></tr>
+            <tr><td>1. Setup</td><td>Install Xray plugin; configure Jira project; create test issue types (Test, Test Set, Test Plan, Test Execution)</td><td>Week 1</td></tr>
+            <tr><td>2. Import</td><td>Migrate existing manual test cases (MAN-01 to MAN-06) and exploratory charters (EXP-01 to EXP-05) into Xray Test issues</td><td>Week 1–2</td></tr>
+            <tr><td>3. Link</td><td>Map Xray Tests to Jira requirements (Stories / Epics) for traceability</td><td>Week 2</td></tr>
+            <tr><td>4. Automate</td><td>Connect CI pipeline to Xray via REST API — push JUnit XML and Vitest JSON results automatically</td><td>Week 2–3</td></tr>
+            <tr><td>5. Train</td><td>Team training sessions on Xray workflows (create tests, execute, report)</td><td>Week 3</td></tr>
+            <tr><td>6. Retire</td><td>Archive Excel/Word documents; Xray becomes the single source of truth</td><td>Week 4</td></tr>
+        </table>
+        <h3>5.3.2 Xray Workflow Integration</h3>
+        <table>
+            <tr><th>Xray Feature</th><th>Usage in This Project</th></tr>
+            <tr><td><strong>Test Repository</strong></td><td>Organize tests by folder: Contract / Integration / E2E / Manual / Performance</td></tr>
+            <tr><td><strong>Test Plans</strong></td><td>Create per-sprint plans linking automated + manual tests</td></tr>
+            <tr><td><strong>Test Executions</strong></td><td>Track manual test runs (MAN-01–MAN-06); auto-populated for CI results</td></tr>
+            <tr><td><strong>Test Sets</strong></td><td>Group tests by risk area (R01–R08) for targeted regression</td></tr>
+            <tr><td><strong>Requirements Coverage</strong></td><td>Link Tests → Stories → Epics; dashboard shows coverage percentage</td></tr>
+            <tr><td><strong>CI Integration</strong></td><td>GitHub Actions pushes JUnit XML + Vitest JSON results to Xray via REST API</td></tr>
+            <tr><td><strong>Defect Linkage</strong></td><td>Failed test executions auto-create linked Jira defects</td></tr>
+            <tr><td><strong>Traceability Matrix</strong></td><td>Auto-generated: Requirement → Test → Execution → Defect</td></tr>
+        </table>
+        <h2>5.4 Complete Tool Inventory</h2>
+        <table>
+            <tr><th>Category</th><th>Tool</th><th>Version / Variant</th><th>Purpose</th><th>License</th></tr>
+            <tr><td>Test Management</td><td>Xray for Jira</td><td>Cloud</td><td>Test cases, execution, traceability, reporting</td><td>Commercial</td></tr>
+            <tr><td>Project Tracking</td><td>Jira</td><td>Cloud</td><td>Stories, defects, sprints</td><td>Commercial</td></tr>
+            <tr><td>TS Test Framework</td><td>Vitest</td><td>3.x</td><td>Unit, integration, E2E tests (TypeScript)</td><td>MIT</td></tr>
+            <tr><td>Java Test Framework</td><td>JUnit 5</td><td>5.11.x</td><td>Unit, integration, E2E tests (Java)</td><td>EPL 2.0</td></tr>
+            <tr><td>Browser / API Testing</td><td>Playwright</td><td>1.50.x</td><td>HTTP API testing, future UI testing</td><td>Apache 2.0</td></tr>
+            <tr><td>Contract Testing (TS)</td><td>Pact (JS)</td><td>16.x</td><td>Consumer-driven contract testing</td><td>MIT</td></tr>
+            <tr><td>Contract Testing (Java)</td><td>Pact JVM</td><td>4.6.x</td><td>Consumer-driven contract testing</td><td>Apache 2.0</td></tr>
+            <tr><td>Contract Broker</td><td>Pact Broker</td><td><em>(Planned)</em></td><td>Central pact storage + can-i-deploy gate</td><td>MIT</td></tr>
+            <tr><td>BDD Framework</td><td>Cucumber 7</td><td>7.21.x</td><td>Behaviour-driven development scenarios</td><td>MIT</td></tr>
+            <tr><td>Load Testing</td><td>k6</td><td>Latest</td><td>Performance: baseline, load, stress, soak, spike</td><td>AGPL-3.0</td></tr>
+            <tr><td>Load Testing (Alt)</td><td>Artillery</td><td>Latest</td><td>Alternative load testing tool</td><td>MPL-2.0</td></tr>
+            <tr><td>Security Scanning</td><td>OWASP ZAP</td><td><em>(Planned)</em></td><td>DAST — SOAP injection, payload attacks</td><td>Apache 2.0</td></tr>
+            <tr><td>Fault Injection</td><td>Toxiproxy</td><td><em>(Planned)</em></td><td>Network fault simulation for resilience testing</td><td>MIT</td></tr>
+            <tr><td>Containerization</td><td>Docker Compose</td><td>v2.x</td><td>Local environment orchestration</td><td>Apache 2.0</td></tr>
+            <tr><td>CI/CD</td><td>GitHub Actions</td><td>—</td><td>Automated pipeline (build, test, deploy)</td><td>—</td></tr>
+            <tr><td>Message Queue (Local)</td><td>ElasticMQ</td><td>Latest</td><td>SQS-compatible local queue</td><td>Apache 2.0</td></tr>
+            <tr><td>Pub/Sub (Local)</td><td>Redis</td><td>7.x</td><td>Event bus for integration events</td><td>BSD-3</td></tr>
+            <tr><td>Perf Monitoring</td><td>Docker Stats + Grafana</td><td>—</td><td>Container resource monitoring during perf tests</td><td>Apache 2.0</td></tr>
+            <tr><td>API Testing (Manual)</td><td>Postman / cURL</td><td>—</td><td>Ad-hoc SOAP and REST endpoint testing</td><td>—</td></tr>
+            <tr><td>Code Coverage</td><td>c8 (Vitest) / JaCoCo (Maven)</td><td>—</td><td>Code coverage reporting</td><td>MIT / EPL</td></tr>
+        </table>
+        <h2>5.5 Tool-to-Phase Mapping</h2>
+        <table>
+            <tr><th>Test Phase</th><th>Tools Used</th></tr>
+            <tr><td><strong>Developer (local)</strong></td><td>Vitest, JUnit 5, Pact (consumer), Docker Compose, Postman</td></tr>
+            <tr><td><strong>Pull Request</strong></td><td>GitHub Actions, Vitest, JUnit 5, Pact (consumer + provider msg)</td></tr>
+            <tr><td><strong>CI Pipeline</strong></td><td>GitHub Actions, Docker Compose, Vitest, JUnit 5, Playwright, Pact, Cucumber</td></tr>
+            <tr><td><strong>Performance</strong></td><td>k6, Docker Compose, Grafana, Docker Stats</td></tr>
+            <tr><td><strong>Pre-Release</strong></td><td>k6 (stress/soak), Manual test plan (Xray), OWASP ZAP</td></tr>
+            <tr><td><strong>Test Reporting</strong></td><td>Xray dashboards, GitHub Actions artifacts, k6 Cloud / Grafana</td></tr>
+            <tr><td><strong>Defect Management</strong></td><td>Jira + Xray (linked defects from failed test executions)</td></tr>
+        </table>
+
+        <hr>
+
+        <h1 id="6-manual-testing">6. Manual Testing</h1>
+        <h2>6.1 When Manual Testing Applies</h2>
+        <p>Manual testing is reserved for activities where human judgment, creativity, or visual inspection adds value beyond what automation provides.</p>
+        <table>
+            <tr><th>Activity</th><th>Rationale</th><th>Cannot Automate Because</th></tr>
+            <tr><td>Exploratory testing</td><td>Discover unknown edge cases</td><td>Requires domain intuition and curiosity</td></tr>
+            <tr><td>Cucumber scenario review</td><td>Validate business intent</td><td>Requires stakeholder judgment</td></tr>
+            <tr><td>New feature smoke test</td><td>Quick sanity before writing automation</td><td>Feature still changing</td></tr>
+            <tr><td>Chaos/fault injection</td><td>One-off infrastructure failure scenarios</td><td>Unique environment conditions</td></tr>
+            <tr><td>Security assessments</td><td>Creative attack vectors</td><td>Requires adversarial thinking</td></tr>
+        </table>
+        <h2>6.2 Manual Test Cases</h2>
+        <h3>6.2.1 Exploratory Session Charters</h3>
+        <table>
+            <tr><th>Charter ID</th><th>Charter</th><th>Time-Box</th><th>Focus Area</th></tr>
+            <tr><td>EXP-01</td><td>Explore SOAP request edge cases with malformed XML, oversized payloads, and special characters in field values</td><td>60 min</td><td>IF-01, IF-02, IF-03</td></tr>
+            <tr><td>EXP-02</td><td>Explore pipeline behavior when services restart mid-processing (kill soap-processor while messages are in SQS)</td><td>45 min</td><td>IF-04, IF-05</td></tr>
+            <tr><td>EXP-03</td><td>Explore siebel event-listener behavior when Redis publishes malformed JSON or unexpected event schemas</td><td>45 min</td><td>IF-07</td></tr>
+            <tr><td>EXP-04</td><td>Explore concurrent multi-app submissions (10+ simultaneous requests from core-app-1 and siebel) and verify event ordering</td><td>30 min</td><td>IF-01 through IF-08</td></tr>
+            <tr><td>EXP-05</td><td>Explore API Gateway behavior with missing Content-Type headers, wrong HTTP methods, and oversized request bodies</td><td>30 min</td><td>IF-01, IF-02, IF-03</td></tr>
+        </table>
+        <h3>6.2.2 Structured Manual Test Cases</h3>
+        <table>
+            <tr><th>TC ID</th><th>Title</th><th>Precondition</th><th>Steps</th><th>Expected Result</th><th>Priority</th></tr>
+            <tr><td>MAN-01</td><td>Service recovery after Docker restart</td><td>All services running</td><td>1. Send a valid SOAP request (verify 202). 2. docker compose restart soap-processor. 3. Wait for health check to pass. 4. Send another SOAP request.</td><td>Second request returns 202; event appears on Redis</td><td>High</td></tr>
+            <tr><td>MAN-02</td><td>SQS message persistence during event-publisher downtime</td><td>Docker stack running</td><td>1. Stop event-publisher container. 2. Send 5 SOAP requests via core-app-1. 3. Verify messages are queued in ElasticMQ (admin UI on :9425). 4. Start event-publisher.</td><td>All 5 events eventually appear on Redis Pub/Sub</td><td>High</td></tr>
+            <tr><td>MAN-03</td><td>SOAP request with 1MB payload</td><td>Docker stack running</td><td>1. Construct a SOAP message with Description field containing ~1MB of text. 2. POST to /soap.</td><td>System either processes or returns a clear error (no silent failure or crash)</td><td>Medium</td></tr>
+            <tr><td>MAN-04</td><td>Redis disconnection during event publishing</td><td>Docker stack running</td><td>1. Send a valid SOAP request. 2. While message is in SQS, stop Redis container. 3. Wait 10 seconds. 4. Start Redis. 5. Send another request.</td><td>Second pipeline completes; first either retries or is dead-lettered</td><td>Medium</td></tr>
+            <tr><td>MAN-05</td><td>Verify Cucumber features match business requirements</td><td>Feature files available</td><td>1. Open each .feature file with a product owner. 2. Read each scenario aloud. 3. Confirm scenarios match acceptance criteria.</td><td>All scenarios approved as accurate representations of requirements</td><td>High</td></tr>
+            <tr><td>MAN-06</td><td>Cross-app event isolation</td><td>Docker stack running</td><td>1. Send ServiceRequest from siebel. 2. In parallel, send PlannedOutage from core-app-1. 3. Verify each Redis event has correct requestId and payload.</td><td>No cross-contamination between events</td><td>High</td></tr>
+        </table>
+        <h2>6.3 Manual Test Execution Schedule</h2>
+        <table>
+            <tr><th>Activity</th><th>Frequency</th><th>Owner</th><th>Artifacts</th></tr>
+            <tr><td>Exploratory sessions (EXP-01 to EXP-05)</td><td>Weekly (rotating 2 charters per week)</td><td>QA Engineer</td><td>Session notes, defect reports</td></tr>
+            <tr><td>Structured manual tests (MAN-01 to MAN-06)</td><td>Each sprint (pre-release)</td><td>QA Engineer</td><td>Test execution log, pass/fail</td></tr>
+            <tr><td>Cucumber business review (MAN-05)</td><td>Start of each sprint</td><td>Product Owner + QA</td><td>Updated .feature files</td></tr>
+            <tr><td>Security assessment</td><td>Per major release</td><td>Security Champion</td><td>OWASP findings report</td></tr>
+        </table>
+
+        <hr>
+
+        <h1 id="7-automation-testing">7. Automation Testing</h1>
+        <h2>7.1 Current Automation Inventory</h2>
+        <p><strong>75 automated tests</strong> across 23 files in two technology stacks.</p>
+        <div class="mermaid">
+pie title Automated Test Distribution
+    "Infrastructure" : 10
+    "Integration API" : 24
+    "E2E Pipeline" : 18
+    "Contract Consumer" : 12
+    "Contract Provider" : 7
+    "Cucumber BDD" : 4
+        </div>
+        <h3>7.1.1 TypeScript Suite (Vitest + Pact) — 35 Tests</h3>
+        <table>
+            <tr><th>Category</th><th>Tests</th><th>Files</th><th>Requires Docker</th></tr>
+            <tr><td>Infrastructure Health</td><td>5</td><td>1</td><td>✅</td></tr>
+            <tr><td>API Gateway Routing</td><td>4</td><td>1</td><td>✅</td></tr>
+            <tr><td>core-app-1 API</td><td>4</td><td>1</td><td>✅</td></tr>
+            <tr><td>siebel API</td><td>4</td><td>1</td><td>✅</td></tr>
+            <tr><td>E2E Pipeline</td><td>9</td><td>1</td><td>✅</td></tr>
+            <tr><td>Contract Consumer (HTTP)</td><td>4</td><td>2</td><td>—</td></tr>
+            <tr><td>Contract Consumer (Message)</td><td>2</td><td>1</td><td>—</td></tr>
+            <tr><td>Contract Provider (HTTP)</td><td>2</td><td>1</td><td>✅</td></tr>
+            <tr><td>Contract Provider (Message)</td><td>1</td><td>1</td><td>—</td></tr>
+        </table>
+        <h3>7.1.2 Java Suite (JUnit 5 + Playwright + Pact JVM + Cucumber) — 40 Tests</h3>
+        <table>
+            <tr><th>Category</th><th>Tests</th><th>Files</th><th>Requires Docker</th></tr>
+            <tr><td>Infrastructure Health</td><td>5</td><td>1</td><td>✅</td></tr>
+            <tr><td>API Gateway Routing</td><td>4</td><td>1</td><td>✅</td></tr>
+            <tr><td>core-app-1 API</td><td>4</td><td>1</td><td>✅</td></tr>
+            <tr><td>siebel API</td><td>4</td><td>1</td><td>✅</td></tr>
+            <tr><td>E2E Pipeline</td><td>9</td><td>1</td><td>✅</td></tr>
+            <tr><td>Contract Consumer (HTTP)</td><td>4</td><td>2</td><td>—</td></tr>
+            <tr><td>Contract Consumer (Message)</td><td>2</td><td>1</td><td>—</td></tr>
+            <tr><td>Contract Provider (HTTP)</td><td>2</td><td>1</td><td>✅</td></tr>
+            <tr><td>Contract Provider (Message)</td><td>2</td><td>1</td><td>—</td></tr>
+            <tr><td>Cucumber BDD</td><td>4</td><td>4</td><td>✅</td></tr>
+        </table>
+        <h2>7.2 Automation Test Coverage Map</h2>
+        <div class="mermaid">
+flowchart LR
+    CA1["core-app-1"]
+    SBL["siebel"]
+    GW["API Gateway"]
+    SP["soap-processor"]
+    SQS["ElasticMQ"]
+    EP["event-publisher"]
+    RD["Redis"]
+    CA1 -->|"🔵 INT + 🟠 CON"| GW
+    SBL -->|"🔵 INT + 🟠 CON"| GW
+    GW -->|"🔵 INT"| SP
+    SP -->|"🟣 E2E"| SQS
+    SQS -->|"🟣 E2E"| EP
+    EP -->|"🟣 E2E + 🟠 CON"| RD
+    RD -.->|"🟣 E2E"| SBL
+        </div>
+        <p><strong>Legend:</strong> 🟢 Infrastructure (health check per node) | 🔵 Integration (synchronous HTTP) | 🟣 E2E (full async pipeline) | 🟠 Contract (schema verification)</p>
+        <h2>7.3 Automation Execution Commands</h2>
+        <pre><code># ── TypeScript ──────────────────────────────────────────
+npm run test:integration        # Infrastructure + API (17 tests)
+npm run test:e2e                # Full pipeline (9 tests)
+npm run test:contract:consumer  # Consumer pacts — no Docker needed (8 tests)
+npm run test:contract:provider  # Provider verification — Docker needed (3 tests)
+npm run test:contract           # All contract tests (11 tests)
+
+# ── Java ────────────────────────────────────────────────
+cd playwright-java-framework
+mvn test -Dgroups="integration"  # Infrastructure + API + Cucumber (21 tests)
+mvn test -Dgroups="e2e"          # Full pipeline (9 tests)
+mvn test -Dgroups="contract"     # All contract tests (12 tests)
+mvn test                         # All tests (40 tests)</code></pre>
+        <h2>7.4 Automation Gap Analysis &amp; Roadmap</h2>
+        <table>
+            <tr><th>Gap</th><th>Current State</th><th>Planned Automation</th><th>Priority</th><th>Target</th></tr>
+            <tr><td>Negative E2E paths</td><td>Manual only</td><td>Vitest + JUnit tests for SQS/Redis down scenarios</td><td>High</td><td>Q2 2026</td></tr>
+            <tr><td>SOAP injection</td><td>Manual only</td><td>OWASP ZAP automated scans in CI</td><td>Medium</td><td>Q2 2026</td></tr>
+            <tr><td>Retry/DLQ behavior</td><td>Not tested</td><td>JUnit tests with Toxiproxy fault injection</td><td>High</td><td>Q2 2026</td></tr>
+            <tr><td>Payload size limits</td><td>Manual only</td><td>Parameterized tests with 1KB → 5MB payloads</td><td>Medium</td><td>Q3 2026</td></tr>
+            <tr><td>Pact Broker integration</td><td>Pacts stored locally (/pacts)</td><td>Publish to Pact Broker + can-i-deploy gate</td><td>High</td><td>Q2 2026</td></tr>
+            <tr><td>Message ordering</td><td>Partial (3 distinct events test)</td><td>Stress test with 100+ concurrent messages</td><td>Medium</td><td>Q3 2026</td></tr>
+        </table>
+
+        <hr>
+
+        <h1 id="8-performance-testing">8. Performance Testing</h1>
+        <h2>8.1 Performance Test Objectives</h2>
+        <table>
+            <tr><th>ID</th><th>Objective</th><th>Metric</th><th>Target</th></tr>
+            <tr><td>PERF-01</td><td>Measure SOAP request throughput</td><td>Requests/sec at the API Gateway</td><td>≥ 100 req/s</td></tr>
+            <tr><td>PERF-02</td><td>Measure E2E pipeline latency</td><td>Time from HTTP POST to Redis event arrival</td><td>P95 &lt; 2s</td></tr>
+            <tr><td>PERF-03</td><td>Determine system breaking point</td><td>Max sustained req/s before errors</td><td>Identify ceiling</td></tr>
+            <tr><td>PERF-04</td><td>Validate SQS queue drain rate</td><td>Messages processed/sec by event-publisher</td><td>≥ 50 msg/s</td></tr>
+            <tr><td>PERF-05</td><td>Verify stability under sustained load</td><td>Error rate over 30 min soak</td><td>&lt; 0.1% errors</td></tr>
+        </table>
+        <h2>8.2 Performance Test Types</h2>
+        <div class="mermaid">
+flowchart LR
+    subgraph Types["Performance Test Types"]
+        BL["Baseline\n(single user,\nmeasure response times)"]
+        LD["Load\n(expected concurrent users,\nmeasure throughput)"]
+        ST["Stress\n(exceed capacity,\nfind breaking point)"]
+        SK["Soak\n(sustained normal load,\ndetect memory leaks)"]
+        SP["Spike\n(sudden burst,\nmeasure recovery)"]
+    end
+    BL --> LD --> ST
+    LD --> SK
+    LD --> SP
+        </div>
+        <h3>8.2.1 Baseline Test</h3>
+        <table>
+            <tr><th>Parameter</th><th>Value</th></tr>
+            <tr><td><strong>Tool</strong></td><td>k6</td></tr>
+            <tr><td><strong>VUs (Virtual Users)</strong></td><td>1</td></tr>
+            <tr><td><strong>Duration</strong></td><td>60 seconds</td></tr>
+            <tr><td><strong>Target</strong></td><td>API Gateway POST /soap + full pipeline to Redis</td></tr>
+            <tr><td><strong>Metrics Collected</strong></td><td>Response time (min, avg, P50, P90, P95, P99, max), throughput</td></tr>
+            <tr><td><strong>Purpose</strong></td><td>Establish single-user latency floor for comparison</td></tr>
+        </table>
+        <h3>8.2.2 Load Test</h3>
+        <table>
+            <tr><th>Parameter</th><th>Value</th></tr>
+            <tr><td><strong>Tool</strong></td><td>k6</td></tr>
+            <tr><td><strong>Ramp Profile</strong></td><td>0→25 VUs over 1 min → hold 25 VUs for 5 min → ramp down 1 min</td></tr>
+            <tr><td><strong>Target</strong></td><td>Mixed: 60% core-app-1 PlannedOutage, 40% siebel ServiceRequest</td></tr>
+            <tr><td><strong>Pass Criteria</strong></td><td>P95 &lt; 2s, error rate &lt; 1%, all events arrive on Redis</td></tr>
+        </table>
+        <h3>8.2.3 Stress Test</h3>
+        <table>
+            <tr><th>Parameter</th><th>Value</th></tr>
+            <tr><td><strong>Tool</strong></td><td>k6</td></tr>
+            <tr><td><strong>Ramp Profile</strong></td><td>0→25→50→100→150→200 VUs, each step held for 2 min</td></tr>
+            <tr><td><strong>Target</strong></td><td>API Gateway POST /soap</td></tr>
+            <tr><td><strong>Purpose</strong></td><td>Find the throughput ceiling where errors begin or latency degrades</td></tr>
+            <tr><td><strong>Pass Criteria</strong></td><td>System degrades gracefully (returns 503/429, not crashes)</td></tr>
+        </table>
+        <h3>8.2.4 Soak Test</h3>
+        <table>
+            <tr><th>Parameter</th><th>Value</th></tr>
+            <tr><td><strong>Tool</strong></td><td>k6</td></tr>
+            <tr><td><strong>VUs</strong></td><td>25 (expected normal load)</td></tr>
+            <tr><td><strong>Duration</strong></td><td>30 minutes</td></tr>
+            <tr><td><strong>Target</strong></td><td>Mixed endpoint traffic</td></tr>
+            <tr><td><strong>Purpose</strong></td><td>Detect memory leaks, connection pool exhaustion, queue buildup</td></tr>
+            <tr><td><strong>Pass Criteria</strong></td><td>Latency remains stable (&lt; 10% drift), no OOM errors, SQS queue depth stays near 0</td></tr>
+        </table>
+        <h3>8.2.5 Spike Test</h3>
+        <table>
+            <tr><th>Parameter</th><th>Value</th></tr>
+            <tr><td><strong>Tool</strong></td><td>k6</td></tr>
+            <tr><td><strong>Profile</strong></td><td>10 VUs → spike to 100 VUs for 30s → back to 10 VUs</td></tr>
+            <tr><td><strong>Target</strong></td><td>API Gateway POST /soap</td></tr>
+            <tr><td><strong>Purpose</strong></td><td>Measure recovery time after a sudden traffic burst</td></tr>
+            <tr><td><strong>Pass Criteria</strong></td><td>System returns to normal latency within 30s of spike ending</td></tr>
+        </table>
+        <h2>8.3 Performance Test Scenarios</h2>
+        <table>
+            <tr><th>Scenario ID</th><th>Description</th><th>Interfaces Tested</th><th>Tool</th></tr>
+            <tr><td>PERF-S01</td><td>Single PlannedOutage SOAP request (baseline)</td><td>IF-01 → IF-06</td><td>k6</td></tr>
+            <tr><td>PERF-S02</td><td>Single ServiceRequest SOAP request (baseline)</td><td>IF-02 → IF-06</td><td>k6</td></tr>
+            <tr><td>PERF-S03</td><td>25 concurrent users — mixed workload (load)</td><td>IF-01, IF-02 → IF-08</td><td>k6</td></tr>
+            <tr><td>PERF-S04</td><td>Ramp to 200 users — SOAP gateway only (stress)</td><td>IF-01 → IF-03</td><td>k6</td></tr>
+            <tr><td>PERF-S05</td><td>SQS queue drain rate under backpressure</td><td>IF-04 → IF-06</td><td>k6 + ElasticMQ admin</td></tr>
+            <tr><td>PERF-S06</td><td>30-minute sustained load (soak)</td><td>All interfaces</td><td>k6</td></tr>
+            <tr><td>PERF-S07</td><td>Traffic spike 10→100→10 VUs (spike)</td><td>IF-01 → IF-06</td><td>k6</td></tr>
+            <tr><td>PERF-S08</td><td>Redis Pub/Sub fan-out latency (subscriber count impact)</td><td>IF-06 → IF-08</td><td>Custom Node.js script</td></tr>
+        </table>
+        <h2>8.4 Performance Test Architecture</h2>
+        <div class="mermaid">
+flowchart LR
+    K6["k6\nLoad Generator"]
+    subgraph SUT["System Under Test"]
+        GW["API Gateway\n:8080"]
+        SP["soap-processor"]
+        SQS["ElasticMQ"]
+        EP["event-publisher"]
+        RD["Redis"]
+    end
+    MON["Monitoring\n(Docker stats +\nk6 metrics)"]
+    VAL["Event Validator\n(Redis subscriber\ncounting arrivals)"]
+    K6 -- "HTTP POST /soap" --> GW
+    GW --> SP --> SQS --> EP --> RD
+    RD --> VAL
+    SUT --> MON
+        </div>
+        <h2>8.5 Performance Test Schedule</h2>
+        <table>
+            <tr><th>Test Type</th><th>Frequency</th><th>Environment</th><th>Duration</th></tr>
+            <tr><td>Baseline</td><td>Weekly (automated in CI)</td><td>Docker Compose (local)</td><td>~2 min</td></tr>
+            <tr><td>Load</td><td>Weekly (automated in CI)</td><td>Docker Compose (local)</td><td>~7 min</td></tr>
+            <tr><td>Stress</td><td>Pre-release</td><td>Dedicated perf environment</td><td>~15 min</td></tr>
+            <tr><td>Soak</td><td>Pre-release</td><td>Dedicated perf environment</td><td>~35 min</td></tr>
+            <tr><td>Spike</td><td>Pre-release</td><td>Docker Compose or dedicated</td><td>~5 min</td></tr>
+        </table>
+        <h2>8.6 Performance Acceptance Criteria</h2>
+        <table>
+            <tr><th>Metric</th><th>Baseline</th><th>Load (25 VUs)</th><th>Stress (ceiling)</th><th>Soak (30 min)</th></tr>
+            <tr><td>P95 Response Time</td><td>&lt; 500ms</td><td>&lt; 2s</td><td>Identified</td><td>Stable ± 10%</td></tr>
+            <tr><td>Throughput</td><td>Measured</td><td>≥ 100 req/s</td><td>Max identified</td><td>Stable</td></tr>
+            <tr><td>Error Rate</td><td>0%</td><td>&lt; 1%</td><td>&lt; 5%</td><td>&lt; 0.1%</td></tr>
+            <tr><td>Event Delivery</td><td>100%</td><td>100%</td><td>≥ 95%</td><td>100%</td></tr>
+            <tr><td>SQS Queue Depth</td><td>0 at rest</td><td>&lt; 10 at steady state</td><td>Identified</td><td>Returns to 0</td></tr>
+            <tr><td>Memory (containers)</td><td>Measured</td><td>&lt; 2x baseline</td><td>&lt; 3x baseline</td><td>No growth trend</td></tr>
+        </table>
+
+        <hr>
+
+        <h1 id="9-test-environment">9. Test Environment Strategy</h1>
+        <h2>9.1 Environments</h2>
+        <table>
+            <tr><th>Environment</th><th>Purpose</th><th>Infrastructure</th><th>Test Types Run</th></tr>
+            <tr><td><strong>Local Dev</strong></td><td>Developer testing during feature work</td><td>Docker Compose + Node.js processes</td><td>Contract consumer, unit</td></tr>
+            <tr><td><strong>CI (Docker)</strong></td><td>Automated pipeline on every push</td><td>Docker Compose in GitHub Actions</td><td>All 75 automated tests</td></tr>
+            <tr><td><strong>Performance</strong></td><td>Dedicated for load/stress/soak tests</td><td>Docker Compose with resource limits</td><td>Performance suite</td></tr>
+            <tr><td><strong>Staging</strong></td><td>Pre-production with AWS-native services</td><td>Real AWS (SQS, SNS, ElasticCache)</td><td>Smoke + E2E subset</td></tr>
+        </table>
+        <h2>9.2 Environment Setup</h2>
+        <pre><code># ── Prerequisites ──────────────────────────────────────
+# Docker Desktop, Node.js 18+, Java 17+, Maven 3.9+
+
+# ── Start integration layer ───────────────────────────
+cd integration-layer && docker compose up -d
+
+# ── Start client applications ─────────────────────────
+PORT=4001 npx tsx core-app-1/src/index.ts &
+PORT=3002 npx tsx siebel/src/index.ts &
+
+# ── Verify (Infrastructure tests should all pass) ─────
+npm run test:integration</code></pre>
+        <h2>9.3 Test Data Isolation</h2>
+        <p>Each test environment uses isolated identifiers:</p>
+        <ul>
+            <li><strong>Request IDs</strong> include timestamps (OUTAGE-20260227..., SBL-20260227...)</li>
+            <li><strong>ElasticMQ</strong> is ephemeral (container restart clears all messages)</li>
+            <li><strong>Redis</strong> state is transient (pub/sub has no persistence)</li>
+            <li><strong>No shared state</strong> between test runs — each suite creates fresh data</li>
+        </ul>
+
+        <hr>
+
+        <h1 id="10-test-data">10. Test Data Strategy</h1>
+        <h2>10.1 Data Categories</h2>
+        <table>
+            <tr><th>Category</th><th>Description</th><th>Source</th><th>Lifecycle</th></tr>
+            <tr><td><strong>SOAP Templates</strong></td><td>Valid/invalid XML payloads</td><td>Hardcoded in test files</td><td>Static</td></tr>
+            <tr><td><strong>PlannedOutage params</strong></td><td>system, region, severity, description</td><td>Factory methods / JSON objects</td><td>Created per test</td></tr>
+            <tr><td><strong>ServiceRequest params</strong></td><td>type, account, contact, service, priority</td><td>Factory methods / JSON objects</td><td>Created per test</td></tr>
+            <tr><td><strong>IntegrationEvent schemas</strong></td><td>Expected event structure from Redis</td><td>Pact contract definitions</td><td>Versioned with pacts</td></tr>
+            <tr><td><strong>Performance payloads</strong></td><td>Parameterized SOAP with varying sizes</td><td>k6 scenario scripts</td><td>Generated at runtime</td></tr>
+        </table>
+        <h2>10.2 Test Data Principles</h2>
+        <ol>
+            <li><strong>Self-contained</strong> — Every test creates its own data. No test depends on another test's output.</li>
+            <li><strong>Deterministic</strong> — Factory methods produce predictable values; timestamps and IDs are the only variable fields.</li>
+            <li><strong>Traceable</strong> — Each test uses unique identifiers (e.g., E2E-Test-System, ACC-E2E-001) to correlate requests with events.</li>
+            <li><strong>No cleanup needed</strong> — All data stores (ElasticMQ, Redis) are ephemeral. Docker restart is the reset mechanism.</li>
+        </ol>
+
+        <hr>
+
+        <h1 id="11-entry-exit">11. Entry &amp; Exit Criteria</h1>
+        <h2>11.1 Entry Criteria (per test level)</h2>
+        <table>
+            <tr><th>Level</th><th>Criteria</th></tr>
+            <tr><td><strong>Contract Consumer</strong></td><td>Source code compiles; Pact library available</td></tr>
+            <tr><td><strong>Infrastructure</strong></td><td>Docker Compose stack healthy (docker compose ps shows all services Up)</td></tr>
+            <tr><td><strong>Integration API</strong></td><td>Entry criteria for Infrastructure + client apps (core-app-1, siebel) responding on health endpoints</td></tr>
+            <tr><td><strong>E2E Pipeline</strong></td><td>Entry criteria for Integration + ElasticMQ admin reachable + Redis PING returns PONG</td></tr>
+            <tr><td><strong>Performance</strong></td><td>Entry criteria for E2E + performance tool (k6) installed + no other workloads competing for resources</td></tr>
+            <tr><td><strong>Acceptance (Cucumber)</strong></td><td>Entry criteria for Integration + feature files reviewed by product owner</td></tr>
+        </table>
+        <h2>11.2 Exit Criteria</h2>
+        <table>
+            <tr><th>Level</th><th>Criteria</th></tr>
+            <tr><td><strong>Contract Consumer</strong></td><td>All consumer pact tests pass; pact files generated in /pacts</td></tr>
+            <tr><td><strong>Contract Provider</strong></td><td>All provider verification tests pass against generated pacts</td></tr>
+            <tr><td><strong>Infrastructure</strong></td><td>All 5 health checks pass (both suites)</td></tr>
+            <tr><td><strong>Integration API</strong></td><td>All 12 tests pass (both suites); no HTTP 5xx responses</td></tr>
+            <tr><td><strong>E2E Pipeline</strong></td><td>All 9 tests pass (both suites); all events arrive within 15s timeout</td></tr>
+            <tr><td><strong>Acceptance</strong></td><td>All Cucumber scenarios pass; product owner signs off</td></tr>
+            <tr><td><strong>Performance</strong></td><td>All acceptance criteria met (Section 8.6); no regressions from previous baseline</td></tr>
+            <tr><td><strong>Release</strong></td><td>All of the above + zero Critical/High defects open + manual test plan executed</td></tr>
+        </table>
+
+        <hr>
+
+        <h1 id="12-risk-based">12. Risk-Based Testing</h1>
+        <h2>12.1 Risk Register</h2>
+        <table>
+            <tr><th>Risk ID</th><th>Risk</th><th>Probability</th><th>Impact</th><th>Mitigation</th><th>Test Coverage</th></tr>
+            <tr><td>R01</td><td>SOAP XML serialization breaks silently</td><td>Medium</td><td>High</td><td>Contract tests lock exact XML structure</td><td>🟠 Consumer + Provider pacts</td></tr>
+            <tr><td>R02</td><td>SQS message lost during processing</td><td>Low</td><td>Critical</td><td>E2E verifies event delivery with waitForEvent</td><td>🟣 E2E pipeline tests</td></tr>
+            <tr><td>R03</td><td>Redis Pub/Sub drops events under load</td><td>Medium</td><td>High</td><td>Performance soak test monitors event count</td><td>⚡ Soak test (PERF-S06)</td></tr>
+            <tr><td>R04</td><td>Event-publisher crashes on malformed SQS message</td><td>Medium</td><td>Medium</td><td>Exploratory testing (EXP-02)</td><td>✋ Manual EXP-02</td></tr>
+            <tr><td>R05</td><td>API Gateway routes wrong path after Nginx config change</td><td>Low</td><td>High</td><td>Integration tests verify /soap routing</td><td>🔵 API Gateway tests</td></tr>
+            <tr><td>R06</td><td>IntegrationEvent schema drift between publisher and listener</td><td>Medium</td><td>High</td><td>Message contract tests (both suites)</td><td>🟠 Message pacts</td></tr>
+            <tr><td>R07</td><td>Memory leak under sustained load</td><td>Low</td><td>Medium</td><td>30-min soak test monitors container memory</td><td>⚡ Soak test (PERF-S06)</td></tr>
+            <tr><td>R08</td><td>Concurrent multi-app messages cause cross-contamination</td><td>Low</td><td>Critical</td><td>E2E cross-app test + exploratory charter</td><td>🟣 E2E + ✋ EXP-04</td></tr>
+        </table>
+        <h2>12.2 Risk-Based Test Prioritization</h2>
+        <div class="mermaid">
+quadrantChart
+    title Risk Assessment — Probability vs Impact
+    x-axis Low Probability --> High Probability
+    y-axis Low Impact --> High Impact
+    quadrant-1 Mitigate First
+    quadrant-2 Monitor
+    quadrant-3 Accept
+    quadrant-4 Investigate
+    "R01 SOAP breaks silently": [0.50, 0.80]
+    "R02 SQS message lost": [0.25, 0.95]
+    "R03 Redis drops events": [0.55, 0.75]
+    "R04 Malformed SQS crash": [0.50, 0.50]
+    "R05 Wrong Nginx routing": [0.20, 0.80]
+    "R06 Event schema drift": [0.55, 0.80]
+    "R07 Memory leak": [0.30, 0.50]
+    "R08 Cross-contamination": [0.25, 0.90]
+        </div>
+
+        <hr>
+
+        <h1 id="13-defect-management">13. Defect Management</h1>
+        <h2>13.1 Severity Classification</h2>
+        <table>
+            <tr><th>Severity</th><th>Definition</th><th>Example</th><th>Response SLA</th></tr>
+            <tr><td><strong>S1 — Critical</strong></td><td>Complete pipeline failure; data loss</td><td>SQS messages not reaching Redis</td><td>Fix within 4 hours</td></tr>
+            <tr><td><strong>S2 — High</strong></td><td>Major feature broken; workaround exists</td><td>SOAP error response returns wrong error code</td><td>Fix within 1 business day</td></tr>
+            <tr><td><strong>S3 — Medium</strong></td><td>Minor feature issue; no data impact</td><td>Incorrect timestamp format in event metadata</td><td>Fix within 1 sprint</td></tr>
+            <tr><td><strong>S4 — Low</strong></td><td>Cosmetic or documentation issue</td><td>Health endpoint returns extra whitespace</td><td>Backlog</td></tr>
+        </table>
+        <h2>13.2 Defect Lifecycle</h2>
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> New: Defect discovered
+    New --> Triaged: Severity + priority assigned
+    Triaged --> InProgress: Developer picked up
+    InProgress --> InReview: Fix submitted (PR)
+    InReview --> Verified: QA confirms fix + regression tests pass
+    InReview --> InProgress: QA rejects fix
+    Verified --> Closed: Released
+    Triaged --> Deferred: Low priority / accepted risk
+    Deferred --> InProgress: Reprioritized
+        </div>
+
+        <hr>
+
+        <h1 id="14-cicd">14. CI/CD Integration</h1>
+        <h2>14.1 Pipeline Stages</h2>
+        <div class="mermaid">
+flowchart LR
+    subgraph PR["Pull Request"]
+        S1["1. Contract Consumer\n(no Docker)\n~5s"]
+        S2["2. Contract Provider Msg\n(no Docker)\n~3s"]
+    end
+    subgraph CI["CI Pipeline"]
+        S3["3. Docker Compose Up\n+ Health Check\n~30s"]
+        S4["4. Infrastructure Tests\n~2s"]
+        S5["5. Integration API Tests\n~10s"]
+        S6["6. Contract Provider HTTP\n~5s"]
+        S7["7. E2E Pipeline Tests\n~45s"]
+        S8["8. Cucumber BDD\n~10s"]
+    end
+    subgraph Perf["Performance (Weekly)"]
+        S9["9. Baseline + Load\n~10 min"]
+    end
+    subgraph Release["Pre-Release"]
+        S10["10. Stress + Soak\n~50 min"]
+        S11["11. Manual Test Plan"]
+    end
+    S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8
+    S8 --> S9
+    S9 --> S10 --> S11
+        </div>
+        <h2>14.2 Fail-Fast Ordering</h2>
+        <p>Tests are ordered by <strong>speed</strong> and <strong>independence</strong> to provide the fastest feedback:</p>
+        <table>
+            <tr><th>Stage</th><th>Time</th><th>Blocks PR</th><th>Docker Required</th></tr>
+            <tr><td>1. Contract Consumer</td><td>~5s</td><td>✅</td><td>—</td></tr>
+            <tr><td>2. Contract Provider (Msg)</td><td>~3s</td><td>✅</td><td>—</td></tr>
+            <tr><td>3. Docker Setup + Health</td><td>~30s</td><td>✅</td><td>✅</td></tr>
+            <tr><td>4. Infrastructure</td><td>~2s</td><td>✅</td><td>✅</td></tr>
+            <tr><td>5. Integration API</td><td>~10s</td><td>✅</td><td>✅</td></tr>
+            <tr><td>6. Contract Provider (HTTP)</td><td>~5s</td><td>✅</td><td>✅</td></tr>
+            <tr><td>7. E2E Pipeline</td><td>~45s</td><td>✅</td><td>✅</td></tr>
+            <tr><td>8. Cucumber BDD</td><td>~10s</td><td>✅</td><td>✅</td></tr>
+            <tr><td>9. Performance (Baseline/Load)</td><td>~10 min</td><td>—</td><td>✅</td></tr>
+        </table>
+        <p><strong>Total CI time: ~2 min</strong> (excluding performance). A contract consumer failure stops the pipeline in 5 seconds.</p>
+
+        <hr>
+
+        <h1 id="15-team-structure">15. Team Structure &amp; Responsibilities</h1>
+        <h2>15.1 Per-Application Team Ownership</h2>
+        <p>Each application has its own development team that owns testing for their component. Cross-cutting concerns (contract testing, E2E, performance) are coordinated by the Platform QA team.</p>
+        <div class="mermaid">
+flowchart TB
+    subgraph CA1T["core-app-1 Team"]
+        CA1D["2 Developers"]
+        CA1Q["1 QA Engineer"]
+    end
+    subgraph SBLT["siebel Team"]
+        SBLD["2 Developers"]
+        SBLQ["1 QA Engineer"]
+    end
+    subgraph ILT["Integration Layer Team"]
+        ILD["3 Developers"]
+        ILQ["1 QA Engineer"]
+    end
+    subgraph PQT["Platform QA"]
+        PQL["QA Lead"]
+        PQE["QA Engineer\n(Automation)"]
+    end
+    PQT --> CA1T
+    PQT --> SBLT
+    PQT --> ILT
+        </div>
+        <h2>15.2 Team Testing Responsibilities</h2>
+        <table>
+            <tr><th>Team</th><th>Owns</th><th>Test Types</th><th>Tools</th></tr>
+            <tr><td><strong>core-app-1 Team</strong></td><td>core-app-1/ source + consumer contracts</td><td>Contract Consumer (HTTP pacts for PlannedOutage), Integration API tests, Unit tests</td><td>Vitest, Pact (TS), JUnit 5, Pact JVM</td></tr>
+            <tr><td><strong>siebel Team</strong></td><td>siebel/ source + consumer contracts + event listener</td><td>Contract Consumer (HTTP pacts for ServiceRequest), Integration API tests, Event listener tests</td><td>Vitest, Pact (TS), JUnit 5, Pact JVM</td></tr>
+            <tr><td><strong>Integration Layer Team</strong></td><td>integration-layer/ services (API Gateway, soap-processor, event-publisher, pubsub-subscriber)</td><td>Contract Provider verification, Infrastructure tests, E2E pipeline tests, Docker Compose config</td><td>Vitest, JUnit 5, Playwright, Docker Compose</td></tr>
+            <tr><td><strong>Platform QA</strong></td><td>Cross-cutting quality, test strategy, tooling, CI pipeline</td><td>E2E orchestration, Performance testing, Manual test plan, Xray administration, Cucumber BDD, Security testing</td><td>k6, Xray, Cucumber 7, OWASP ZAP, GitHub Actions</td></tr>
+        </table>
+        <h2>15.3 RACI Matrix</h2>
+        <table>
+            <tr><th>Activity</th><th>core-app-1</th><th>siebel</th><th>Integration Layer</th><th>Platform QA</th><th>Product Owner</th></tr>
+            <tr><td>Unit / Component tests</td><td>R/A</td><td>R/A</td><td>R/A</td><td>C</td><td>—</td></tr>
+            <tr><td>Contract Consumer tests</td><td>R/A</td><td>R/A</td><td>C</td><td>C</td><td>—</td></tr>
+            <tr><td>Contract Provider verification</td><td>C</td><td>C</td><td>R/A</td><td>C</td><td>—</td></tr>
+            <tr><td>Integration API tests</td><td>R</td><td>R</td><td>R</td><td>A</td><td>—</td></tr>
+            <tr><td>E2E Pipeline tests</td><td>C</td><td>C</td><td>R</td><td>A</td><td>—</td></tr>
+            <tr><td>Cucumber BDD scenarios</td><td>C</td><td>C</td><td>C</td><td>R</td><td>A</td></tr>
+            <tr><td>Performance tests</td><td>I</td><td>I</td><td>C</td><td>R/A</td><td>I</td></tr>
+            <tr><td>Manual test execution</td><td>—</td><td>—</td><td>C</td><td>R/A</td><td>C</td></tr>
+            <tr><td>Exploratory testing</td><td>C</td><td>C</td><td>C</td><td>R/A</td><td>—</td></tr>
+            <tr><td>Security assessment</td><td>C</td><td>C</td><td>C</td><td>R/A</td><td>I</td></tr>
+            <tr><td>Xray test management</td><td>I</td><td>I</td><td>I</td><td>R/A</td><td>C</td></tr>
+            <tr><td>Defect triage</td><td>R</td><td>R</td><td>R</td><td>A</td><td>C</td></tr>
+            <tr><td>CI pipeline maintenance</td><td>C</td><td>C</td><td>R</td><td>A</td><td>—</td></tr>
+        </table>
+        <p><strong>R</strong> = Responsible, <strong>A</strong> = Accountable, <strong>C</strong> = Consulted, <strong>I</strong> = Informed</p>
+        <h2>15.4 Roles</h2>
+        <table>
+            <tr><th>Role</th><th>Responsibilities</th></tr>
+            <tr><td><strong>App Developer</strong></td><td>Write and maintain automated tests for their app; fix defects; author consumer pacts</td></tr>
+            <tr><td><strong>Integration Developer</strong></td><td>Maintain integration-layer services; verify provider pacts; manage Docker Compose configs</td></tr>
+            <tr><td><strong>QA Engineer (per team)</strong></td><td>Execute manual tests; run exploratory sessions; maintain Cucumber features; triage defects</td></tr>
+            <tr><td><strong>QA Lead (Platform)</strong></td><td>Own test strategy; manage Xray configuration; coordinate cross-team testing; performance test design</td></tr>
+            <tr><td><strong>QA Automation Engineer</strong></td><td>Build and maintain automation frameworks (TS + Java); CI pipeline test stages; Xray CI integration</td></tr>
+            <tr><td><strong>Tech Lead</strong></td><td>Review test strategy; approve risk register; define exit criteria; ensure CI pipeline coverage</td></tr>
+            <tr><td><strong>Product Owner</strong></td><td>Review and approve Cucumber BDD scenarios; sign off on acceptance criteria</td></tr>
+            <tr><td><strong>DevOps / SRE</strong></td><td>Maintain CI pipeline; manage Docker Compose + performance environments; set up monitoring</td></tr>
+        </table>
+
+        <hr>
+
+        <h1 id="16-test-schedule">16. Test Schedule</h1>
+        <div class="mermaid">
+gantt
+    title Test Execution Timeline (per Sprint)
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b %d
+    section Automated (Every Commit)
+    Contract Consumer + Msg Provider :active, auto1, 2026-02-27, 14d
+    section Automated (Every PR)
+    Infrastructure + Integration + E2E  :active, auto2, 2026-02-27, 14d
+    Cucumber BDD :active, auto3, 2026-02-27, 14d
+    section Manual (Weekly)
+    Exploratory Session 1 (EXP-01,02) :manual1, 2026-03-02, 1d
+    Exploratory Session 2 (EXP-03,04) :manual2, 2026-03-09, 1d
+    section Performance (Weekly)
+    Baseline + Load Test :perf1, 2026-03-04, 1d
+    section Pre-Release
+    Manual Test Plan (MAN-01 to 06) :release1, 2026-03-11, 1d
+    Stress + Soak Tests :release2, 2026-03-11, 1d
+    Sign-off :milestone, 2026-03-12, 0d
+        </div>
+
+        <hr>
+
+        <h1 id="17-metrics">17. Metrics &amp; Reporting</h1>
+        <h2>17.1 Key Metrics</h2>
+        <table>
+            <tr><th>Metric</th><th>Formula</th><th>Target</th><th>Frequency</th></tr>
+            <tr><td><strong>Automation Rate</strong></td><td>Automated tests / Total executable test cases</td><td>≥ 90%</td><td>Monthly</td></tr>
+            <tr><td><strong>Pass Rate</strong></td><td>Passed tests / Total tests executed</td><td>≥ 98% (CI)</td><td>Per run</td></tr>
+            <tr><td><strong>Defect Escape Rate</strong></td><td>Defects found in staging or prod / Total defects</td><td>&lt; 5%</td><td>Per release</td></tr>
+            <tr><td><strong>Mean Time to Detection</strong></td><td>Avg time from code commit to test failure</td><td>&lt; 5 min</td><td>Per sprint</td></tr>
+            <tr><td><strong>Contract Compliance</strong></td><td>Verified pacts / Total pacts</td><td>100%</td><td>Per run</td></tr>
+            <tr><td><strong>P95 Response Time Trend</strong></td><td>P95 over time across baseline runs</td><td>No upward trend</td><td>Weekly</td></tr>
+            <tr><td><strong>Event Delivery Rate</strong></td><td>Events received on Redis / SOAP requests sent</td><td>100% (normal load)</td><td>Per E2E run</td></tr>
+        </table>
+        <h2>17.2 Dashboard Indicators</h2>
+        <table>
+            <tr><th>Indicator</th><th>Green</th><th>Yellow</th><th>Red</th></tr>
+            <tr><td>CI pass rate</td><td>≥ 98%</td><td>90–98%</td><td>&lt; 90%</td></tr>
+            <tr><td>E2E pipeline latency P95</td><td>&lt; 2s</td><td>2–5s</td><td>&gt; 5s</td></tr>
+            <tr><td>Open S1/S2 defects</td><td>0</td><td>1–2</td><td>≥ 3</td></tr>
+            <tr><td>Pact verification</td><td>All pass</td><td>—</td><td>Any failure</td></tr>
+            <tr><td>Soak test memory trend</td><td>Flat</td><td>&lt; 10% growth</td><td>&gt; 10% growth</td></tr>
+        </table>
+        <h2>17.3 Reporting Cadence</h2>
+        <table>
+            <tr><th>Report</th><th>Audience</th><th>Frequency</th><th>Content</th></tr>
+            <tr><td>CI Test Summary</td><td>Dev team</td><td>Per PR</td><td>Pass/fail counts, failure details, duration</td></tr>
+            <tr><td>Sprint Test Report</td><td>Scrum team</td><td>End of sprint</td><td>Metrics summary, defect status, coverage gaps</td></tr>
+            <tr><td>Performance Trend</td><td>Tech lead + SRE</td><td>Weekly</td><td>Latency/throughput trends, comparison to baseline</td></tr>
+            <tr><td>Release Readiness</td><td>All stakeholders</td><td>Pre-release</td><td>Exit criteria checklist, risk assessment, sign-off</td></tr>
+        </table>
+
+        <hr>
+
+        <h1>Appendix A: Document Revision History</h1>
+        <table>
+            <tr><th>Version</th><th>Date</th><th>Author</th><th>Changes</th></tr>
+            <tr><td>1.0</td><td>2026-02-27</td><td>QA Team</td><td>Initial test strategy</td></tr>
+            <tr><td>1.1</td><td>2026-02-28</td><td>QA Team</td><td>Added Section 5 (Tooling &amp; Test Management — Xray migration), per-app team structure (Section 15), complete tool inventory</td></tr>
+        </table>
+
+        <h1>Appendix B: Reference Documents</h1>
+        <table>
+            <tr><th>Document</th><th>Location</th></tr>
+            <tr><td>Testing Documentation (detailed test inventory)</td><td>docs/testing-documentation.md</td></tr>
+            <tr><td>Contract Testing Strategy</td><td>docs/contract-testing-strategy.md</td></tr>
+            <tr><td>Contract Testing Analysis</td><td>docs/do-we-need-contract-testing.md</td></tr>
+            <tr><td>Docker Compose Configuration</td><td>integration-layer/docker-compose.yml</td></tr>
+            <tr><td>Java Framework README</td><td>playwright-java-framework/README.md</td></tr>
+        </table>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            securityLevel: 'loose'
+        });
+    </script>
+</body>
+</html>
