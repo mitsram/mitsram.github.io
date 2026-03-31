@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Virtualization &amp; WireMock - Comprehensive Guide</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        header .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            margin-bottom: 0.5rem;
+        }
+
+        header .meta {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--primary-dark);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin: 1.25rem 0 0.5rem;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        li p {
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: var(--bg-secondary);
+            transition: background 0.2s;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        code {
+            background: var(--bg-tertiary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: var(--primary-dark);
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            line-height: 1.5;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .first-section {
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin: 0 0 2rem 0;
+            border-radius: 8px;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: var(--primary-dark);
+        }
+
+        .success-box {
+            background: #ecfdf5;
+            border-left: 4px solid var(--success);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success-box p, .success-box li {
+            color: #065f46;
+        }
+
+        .warning-box {
+            background: #fffbeb;
+            border-left: 4px solid var(--warning);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box p, .warning-box li {
+            color: #92400e;
+        }
+
+        .danger-box {
+            background: #fef2f2;
+            border-left: 4px solid var(--danger);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .danger-box p {
+            color: #991b1b;
+        }
+
+        .diagram {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            text-align: center;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            white-space: pre;
+            color: var(--text-primary);
+        }
+
+        .toc {
+            background: var(--bg-tertiary);
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .toc a {
+            color: var(--primary);
+            text-decoration: none;
+            display: block;
+            padding: 0.25rem 0;
+        }
+
+        .toc a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .toc .indent-1 { margin-left: 1.5rem; }
+        .toc .indent-2 { margin-left: 3rem; }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-blue { background: #dbeafe; color: #1e40af; }
+        .badge-green { background: #d1fae5; color: #065f46; }
+        .badge-yellow { background: #fef3c7; color: #92400e; }
+        .badge-red { background: #fee2e2; color: #991b1b; }
+
+        .file-tree {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .file-tree .folder { color: #60a5fa; }
+        .file-tree .file { color: #a7f3d0; }
+        .file-tree .comment { color: #64748b; }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SERVICE VIRTUALIZATION &amp; WIREMOCK</h1>
+            <div class="subtitle">Comprehensive Guide to API Simulation for Testing</div>
+            <div class="meta">Version 1.0 | April 2026</div>
+        </header>
+
+        <div class="content">
+
+            <!-- TABLE OF CONTENTS -->
+            <div class="first-section">
+                <h2 style="margin-top:0;">Table of Contents</h2>
+                <div class="toc">
+                    <a href="#what-is-service-virtualization">1. What is Service Virtualization?</a>
+                    <a href="#why-service-virtualization" class="indent-1">1.1 Why Service Virtualization?</a>
+                    <a href="#sv-vs-mocking" class="indent-1">1.2 Service Virtualization vs. Mocking vs. Stubbing</a>
+                    <a href="#common-use-cases" class="indent-1">1.3 Common Use Cases</a>
+                    <a href="#what-is-wiremock">2. What is WireMock?</a>
+                    <a href="#wiremock-architecture" class="indent-1">2.1 Architecture &amp; How It Works</a>
+                    <a href="#wiremock-features" class="indent-1">2.2 Key Features</a>
+                    <a href="#wiremock-modes" class="indent-1">2.3 Operating Modes</a>
+                    <a href="#getting-started">3. Getting Started with WireMock</a>
+                    <a href="#installation" class="indent-1">3.1 Installation</a>
+                    <a href="#standalone-server" class="indent-1">3.2 Running as a Standalone Server</a>
+                    <a href="#java-integration" class="indent-1">3.3 Java / JUnit Integration</a>
+                    <a href="#wiremock-testing">4. Using WireMock in Testing</a>
+                    <a href="#stubbing-basics" class="indent-1">4.1 Stubbing Basics</a>
+                    <a href="#request-matching" class="indent-1">4.2 Request Matching</a>
+                    <a href="#response-templating" class="indent-1">4.3 Response Templating</a>
+                    <a href="#record-playback" class="indent-1">4.4 Record &amp; Playback</a>
+                    <a href="#stateful-behavior" class="indent-1">4.5 Stateful Behavior (Scenarios)</a>
+                    <a href="#fault-simulation" class="indent-1">4.6 Fault &amp; Delay Simulation</a>
+                    <a href="#verification" class="indent-1">4.7 Request Verification</a>
+                    <a href="#testing-strategies">5. Testing Strategies with WireMock</a>
+                    <a href="#unit-testing" class="indent-1">5.1 Unit / Component Testing</a>
+                    <a href="#integration-testing" class="indent-1">5.2 Integration Testing</a>
+                    <a href="#contract-testing" class="indent-1">5.3 Consumer-Driven Contract Testing</a>
+                    <a href="#performance-testing" class="indent-1">5.4 Performance &amp; Resilience Testing</a>
+                    <a href="#cicd-pipeline">6. CI/CD Integration with GitHub Actions</a>
+                    <a href="#cicd-strategy" class="indent-1">6.1 Pipeline Strategy</a>
+                    <a href="#standalone-workflow" class="indent-1">6.2 Standalone WireMock Workflow</a>
+                    <a href="#docker-workflow" class="indent-1">6.3 Docker-Based Workflow</a>
+                    <a href="#mappings-management" class="indent-1">6.4 Managing Mappings in Source Control</a>
+                    <a href="#advanced-pipeline" class="indent-1">6.5 Advanced Pipeline Patterns</a>
+                    <a href="#best-practices">7. Best Practices &amp; Anti-Patterns</a>
+                    <a href="#references">8. References &amp; Resources</a>
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- SECTION 1: WHAT IS SERVICE VIRTUALIZATION -->
+            <!-- ============================================================ -->
+            <h1 id="what-is-service-virtualization">1. What is Service Virtualization?</h1>
+
+            <p><strong>Service Virtualization</strong> is the practice of simulating the behavior of dependent systems (APIs, third-party services, databases, message queues) so that the system under test can be developed and tested in isolation, without requiring the actual dependent services to be available.</p>
+
+            <p>In modern distributed architectures, applications depend on numerous external APIs, microservices, and third-party platforms. These dependencies introduce constraints: services may be unavailable, expensive to access, slow, or still under development. Service virtualization removes these constraints by providing realistic simulations that mimic the behavior of real services.</p>
+
+            <div class="diagram">
+┌──────────────┐         ┌──────────────────┐         ┌──────────────────┐
+│              │         │                  │         │  External API    │
+│  Application │───────▶ │  Virtual Service │ ──(X)──▶│  (Unavailable)   │
+│  Under Test  │         │  (WireMock)      │         │                  │
+│              │         │                  │         └──────────────────┘
+└──────────────┘         └──────────────────┘
+                                │
+                                ▼
+                         Simulated Responses
+                         (Configured Stubs)
+            </div>
+
+            <h2 id="why-service-virtualization">1.1 Why Service Virtualization?</h2>
+
+            <p>Teams adopt service virtualization to solve real, tangible problems that slow down the development lifecycle:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Problem</th>
+                        <th>Without Service Virtualization</th>
+                        <th>With Service Virtualization</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Dependency unavailability</strong></td>
+                        <td>Teams are blocked, waiting for external services</td>
+                        <td>Simulate the service and keep working</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Third-party rate limits / costs</strong></td>
+                        <td>Pay per call or hit rate limits in testing</td>
+                        <td>Virtual services have no rate limits or costs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data constraints</strong></td>
+                        <td>Hard to reproduce edge cases with live data</td>
+                        <td>Full control over responses, errors, delays</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Environment instability</strong></td>
+                        <td>Flaky tests due to unreliable shared environments</td>
+                        <td>Deterministic, repeatable test environments</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Parallel development</strong></td>
+                        <td>Frontend waits for backend API to be ready</td>
+                        <td>Develop against virtual API contract</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fault testing</strong></td>
+                        <td>Difficult to trigger real timeouts or 500 errors</td>
+                        <td>Simulate any failure scenario on demand</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="sv-vs-mocking">1.2 Service Virtualization vs. Mocking vs. Stubbing</h2>
+
+            <p>These terms are often used interchangeably but have important distinctions:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Mocking</th>
+                        <th>Stubbing</th>
+                        <th>Service Virtualization</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Scope</strong></td>
+                        <td>In-process, code-level</td>
+                        <td>In-process, code-level</td>
+                        <td>Network-level (HTTP, TCP, JMS)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Protocol</strong></td>
+                        <td>Language-specific (Java, Python)</td>
+                        <td>Language-specific</td>
+                        <td>Protocol-level (HTTP, HTTPS, SOAP)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Behavior</strong></td>
+                        <td>Verifies interactions (was X called?)</td>
+                        <td>Returns canned responses</td>
+                        <td>Simulates realistic service behavior</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Statefulness</strong></td>
+                        <td>Typically stateless per test</td>
+                        <td>Stateless</td>
+                        <td>Can be stateful across requests</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Shared access</strong></td>
+                        <td>Same process only</td>
+                        <td>Same process only</td>
+                        <td>Multiple consumers over the network</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Typical tools</strong></td>
+                        <td>Mockito, unittest.mock</td>
+                        <td>Sinon.js, test doubles</td>
+                        <td>WireMock, Mountebank, Hoverfly</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <p><strong>Key insight:</strong> Service virtualization operates at the network layer. The application under test makes real HTTP calls &mdash; it doesn't know the responses come from a virtual service. This makes virtual services usable by any technology stack.</p>
+            </div>
+
+            <h2 id="common-use-cases">1.3 Common Use Cases</h2>
+
+            <ul>
+                <li><strong>Shift-left testing:</strong> Write integration tests before dependent services are built</li>
+                <li><strong>Third-party API simulation:</strong> Payment gateways, SMS providers, identity providers</li>
+                <li><strong>Edge case testing:</strong> Simulate 500 errors, timeouts, malformed responses, rate limiting</li>
+                <li><strong>Performance testing:</strong> Control latency and throughput of virtualized dependencies</li>
+                <li><strong>Contract validation:</strong> Verify that consumers and providers agree on API contracts</li>
+                <li><strong>Demo environments:</strong> Run demos without relying on live infrastructure</li>
+                <li><strong>Security testing:</strong> Simulate injection responses, malformed headers, unexpected payloads</li>
+            </ul>
+
+
+            <!-- ============================================================ -->
+            <!-- SECTION 2: WHAT IS WIREMOCK -->
+            <!-- ============================================================ -->
+            <h1 id="what-is-wiremock">2. What is WireMock?</h1>
+
+            <p><strong>WireMock</strong> is an open-source HTTP mock server for service virtualization. It creates a local or remote HTTP server that intercepts requests and returns configured responses, enabling you to simulate APIs for testing purposes. Originally built for the Java ecosystem, WireMock is now widely adopted across all technology stacks.</p>
+
+            <div class="success-box">
+                <p><strong>WireMock at a Glance:</strong></p>
+                <ul>
+                    <li>HTTP/HTTPS stubbing based on request matching</li>
+                    <li>Record traffic from real APIs and replay it</li>
+                    <li>Simulate faults, delays, and network errors</li>
+                    <li>Stateful scenarios for complex workflows</li>
+                    <li>Response templating with dynamic data</li>
+                    <li>Java API, REST API, JSON configuration, and Docker support</li>
+                    <li>Available as standalone JAR, JUnit rule, or Docker image</li>
+                </ul>
+            </div>
+
+            <h2 id="wiremock-architecture">2.1 Architecture &amp; How It Works</h2>
+
+            <p>WireMock runs as an HTTP server (by default on port 8080) that intercepts incoming requests and matches them against a set of configured <strong>stub mappings</strong>. When a match is found, the corresponding response is returned. When no match is found, a 404 is returned (or the request can be proxied to a real service).</p>
+
+            <div class="diagram">
+                                    ┌─────────────────────────────────┐
+                                    │         WireMock Server         │
+                                    │                                 │
+┌─────────────────┐   HTTP Request  │  ┌───────────────────────────┐  │
+│  Application /  │ ──────────────▶ │  │   Request Matcher Engine  │  │
+│  Test Client    │                 │  │                           │  │
+│                 │ ◀────────────── │  │  URL, Method, Headers,    │  │
+└─────────────────┘   HTTP Response │  │  Body, Query Params       │  │
+                                    │  └─────────┬─────────────────┘  │
+                                    │            │                    │
+                                    │            ▼                    │
+                                    │  ┌───────────────────────────┐  │
+                                    │  │    Stub Mappings Store    │  │
+                                    │  │                           │  │
+                                    │  │  mapping-1.json           │  │
+                                    │  │  mapping-2.json           │  │
+                                    │  │  mapping-n.json           │  │
+                                    │  └─────────┬─────────────────┘  │
+                                    │            │                    │
+                                    │            ▼                    │
+                                    │  ┌───────────────────────────┐  │
+                                    │  │   Response Definition     │  │
+                                    │  │                           │  │
+                                    │  │  Status, Headers, Body,   │  │
+                                    │  │  Delays, Faults,          │  │
+                                    │  │  Templated Responses      │  │
+                                    │  └───────────────────────────┘  │
+                                    └─────────────────────────────────┘
+            </div>
+
+            <h3>Request Processing Flow</h3>
+            <ol>
+                <li><strong>Request received:</strong> WireMock receives an HTTP request from the application under test</li>
+                <li><strong>Matching:</strong> The request is evaluated against all configured stub mappings in priority order</li>
+                <li><strong>Response generation:</strong> If a match is found, the configured response is generated (optionally with templating)</li>
+                <li><strong>Response delivery:</strong> The response is sent back, with any configured delays or faults applied</li>
+                <li><strong>Journal logging:</strong> The request is recorded in the request journal for later verification</li>
+            </ol>
+
+            <h2 id="wiremock-features">2.2 Key Features</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Stubbing</strong></td>
+                        <td>Define request-response pairs using JSON files or programmatic API</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Request Matching</strong></td>
+                        <td>Match by URL, method, headers, query parameters, cookies, and body content (JSON, XML, regex)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Response Templating</strong></td>
+                        <td>Generate dynamic responses using Handlebars templates with access to request data</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Record &amp; Playback</strong></td>
+                        <td>Proxy to a real API, record all interactions, then replay them without the real service</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stateful Scenarios</strong></td>
+                        <td>Model sequences of interactions where responses change based on previous requests</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fault Injection</strong></td>
+                        <td>Simulate connection resets, empty responses, random data, and malformed responses</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Delay Simulation</strong></td>
+                        <td>Add fixed, uniform, log-normal, or chunked delays to simulate latency</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proxying</strong></td>
+                        <td>Forward unmatched requests to a target URL, enabling partial virtualization</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Verification</strong></td>
+                        <td>Assert that specific requests were made (count, order, timing)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Admin REST API</strong></td>
+                        <td>Full API at <code>/__admin</code> for creating, updating, and deleting stubs at runtime</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HTTPS Support</strong></td>
+                        <td>Built-in TLS with self-signed certificates or custom keystores</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="wiremock-modes">2.3 Operating Modes</h2>
+
+            <h3>Standalone Server</h3>
+            <p>Run WireMock as a self-contained JAR that serves virtual APIs. Ideal for shared team environments, Docker deployments, and CI/CD pipelines.</p>
+<pre><code>java -jar wiremock-standalone-3.x.x.jar --port 8080 --verbose</code></pre>
+
+            <h3>JUnit Rule / Extension (Embedded)</h3>
+            <p>Embed WireMock into your Java test suite using JUnit 4 Rules or JUnit 5 Extensions. The server starts and stops automatically with each test class or method.</p>
+<pre><code>@WireMockTest(httpPort = 8080)
+class MyApiTest {
+    // WireMock is started automatically
+}</code></pre>
+
+            <h3>Docker Container</h3>
+            <p>Run WireMock as a Docker container with mappings mounted as volumes. Perfect for CI pipelines and team-shared environments.</p>
+<pre><code>docker run -d --name wiremock \
+  -p 8080:8080 \
+  -v $PWD/mappings:/home/wiremock/mappings \
+  -v $PWD/__files:/home/wiremock/__files \
+  wiremock/wiremock:3.9.2</code></pre>
+
+
+            <!-- ============================================================ -->
+            <!-- SECTION 3: GETTING STARTED -->
+            <!-- ============================================================ -->
+            <h1 id="getting-started">3. Getting Started with WireMock</h1>
+
+            <h2 id="installation">3.1 Installation</h2>
+
+            <h3>Maven (Java)</h3>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.wiremock&lt;/groupId&gt;
+    &lt;artifactId&gt;wiremock-standalone&lt;/artifactId&gt;
+    &lt;version&gt;3.9.2&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+
+            <h3>Gradle (Java)</h3>
+<pre><code>testImplementation 'org.wiremock:wiremock-standalone:3.9.2'</code></pre>
+
+            <h3>Python (via wiremock package)</h3>
+<pre><code>pip install wiremock</code></pre>
+
+            <h3>Node.js (via wiremock-captain or REST API)</h3>
+<pre><code>npm install wiremock-captain --save-dev</code></pre>
+
+            <h3>Standalone JAR (Any Language)</h3>
+<pre><code># Download the standalone JAR
+curl -L -o wiremock.jar \
+  https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/3.9.2/wiremock-standalone-3.9.2.jar
+
+# Run it
+java -jar wiremock.jar --port 8080</code></pre>
+
+            <h2 id="standalone-server">3.2 Running as a Standalone Server</h2>
+
+            <p>The standalone server reads stub mappings from a local directory structure:</p>
+
+            <div class="file-tree">
+<span class="folder">wiremock/</span>
+├── <span class="folder">mappings/</span>           <span class="comment"># JSON stub mapping files</span>
+│   ├── <span class="file">get-user.json</span>
+│   ├── <span class="file">create-order.json</span>
+│   └── <span class="file">payment-error.json</span>
+├── <span class="folder">__files/</span>             <span class="comment"># Response body files (referenced by mappings)</span>
+│   ├── <span class="file">user-response.json</span>
+│   └── <span class="file">order-list.json</span>
+└── <span class="file">wiremock-standalone-3.9.2.jar</span>
+            </div>
+
+            <h4>Common CLI Options</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Description</th>
+                        <th>Default</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>--port</code></td>
+                        <td>HTTP port</td>
+                        <td>8080</td>
+                    </tr>
+                    <tr>
+                        <td><code>--https-port</code></td>
+                        <td>HTTPS port</td>
+                        <td>Disabled</td>
+                    </tr>
+                    <tr>
+                        <td><code>--root-dir</code></td>
+                        <td>Root directory for mappings and __files</td>
+                        <td>Current directory</td>
+                    </tr>
+                    <tr>
+                        <td><code>--verbose</code></td>
+                        <td>Enable verbose request logging</td>
+                        <td>Off</td>
+                    </tr>
+                    <tr>
+                        <td><code>--global-response-templating</code></td>
+                        <td>Enable response templating for all stubs</td>
+                        <td>Off</td>
+                    </tr>
+                    <tr>
+                        <td><code>--record-mappings</code></td>
+                        <td>Enable recording mode</td>
+                        <td>Off</td>
+                    </tr>
+                    <tr>
+                        <td><code>--proxy-all</code></td>
+                        <td>Proxy unmatched requests to a URL</td>
+                        <td>Disabled</td>
+                    </tr>
+                    <tr>
+                        <td><code>--disable-banner</code></td>
+                        <td>Suppress startup banner</td>
+                        <td>Off</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Example: Starting with All Features</h3>
+<pre><code>java -jar wiremock.jar \
+  --port 8080 \
+  --https-port 8443 \
+  --verbose \
+  --global-response-templating \
+  --root-dir ./wiremock-config</code></pre>
+
+            <h2 id="java-integration">3.3 Java / JUnit Integration</h2>
+
+            <h3>JUnit 5 Extension</h3>
+<pre><code>import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+
+class UserServiceTest {
+
+    @RegisterExtension
+    static WireMockExtension wireMock = WireMockExtension.newInstance()
+        .options(wireMockConfig().dynamicPort())
+        .build();
+
+    @Test
+    void shouldFetchUserDetails() {
+        // Arrange: configure stub
+        wireMock.stubFor(get(urlPathEqualTo("/api/users/42"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("""
+                    {
+                        "id": 42,
+                        "name": "Jane Doe",
+                        "email": "jane@example.com"
+                    }
+                    """)));
+
+        // Act: call the service under test
+        String baseUrl = wireMock.baseUrl();
+        UserService userService = new UserService(baseUrl);
+        User user = userService.getUser(42);
+
+        // Assert: verify response
+        assertThat(user.getName()).isEqualTo("Jane Doe");
+
+        // Verify: WireMock received the expected request
+        wireMock.verify(1, getRequestedFor(urlPathEqualTo("/api/users/42")));
+    }
+}</code></pre>
+
+            <h3>JUnit 4 Rule</h3>
+<pre><code>import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.junit.Rule;
+import org.junit.Test;
+
+public class LegacyApiTest {
+
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(8089);
+
+    @Test
+    public void testApiCall() {
+        stubFor(get(urlEqualTo("/api/health"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withBody("{\"status\": \"UP\"}")));
+
+        // ... test code
+    }
+}</code></pre>
+
+
+            <!-- ============================================================ -->
+            <!-- SECTION 4: USING WIREMOCK IN TESTING -->
+            <!-- ============================================================ -->
+            <h1 id="wiremock-testing">4. Using WireMock in Testing</h1>
+
+            <h2 id="stubbing-basics">4.1 Stubbing Basics</h2>
+
+            <p>Stubs define the expected request pattern and the response WireMock should return. Stubs can be configured via JSON files or the programmatic API.</p>
+
+            <h3>JSON Stub Mapping</h3>
+            <p>Place this file in the <code>mappings/</code> directory:</p>
+<pre><code>{
+    "id": "get-user-by-id",
+    "name": "Get User by ID",
+    "request": {
+        "method": "GET",
+        "urlPathPattern": "/api/users/[0-9]+"
+    },
+    "response": {
+        "status": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "jsonBody": {
+            "id": 1,
+            "name": "John Smith",
+            "email": "john@example.com",
+            "role": "admin"
+        }
+    },
+    "priority": 5
+}</code></pre>
+
+            <h3>REST API (Runtime Configuration)</h3>
+<pre><code># Create a stub via the Admin API
+curl -X POST http://localhost:8080/__admin/mappings \
+  -H "Content-Type: application/json" \
+  -d '{
+    "request": {
+        "method": "POST",
+        "urlPath": "/api/orders",
+        "headers": {
+            "Content-Type": { "equalTo": "application/json" }
+        }
+    },
+    "response": {
+        "status": 201,
+        "jsonBody": {
+            "orderId": "ORD-12345",
+            "status": "CREATED"
+        }
+    }
+  }'</code></pre>
+
+            <h2 id="request-matching">4.2 Request Matching</h2>
+
+            <p>WireMock's matching engine supports a rich set of matchers for precise request identification:</p>
+
+            <h3>URL Matching</h3>
+<pre><code>// Exact URL match (including query string)
+stubFor(get(urlEqualTo("/api/users?page=1&amp;size=10"))
+    .willReturn(ok()));
+
+// URL path only (ignoring query params)
+stubFor(get(urlPathEqualTo("/api/users"))
+    .willReturn(ok()));
+
+// Regex URL pattern
+stubFor(get(urlPathMatching("/api/users/[0-9]+"))
+    .willReturn(ok()));
+
+// URL path with specific query parameter matching
+stubFor(get(urlPathEqualTo("/api/search"))
+    .withQueryParam("q", containing("wiremock"))
+    .withQueryParam("limit", matching("[0-9]+"))
+    .willReturn(ok()));</code></pre>
+
+            <h3>Header Matching</h3>
+<pre><code>stubFor(get(urlPathEqualTo("/api/secure-data"))
+    .withHeader("Authorization", matching("Bearer .+"))
+    .withHeader("Accept", equalTo("application/json"))
+    .withHeader("X-Request-Id", matching("[a-f0-9-]{36}"))
+    .willReturn(ok()));</code></pre>
+
+            <h3>Request Body Matching</h3>
+<pre><code>// JSON body matching with JSONPath
+stubFor(post(urlPathEqualTo("/api/orders"))
+    .withRequestBody(matchingJsonPath("$.customerId"))
+    .withRequestBody(matchingJsonPath("$.items[?(@.quantity > 0)]"))
+    .willReturn(created()));
+
+// Exact JSON body match (ignoring key order and extra fields)
+stubFor(post(urlPathEqualTo("/api/users"))
+    .withRequestBody(equalToJson("""
+        { "name": "Jane", "email": "jane@example.com" }
+    """, true, true))
+    .willReturn(created()));
+
+// XML body matching with XPath
+stubFor(post(urlPathEqualTo("/api/soap-endpoint"))
+    .withRequestBody(matchingXPath("//OrderId[text()='12345']"))
+    .willReturn(ok()));</code></pre>
+
+            <h3>JSON Stub: Complete Matching Example</h3>
+<pre><code>{
+    "request": {
+        "method": "POST",
+        "urlPath": "/api/payments",
+        "headers": {
+            "Content-Type": { "equalTo": "application/json" },
+            "Authorization": { "matches": "Bearer .+" },
+            "X-Idempotency-Key": { "matches": "[a-f0-9-]{36}" }
+        },
+        "bodyPatterns": [
+            { "matchesJsonPath": "$.amount" },
+            { "matchesJsonPath": "$.currency" },
+            { "matchesJsonPath": "$.merchantId" }
+        ]
+    },
+    "response": {
+        "status": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "jsonBody": {
+            "transactionId": "TXN-98765",
+            "status": "APPROVED",
+            "amount": 99.99
+        }
+    }
+}</code></pre>
+
+            <h2 id="response-templating">4.3 Response Templating</h2>
+
+            <p>Response templating allows you to generate dynamic responses based on the incoming request. WireMock uses <strong>Handlebars</strong> as its templating engine.</p>
+
+<pre><code>{
+    "request": {
+        "method": "GET",
+        "urlPathPattern": "/api/users/([0-9]+)"
+    },
+    "response": {
+        "status": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": "{ \"id\": {{request.path.[2]}}, \"name\": \"User {{request.path.[2]}}\", \"requestedAt\": \"{{now}}\" }",
+        "transformers": ["response-template"]
+    }
+}</code></pre>
+
+            <h3>Common Template Helpers</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Helper</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>{{request.url}}</code></td>
+                        <td>Full request URL</td>
+                        <td><code>/api/users/42?include=profile</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>{{request.path.[n]}}</code></td>
+                        <td>URL path segment by index</td>
+                        <td><code>{{request.path.[2]}}</code> &rarr; <code>42</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>{{request.query.param}}</code></td>
+                        <td>Query parameter value</td>
+                        <td><code>{{request.query.page}}</code> &rarr; <code>1</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>{{request.headers.Name}}</code></td>
+                        <td>Request header value</td>
+                        <td><code>{{request.headers.X-Request-Id}}</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>{{request.body}}</code></td>
+                        <td>Raw request body</td>
+                        <td>Full body string</td>
+                    </tr>
+                    <tr>
+                        <td><code>{{jsonPath request.body '$.field'}}</code></td>
+                        <td>Extract JSON field from body</td>
+                        <td>Dynamic field extraction</td>
+                    </tr>
+                    <tr>
+                        <td><code>{{now}}</code></td>
+                        <td>Current timestamp</td>
+                        <td><code>2026-04-01T10:30:00Z</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>{{randomValue type='UUID'}}</code></td>
+                        <td>Generate random UUID</td>
+                        <td><code>a1b2c3d4-e5f6-...</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>{{math 1 '+' 1}}</code></td>
+                        <td>Basic arithmetic</td>
+                        <td><code>2</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Advanced Templating Example: Echo Service</h3>
+<pre><code>{
+    "request": {
+        "method": "POST",
+        "urlPath": "/api/echo"
+    },
+    "response": {
+        "status": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": "{\n  \"echo\": {\n    \"method\": \"{{request.method}}\",\n    \"url\": \"{{request.url}}\",\n    \"body\": {{jsonPath request.body '$'}},\n    \"timestamp\": \"{{now format='yyyy-MM-dd\\'T\\'HH:mm:ss.SSSZ'}}\",\n    \"correlationId\": \"{{randomValue type='UUID'}}\"\n  }\n}",
+        "transformers": ["response-template"]
+    }
+}</code></pre>
+
+            <h2 id="record-playback">4.4 Record &amp; Playback</h2>
+
+            <p>WireMock can act as a proxy, recording real API interactions and saving them as stub mappings for future playback. This is the fastest way to build a realistic set of virtual service responses.</p>
+
+            <h3>Recording via CLI</h3>
+<pre><code># Start WireMock in recording mode, proxying to the real API
+java -jar wiremock.jar \
+  --port 8080 \
+  --proxy-all="https://api.real-service.com" \
+  --record-mappings \
+  --verbose</code></pre>
+
+            <p>All requests routed through WireMock will be forwarded to the real API. Both the request pattern and the response are saved as JSON in the <code>mappings/</code> and <code>__files/</code> directories.</p>
+
+            <h3>Recording via REST API</h3>
+<pre><code># Start recording
+curl -X POST http://localhost:8080/__admin/recordings/start \
+  -H "Content-Type: application/json" \
+  -d '{
+    "targetBaseUrl": "https://api.real-service.com",
+    "filters": {
+        "urlPathPattern": "/api/.*"
+    },
+    "captureHeaders": {
+        "Content-Type": {},
+        "Accept": {}
+    },
+    "requestBodyPattern": {
+        "matcher": "equalToJson",
+        "ignoreArrayOrder": true,
+        "ignoreExtraElements": true
+    }
+  }'
+
+# ... run your tests or make API calls ...
+
+# Stop recording and save mappings
+curl -X POST http://localhost:8080/__admin/recordings/stop</code></pre>
+
+            <div class="warning-box">
+                <p><strong>Important:</strong> After recording, review the generated mappings to remove sensitive data (API keys, tokens, PII) before committing to source control. Use response templating to replace hardcoded values with dynamic placeholders.</p>
+            </div>
+
+            <h2 id="stateful-behavior">4.5 Stateful Behavior (Scenarios)</h2>
+
+            <p>WireMock scenarios allow you to model stateful interactions where the response changes based on the sequence of requests. This is essential for testing workflows like order processing, authentication flows, or multi-step wizards.</p>
+
+<pre><code>// Scenario: Order lifecycle
+// State 1: Order is "PENDING" when first created
+stubFor(get(urlPathEqualTo("/api/orders/100"))
+    .inScenario("Order Lifecycle")
+    .whenScenarioStateIs(Scenario.STARTED)
+    .willReturn(aResponse()
+        .withStatus(200)
+        .withBody("{\"orderId\": 100, \"status\": \"PENDING\"}")));
+
+// Transition: Confirming the order moves state to "CONFIRMED"
+stubFor(post(urlPathEqualTo("/api/orders/100/confirm"))
+    .inScenario("Order Lifecycle")
+    .whenScenarioStateIs(Scenario.STARTED)
+    .willSetStateTo("confirmed")
+    .willReturn(aResponse().withStatus(200)));
+
+// State 2: After confirmation, order shows as "CONFIRMED"
+stubFor(get(urlPathEqualTo("/api/orders/100"))
+    .inScenario("Order Lifecycle")
+    .whenScenarioStateIs("confirmed")
+    .willReturn(aResponse()
+        .withStatus(200)
+        .withBody("{\"orderId\": 100, \"status\": \"CONFIRMED\"}")));
+
+// Transition: Shipping the order moves state to "SHIPPED"
+stubFor(post(urlPathEqualTo("/api/orders/100/ship"))
+    .inScenario("Order Lifecycle")
+    .whenScenarioStateIs("confirmed")
+    .willSetStateTo("shipped")
+    .willReturn(aResponse().withStatus(200)));
+
+// State 3: After shipping, order shows as "SHIPPED"
+stubFor(get(urlPathEqualTo("/api/orders/100"))
+    .inScenario("Order Lifecycle")
+    .whenScenarioStateIs("shipped")
+    .willReturn(aResponse()
+        .withStatus(200)
+        .withBody("{\"orderId\": 100, \"status\": \"SHIPPED\"}")));</code></pre>
+
+            <h2 id="fault-simulation">4.6 Fault &amp; Delay Simulation</h2>
+
+            <p>Testing how your application handles failures is critical for resilience. WireMock allows you to simulate a wide range of network and service failures.</p>
+
+            <h3>Delays</h3>
+<pre><code>// Fixed delay (milliseconds)
+stubFor(get(urlPathEqualTo("/api/slow-endpoint"))
+    .willReturn(ok()
+        .withFixedDelay(3000)));  // 3 second delay
+
+// Random delay (uniform distribution)
+stubFor(get(urlPathEqualTo("/api/variable-latency"))
+    .willReturn(ok()
+        .withUniformRandomDelay(500, 2000)));  // 500ms - 2000ms
+
+// Log-normal delay (realistic latency distribution)
+stubFor(get(urlPathEqualTo("/api/realistic-latency"))
+    .willReturn(ok()
+        .withLogNormalRandomDelay(90, 0.4)));  // median 90ms
+
+// Chunked dribble delay (slow response body delivery)
+stubFor(get(urlPathEqualTo("/api/slow-download"))
+    .willReturn(ok()
+        .withBody("large response body here...")
+        .withChunkedDribbleDelay(5, 5000)));  // 5 chunks over 5 seconds</code></pre>
+
+            <h3>Faults</h3>
+<pre><code>// Connection reset (TCP RST)
+stubFor(get(urlPathEqualTo("/api/connection-reset"))
+    .willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
+
+// Empty response (connection closed without data)
+stubFor(get(urlPathEqualTo("/api/empty-response"))
+    .willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
+
+// Malformed response (random garbage bytes)
+stubFor(get(urlPathEqualTo("/api/garbage"))
+    .willReturn(aResponse().withFault(Fault.MALFORMED_RESPONSE_CHUNK)));</code></pre>
+
+            <h3>JSON Fault Configuration</h3>
+<pre><code>{
+    "request": {
+        "method": "GET",
+        "urlPath": "/api/timeout-simulation"
+    },
+    "response": {
+        "status": 504,
+        "fixedDelayMilliseconds": 30000,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "jsonBody": {
+            "error": "Gateway Timeout",
+            "message": "Upstream service did not respond in time"
+        }
+    }
+}</code></pre>
+
+            <h2 id="verification">4.7 Request Verification</h2>
+
+            <p>WireMock keeps a journal of all incoming requests, allowing you to verify that specific interactions occurred during a test.</p>
+
+            <h3>Programmatic Verification (Java)</h3>
+<pre><code>// Verify a request was made exactly once
+verify(1, getRequestedFor(urlPathEqualTo("/api/users/42"))
+    .withHeader("Accept", equalTo("application/json")));
+
+// Verify a POST was made with specific body content
+verify(postRequestedFor(urlPathEqualTo("/api/orders"))
+    .withRequestBody(matchingJsonPath("$.customerId", equalTo("CUST-001")))
+    .withRequestBody(matchingJsonPath("$.items.length()", equalTo("3"))));
+
+// Verify no requests were made to a specific endpoint
+verify(0, deleteRequestedFor(urlPathMatching("/api/users/.*")));
+
+// Verify request timing
+verify(getRequestedFor(urlPathEqualTo("/api/health"))
+    .withHeader("X-Correlation-Id", matching(".+")));
+
+// Get all requests for inspection
+List&lt;LoggedRequest&gt; requests = findAll(
+    getRequestedFor(urlPathMatching("/api/.*")));
+assertThat(requests).hasSize(5);</code></pre>
+
+            <h3>REST API Verification</h3>
+<pre><code># Count requests to an endpoint
+curl -X POST http://localhost:8080/__admin/requests/count \
+  -H "Content-Type: application/json" \
+  -d '{
+    "method": "GET",
+    "urlPathPattern": "/api/users/.*"
+  }'
+
+# Find all logged requests
+curl http://localhost:8080/__admin/requests
+
+# Find unmatched requests (useful for debugging)
+curl http://localhost:8080/__admin/requests/unmatched</code></pre>
+
+
+            <!-- ============================================================ -->
+            <!-- SECTION 5: TESTING STRATEGIES -->
+            <!-- ============================================================ -->
+            <h1 id="testing-strategies">5. Testing Strategies with WireMock</h1>
+
+            <h2 id="unit-testing">5.1 Unit / Component Testing</h2>
+
+            <p>Use WireMock to isolate components that make HTTP calls to external services. This gives you the speed of a unit test with the confidence of testing real HTTP interactions.</p>
+
+            <div class="diagram">
+┌──────────────────────────────────────────────────────────────┐
+│                     Test Process (JVM)                       │
+│                                                              │
+│  ┌──────────────┐    HTTP     ┌──────────────────────────┐  │
+│  │  Component    │ ─────────▶ │  WireMock (embedded)     │  │
+│  │  Under Test   │ ◀───────── │  Port: dynamic           │  │
+│  └──────────────┘             │  Lifecycle: per-test     │  │
+│                               └──────────────────────────┘  │
+└──────────────────────────────────────────────────────────────┘
+            </div>
+
+<pre><code>@WireMockTest(httpPort = 0)  // dynamic port
+class PaymentGatewayClientTest {
+
+    @Test
+    void shouldHandlePaymentApproval(WireMockRuntimeInfo wmInfo) {
+        stubFor(post("/api/payments/charge")
+            .willReturn(okJson("""
+                {"transactionId": "TXN-001", "status": "APPROVED"}
+            """)));
+
+        PaymentClient client = new PaymentClient(wmInfo.getHttpBaseUrl());
+        PaymentResult result = client.charge(new PaymentRequest("100.00", "USD"));
+
+        assertThat(result.getStatus()).isEqualTo("APPROVED");
+    }
+
+    @Test
+    void shouldHandlePaymentDecline(WireMockRuntimeInfo wmInfo) {
+        stubFor(post("/api/payments/charge")
+            .willReturn(jsonResponse("""
+                {"transactionId": "TXN-002", "status": "DECLINED", "reason": "Insufficient funds"}
+            """, 402)));
+
+        PaymentClient client = new PaymentClient(wmInfo.getHttpBaseUrl());
+
+        assertThatThrownBy(() -&gt; client.charge(new PaymentRequest("100.00", "USD")))
+            .isInstanceOf(PaymentDeclinedException.class)
+            .hasMessageContaining("Insufficient funds");
+    }
+
+    @Test
+    void shouldHandleServiceTimeout(WireMockRuntimeInfo wmInfo) {
+        stubFor(post("/api/payments/charge")
+            .willReturn(ok().withFixedDelay(10000)));  // 10s delay
+
+        PaymentClient client = new PaymentClient(wmInfo.getHttpBaseUrl());
+        client.setTimeoutMs(2000);  // 2s timeout
+
+        assertThatThrownBy(() -&gt; client.charge(new PaymentRequest("100.00", "USD")))
+            .isInstanceOf(TimeoutException.class);
+    }
+}</code></pre>
+
+            <h2 id="integration-testing">5.2 Integration Testing</h2>
+
+            <p>For integration tests, run WireMock as a standalone server alongside your application (or via Docker Compose). This tests the full application stack while controlling external dependencies.</p>
+
+            <h3>Spring Boot Integration Test</h3>
+<pre><code>@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@WireMockTest(httpPort = 9090)
+class OrderServiceIntegrationTest {
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("payment.service.url", () -&gt; "http://localhost:9090");
+        registry.add("inventory.service.url", () -&gt; "http://localhost:9090");
+    }
+
+    @Test
+    void shouldCreateOrderSuccessfully() {
+        // Stub the payment service
+        stubFor(post(urlPathEqualTo("/api/payments/authorize"))
+            .willReturn(okJson("{\"authorized\": true, \"authCode\": \"AUTH-999\"}")));
+
+        // Stub the inventory service
+        stubFor(post(urlPathEqualTo("/api/inventory/reserve"))
+            .willReturn(okJson("{\"reserved\": true, \"reservationId\": \"RES-555\"}")));
+
+        // Call the application's order endpoint
+        OrderRequest orderRequest = new OrderRequest("CUST-001",
+            List.of(new OrderItem("PROD-A", 2)));
+
+        ResponseEntity&lt;OrderResponse&gt; response = restTemplate
+            .postForEntity("/api/orders", orderRequest, OrderResponse.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody().getStatus()).isEqualTo("CONFIRMED");
+
+        // Verify interactions with downstream services
+        verify(1, postRequestedFor(urlPathEqualTo("/api/payments/authorize")));
+        verify(1, postRequestedFor(urlPathEqualTo("/api/inventory/reserve")));
+    }
+}</code></pre>
+
+            <h2 id="contract-testing">5.3 Consumer-Driven Contract Testing</h2>
+
+            <p>WireMock can be used as part of a consumer-driven contract testing workflow. The consumer team records their expectations as WireMock stubs, which serve as a contract the provider must satisfy.</p>
+
+            <div class="diagram">
+┌──────────────────┐                              ┌──────────────────┐
+│   Consumer Team  │                              │   Provider Team  │
+│                  │                              │                  │
+│  1. Define stubs │    Shared Contract (JSON)    │  3. Validate API │
+│     (WireMock    │ ──────────────────────────▶  │     against      │
+│      mappings)   │                              │     contract     │
+│                  │                              │     stubs        │
+│  2. Test against │                              │                  │
+│     WireMock     │                              │  4. Run provider │
+│                  │                              │     tests        │
+└──────────────────┘                              └──────────────────┘
+            </div>
+
+<pre><code>// Consumer side: define expected interactions
+stubFor(get(urlPathEqualTo("/api/products/SKU-100"))
+    .willReturn(okJson("""
+        {
+            "sku": "SKU-100",
+            "name": "Widget Pro",
+            "price": 29.99,
+            "inStock": true
+        }
+    """)));
+
+// Provider side: validate real API matches the contract
+// Load consumer's WireMock mappings and verify the real API
+// returns responses matching those contracts</code></pre>
+
+            <h2 id="performance-testing">5.4 Performance &amp; Resilience Testing</h2>
+
+            <p>WireMock enables controlled performance and resilience testing by simulating various failure modes and latency patterns:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test Scenario</th>
+                        <th>WireMock Configuration</th>
+                        <th>What It Validates</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>High latency</strong></td>
+                        <td><code>withFixedDelay(5000)</code></td>
+                        <td>Timeout handling, circuit breaker activation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Intermittent failures</strong></td>
+                        <td>Scenario toggling between 200 and 503</td>
+                        <td>Retry logic, exponential backoff</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Connection drops</strong></td>
+                        <td><code>withFault(CONNECTION_RESET_BY_PEER)</code></td>
+                        <td>Connection pool recovery</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Rate limiting</strong></td>
+                        <td>Return 429 with <code>Retry-After</code> header</td>
+                        <td>Rate limit handling, backoff strategy</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Partial responses</strong></td>
+                        <td><code>withChunkedDribbleDelay</code></td>
+                        <td>Streaming/chunked response handling</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Service degradation</strong></td>
+                        <td>Scenario: healthy &rarr; degraded &rarr; down</td>
+                        <td>Graceful degradation, fallback mechanisms</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Circuit Breaker Testing Example</h3>
+<pre><code>@Test
+void shouldOpenCircuitBreakerAfterConsecutiveFailures() {
+    // First 3 calls: service returns 503
+    stubFor(get(urlPathEqualTo("/api/data"))
+        .inScenario("circuit-breaker")
+        .whenScenarioStateIs(Scenario.STARTED)
+        .willReturn(serviceUnavailable())
+        .willSetStateTo("failure-1"));
+
+    stubFor(get(urlPathEqualTo("/api/data"))
+        .inScenario("circuit-breaker")
+        .whenScenarioStateIs("failure-1")
+        .willReturn(serviceUnavailable())
+        .willSetStateTo("failure-2"));
+
+    stubFor(get(urlPathEqualTo("/api/data"))
+        .inScenario("circuit-breaker")
+        .whenScenarioStateIs("failure-2")
+        .willReturn(serviceUnavailable())
+        .willSetStateTo("failure-3"));
+
+    // 4th call onwards: service is healthy again
+    stubFor(get(urlPathEqualTo("/api/data"))
+        .inScenario("circuit-breaker")
+        .whenScenarioStateIs("failure-3")
+        .willReturn(ok("{\"data\": \"recovered\"}")));
+
+    DataClient client = new DataClient(wireMock.baseUrl());
+
+    // Trigger failures
+    assertThrows(ServiceException.class, () -&gt; client.fetchData());
+    assertThrows(ServiceException.class, () -&gt; client.fetchData());
+    assertThrows(ServiceException.class, () -&gt; client.fetchData());
+
+    // Circuit breaker should be OPEN - returns fallback without calling service
+    DataResponse fallback = client.fetchData();
+    assertThat(fallback.getSource()).isEqualTo("CACHE");
+
+    // Verify WireMock only received 3 requests (circuit breaker prevented the 4th)
+    verify(3, getRequestedFor(urlPathEqualTo("/api/data")));
+}</code></pre>
+
+
+            <!-- ============================================================ -->
+            <!-- SECTION 6: CI/CD INTEGRATION -->
+            <!-- ============================================================ -->
+            <h1 id="cicd-pipeline">6. CI/CD Integration with GitHub Actions</h1>
+
+            <h2 id="cicd-strategy">6.1 Pipeline Strategy</h2>
+
+            <p>There are two primary approaches to integrating WireMock into a CI/CD pipeline:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Approach</th>
+                        <th>How</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Embedded (JUnit)</strong></td>
+                        <td>WireMock starts/stops within the test JVM</td>
+                        <td>Java projects, unit/component tests, simplest setup</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Standalone JAR</strong></td>
+                        <td>Download JAR and start as a background process</td>
+                        <td>Multi-language projects, any stack with HTTP client tests</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Docker Service</strong></td>
+                        <td>Run as a GitHub Actions service container</td>
+                        <td>Docker Compose workflows, complex multi-service setups</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="standalone-workflow">6.2 Standalone WireMock Workflow</h2>
+
+            <p>This workflow downloads WireMock, starts it as a background process, runs tests, and then stops it.</p>
+
+<pre><code># .github/workflows/integration-tests.yml
+name: Integration Tests with WireMock
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  WIREMOCK_VERSION: "3.9.2"
+  WIREMOCK_PORT: 8080
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      # ---- WireMock Setup ----
+      - name: Cache WireMock JAR
+        uses: actions/cache@v4
+        with:
+          path: wiremock.jar
+          key: wiremock-${{ env.WIREMOCK_VERSION }}
+
+      - name: Download WireMock
+        run: |
+          if [ ! -f wiremock.jar ]; then
+            curl -L -o wiremock.jar \
+              "https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/${WIREMOCK_VERSION}/wiremock-standalone-${WIREMOCK_VERSION}.jar"
+          fi
+
+      - name: Start WireMock
+        run: |
+          java -jar wiremock.jar \
+            --port ${{ env.WIREMOCK_PORT }} \
+            --root-dir ./wiremock-config \
+            --global-response-templating \
+            --verbose &
+
+          # Wait for WireMock to be ready
+          echo "Waiting for WireMock to start..."
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:${{ env.WIREMOCK_PORT }}/__admin/mappings > /dev/null 2>&1; then
+              echo "WireMock is ready!"
+              break
+            fi
+            echo "Attempt $i/30 - waiting..."
+            sleep 1
+          done
+
+      - name: Verify WireMock is running
+        run: |
+          curl -s http://localhost:${{ env.WIREMOCK_PORT }}/__admin/mappings | head -20
+          echo ""
+          echo "Loaded mappings count:"
+          curl -s http://localhost:${{ env.WIREMOCK_PORT }}/__admin/mappings/count
+
+      # ---- Run Tests ----
+      - name: Run integration tests
+        run: mvn verify -Dtest.wiremock.url=http://localhost:${{ env.WIREMOCK_PORT }}
+        env:
+          EXTERNAL_API_URL: http://localhost:${{ env.WIREMOCK_PORT }}
+
+      # ---- Diagnostics (on failure) ----
+      - name: Dump WireMock logs on failure
+        if: failure()
+        run: |
+          echo "=== Unmatched Requests ==="
+          curl -s http://localhost:${{ env.WIREMOCK_PORT }}/__admin/requests/unmatched
+          echo ""
+          echo "=== All Requests ==="
+          curl -s http://localhost:${{ env.WIREMOCK_PORT }}/__admin/requests
+          echo ""
+          echo "=== Near Misses ==="
+          curl -s http://localhost:${{ env.WIREMOCK_PORT }}/__admin/near-misses/request</code></pre>
+
+            <h2 id="docker-workflow">6.3 Docker-Based Workflow</h2>
+
+            <p>Use GitHub Actions service containers to run WireMock as a Docker container alongside your tests.</p>
+
+<pre><code># .github/workflows/docker-integration-tests.yml
+name: Integration Tests (Docker WireMock)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      wiremock:
+        image: wiremock/wiremock:3.9.2
+        ports:
+          - 8080:8080
+        options: >-
+          --health-cmd "curl -f http://localhost:8080/__admin/mappings || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        volumes:
+          - ${{ github.workspace }}/wiremock-config/mappings:/home/wiremock/mappings
+          - ${{ github.workspace }}/wiremock-config/__files:/home/wiremock/__files
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Wait for WireMock service
+        run: |
+          echo "Waiting for WireMock service..."
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:8080/__admin/mappings > /dev/null 2>&1; then
+              echo "WireMock is ready!"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Load additional mappings (optional runtime stubs)
+        run: |
+          # Load any environment-specific stubs via the REST API
+          for file in wiremock-config/ci-mappings/*.json; do
+            if [ -f "$file" ]; then
+              echo "Loading mapping: $file"
+              curl -s -X POST http://localhost:8080/__admin/mappings \
+                -H "Content-Type: application/json" \
+                -d @"$file"
+            fi
+          done
+
+      - name: Run integration tests
+        run: mvn verify -Pintegration-tests
+        env:
+          PAYMENT_SERVICE_URL: http://localhost:8080
+          INVENTORY_SERVICE_URL: http://localhost:8080
+
+      - name: Collect WireMock diagnostics
+        if: failure()
+        run: |
+          echo "=== Unmatched Requests ==="
+          curl -s http://localhost:8080/__admin/requests/unmatched | jq '.'
+          echo "=== Near Misses ==="
+          curl -s http://localhost:8080/__admin/near-misses/request | jq '.'</code></pre>
+
+            <div class="info-box">
+                <p><strong>Note:</strong> GitHub Actions service containers run in the same Docker network as the runner. Access them via <code>localhost</code> on the mapped port. Volume mounts require the files to exist in the workspace before the service starts, so the <code>checkout</code> step must come first.</p>
+            </div>
+
+            <h2 id="mappings-management">6.4 Managing Mappings in Source Control</h2>
+
+            <p>Store your WireMock configuration alongside your test code for version control and team collaboration:</p>
+
+            <div class="file-tree">
+<span class="folder">project-root/</span>
+├── <span class="folder">src/</span>
+│   ├── <span class="folder">main/</span>
+│   └── <span class="folder">test/</span>
+├── <span class="folder">wiremock-config/</span>                 <span class="comment"># WireMock root directory</span>
+│   ├── <span class="folder">mappings/</span>                    <span class="comment"># Stub mapping files</span>
+│   │   ├── <span class="folder">payment-service/</span>         <span class="comment"># Organized by service</span>
+│   │   │   ├── <span class="file">charge-approved.json</span>
+│   │   │   ├── <span class="file">charge-declined.json</span>
+│   │   │   └── <span class="file">charge-timeout.json</span>
+│   │   ├── <span class="folder">inventory-service/</span>
+│   │   │   ├── <span class="file">check-stock-available.json</span>
+│   │   │   └── <span class="file">check-stock-unavailable.json</span>
+│   │   └── <span class="folder">user-service/</span>
+│   │       ├── <span class="file">get-user.json</span>
+│   │       └── <span class="file">create-user.json</span>
+│   ├── <span class="folder">__files/</span>                     <span class="comment"># Response body files</span>
+│   │   ├── <span class="file">user-list-response.json</span>
+│   │   └── <span class="file">large-payload.json</span>
+│   └── <span class="folder">ci-mappings/</span>                 <span class="comment"># CI-specific overrides</span>
+│       └── <span class="file">health-check.json</span>
+├── <span class="folder">.github/</span>
+│   └── <span class="folder">workflows/</span>
+│       └── <span class="file">integration-tests.yml</span>
+└── <span class="file">pom.xml</span>
+            </div>
+
+            <h3>Naming Conventions for Mappings</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Convention</th>
+                        <th>Example</th>
+                        <th>Benefit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Service-based folders</td>
+                        <td><code>mappings/payment-service/</code></td>
+                        <td>Clear ownership, easy to find</td>
+                    </tr>
+                    <tr>
+                        <td>Descriptive file names</td>
+                        <td><code>charge-declined-insufficient-funds.json</code></td>
+                        <td>Self-documenting</td>
+                    </tr>
+                    <tr>
+                        <td>Scenario prefixes</td>
+                        <td><code>order-lifecycle-01-pending.json</code></td>
+                        <td>Clear ordering for stateful flows</td>
+                    </tr>
+                    <tr>
+                        <td>Error case suffixes</td>
+                        <td><code>get-user-404-not-found.json</code></td>
+                        <td>Quickly identify error stubs</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="advanced-pipeline">6.5 Advanced Pipeline Patterns</h2>
+
+            <h3>Pattern 1: Matrix Testing with Multiple API Versions</h3>
+<pre><code>jobs:
+  test-api-versions:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        api-version: [v1, v2, v3]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start WireMock with version-specific mappings
+        run: |
+          java -jar wiremock.jar \
+            --port 8080 \
+            --root-dir ./wiremock-config/${{ matrix.api-version }} \
+            --global-response-templating &
+          sleep 5
+
+      - name: Run tests for API ${{ matrix.api-version }}
+        run: mvn verify -Dapi.version=${{ matrix.api-version }}
+        env:
+          API_BASE_URL: http://localhost:8080</code></pre>
+
+            <h3>Pattern 2: Record in CI, Commit Updated Mappings</h3>
+<pre><code>  record-api-interactions:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start WireMock in recording mode
+        run: |
+          java -jar wiremock.jar \
+            --port 8080 \
+            --proxy-all="https://api.staging.example.com" \
+            --record-mappings \
+            --root-dir ./wiremock-config &
+          sleep 5
+
+      - name: Run test suite (traffic is recorded)
+        run: mvn verify -Precord-mode
+        env:
+          API_BASE_URL: http://localhost:8080
+
+      - name: Stop WireMock
+        run: curl -X POST http://localhost:8080/__admin/shutdown
+
+      - name: Commit updated mappings
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update WireMock mappings from recording"
+          file_pattern: "wiremock-config/mappings/*.json wiremock-config/__files/*"</code></pre>
+
+            <h3>Pattern 3: Multi-Service Docker Compose</h3>
+<pre><code># docker-compose.wiremock.yml
+services:
+  wiremock-payments:
+    image: wiremock/wiremock:3.9.2
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./wiremock-config/payment-service/mappings:/home/wiremock/mappings
+      - ./wiremock-config/payment-service/__files:/home/wiremock/__files
+    command: ["--global-response-templating", "--verbose"]
+
+  wiremock-inventory:
+    image: wiremock/wiremock:3.9.2
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./wiremock-config/inventory-service/mappings:/home/wiremock/mappings
+      - ./wiremock-config/inventory-service/__files:/home/wiremock/__files
+    command: ["--global-response-templating", "--verbose"]
+
+  wiremock-notifications:
+    image: wiremock/wiremock:3.9.2
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./wiremock-config/notification-service/mappings:/home/wiremock/mappings
+      - ./wiremock-config/notification-service/__files:/home/wiremock/__files
+    command: ["--global-response-templating", "--verbose"]</code></pre>
+
+            <p>Then in GitHub Actions:</p>
+
+<pre><code>      - name: Start all virtual services
+        run: docker compose -f docker-compose.wiremock.yml up -d
+
+      - name: Wait for all services
+        run: |
+          for port in 8081 8082 8083; do
+            echo "Waiting for WireMock on port $port..."
+            for i in $(seq 1 30); do
+              curl -s "http://localhost:$port/__admin/mappings" > /dev/null 2>&1 && break
+              sleep 1
+            done
+          done
+
+      - name: Run integration tests
+        run: mvn verify -Pintegration
+        env:
+          PAYMENT_URL: http://localhost:8081
+          INVENTORY_URL: http://localhost:8082
+          NOTIFICATION_URL: http://localhost:8083
+
+      - name: Tear down virtual services
+        if: always()
+        run: docker compose -f docker-compose.wiremock.yml down</code></pre>
+
+            <h3>Pattern 4: WireMock Health Check as Quality Gate</h3>
+<pre><code>      - name: Verify no unmatched requests
+        run: |
+          UNMATCHED=$(curl -s http://localhost:8080/__admin/requests/unmatched | jq '.requests | length')
+          if [ "$UNMATCHED" -gt 0 ]; then
+            echo "::error::Found $UNMATCHED unmatched requests!"
+            curl -s http://localhost:8080/__admin/requests/unmatched | jq '.'
+            echo ""
+            echo "=== Near Misses ==="
+            curl -s http://localhost:8080/__admin/near-misses/request | jq '.'
+            exit 1
+          fi
+          echo "All requests matched successfully."</code></pre>
+
+
+            <!-- ============================================================ -->
+            <!-- SECTION 7: BEST PRACTICES -->
+            <!-- ============================================================ -->
+            <h1 id="best-practices">7. Best Practices &amp; Anti-Patterns</h1>
+
+            <h2>Best Practices</h2>
+
+            <div class="success-box">
+                <ul>
+                    <li><strong>Version your mappings:</strong> Store all WireMock configurations in source control alongside your tests</li>
+                    <li><strong>Organize by service:</strong> Use separate directories per external service for clarity and ownership</li>
+                    <li><strong>Use response templating:</strong> Avoid hardcoding dynamic values; use Handlebars templates for dates, IDs, and request-derived data</li>
+                    <li><strong>Set priorities:</strong> Use the <code>priority</code> field to control match order, especially when using regex patterns (lower number = higher priority)</li>
+                    <li><strong>Verify interactions:</strong> Always verify that expected requests were made &mdash; don't just test the happy path response</li>
+                    <li><strong>Test failure modes:</strong> Use fault injection and delays to validate resilience patterns (retries, circuit breakers, timeouts)</li>
+                    <li><strong>Use dynamic ports in tests:</strong> Avoid port conflicts in CI by using <code>dynamicPort()</code> for embedded WireMock</li>
+                    <li><strong>Clean up between tests:</strong> Use <code>@BeforeEach</code> or <code>WireMock.reset()</code> to ensure test isolation</li>
+                    <li><strong>Record from real APIs periodically:</strong> Keep your virtual services in sync with actual API behavior</li>
+                    <li><strong>Add diagnostics on failure:</strong> Log unmatched requests and near misses in CI to accelerate debugging</li>
+                </ul>
+            </div>
+
+            <h2>Anti-Patterns to Avoid</h2>
+
+            <div class="danger-box">
+                <p><strong>Common mistakes that reduce the value of service virtualization:</strong></p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Anti-Pattern</th>
+                        <th>Why It's Harmful</th>
+                        <th>Better Approach</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Over-matching</strong></td>
+                        <td>Overly specific stubs break when irrelevant request details change</td>
+                        <td>Match on the minimum necessary criteria (URL path, key headers, essential body fields)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stale mappings</strong></td>
+                        <td>Virtual service drifts from real API, giving false confidence</td>
+                        <td>Periodically re-record from the real API; add contract tests</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hardcoded IDs/dates</strong></td>
+                        <td>Tests become brittle and time-sensitive</td>
+                        <td>Use response templating with <code>{{randomValue}}</code> and <code>{{now}}</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Single global WireMock</strong></td>
+                        <td>Shared state causes test interference and flakiness</td>
+                        <td>Use per-test or per-class WireMock instances with dynamic ports</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No verification</strong></td>
+                        <td>Tests pass even when the application doesn't call the API</td>
+                        <td>Always verify expected requests were made with correct parameters</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Testing only happy paths</strong></td>
+                        <td>Misses the primary value of service virtualization: controlled failure testing</td>
+                        <td>Create stubs for 4xx, 5xx, timeouts, malformed responses, and connection failures</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Secrets in mappings</strong></td>
+                        <td>API keys and tokens leaked in source control</td>
+                        <td>Use pattern matching for auth headers (<code>matches: "Bearer .+"</code>) instead of exact values</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <!-- ============================================================ -->
+            <!-- SECTION 8: REFERENCES -->
+            <!-- ============================================================ -->
+            <h1 id="references">8. References &amp; Resources</h1>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Resource</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>WireMock Official Documentation</strong></td>
+                        <td><a href="https://wiremock.org/docs/">wiremock.org/docs</a> &mdash; Comprehensive reference for all features</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WireMock GitHub Repository</strong></td>
+                        <td><a href="https://github.com/wiremock/wiremock">github.com/wiremock/wiremock</a> &mdash; Source code and issue tracker</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WireMock Docker Hub</strong></td>
+                        <td><a href="https://hub.docker.com/r/wiremock/wiremock">hub.docker.com/r/wiremock/wiremock</a> &mdash; Official Docker images</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WireMock Standalone JAR</strong></td>
+                        <td><a href="https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/">Maven Central</a> &mdash; Download standalone JAR</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GitHub Actions Documentation</strong></td>
+                        <td><a href="https://docs.github.com/en/actions">docs.github.com/actions</a> &mdash; Workflow syntax and service containers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Response Templating</strong></td>
+                        <td><a href="https://wiremock.org/docs/response-templating/">wiremock.org/docs/response-templating</a> &mdash; Handlebars template reference</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stateful Behavior</strong></td>
+                        <td><a href="https://wiremock.org/docs/stateful-behaviour/">wiremock.org/docs/stateful-behaviour</a> &mdash; Scenarios guide</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Record &amp; Playback</strong></td>
+                        <td><a href="https://wiremock.org/docs/record-playback/">wiremock.org/docs/record-playback</a> &mdash; Recording real API interactions</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <p><strong>Document Version:</strong> 1.0 &nbsp;|&nbsp; <strong>Last Updated:</strong> April 2026 &nbsp;|&nbsp; <strong>Author:</strong> QA Engineering Team</p>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
