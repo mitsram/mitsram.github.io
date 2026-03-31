@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOAP (Simple Object Access Protocol) - Comprehensive Guide</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        header .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            margin-bottom: 0.5rem;
+        }
+
+        header .meta {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--primary-dark);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin: 1.25rem 0 0.5rem;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        li p {
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: var(--bg-secondary);
+            transition: background 0.2s;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        code {
+            background: var(--bg-tertiary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: var(--primary-dark);
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            line-height: 1.5;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .first-section {
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin: 0 0 2rem 0;
+            border-radius: 8px;
+        }
+
+        .info-box {
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--secondary);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info-box p {
+            margin-bottom: 0;
+        }
+
+        .warning-box {
+            background: #fffbeb;
+            border-left: 4px solid var(--warning);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box p {
+            margin-bottom: 0;
+        }
+
+        .tip-box {
+            background: #ecfdf5;
+            border-left: 4px solid var(--success);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tip-box p {
+            margin-bottom: 0;
+        }
+
+        .diagram-box {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            white-space: pre;
+            color: var(--text-primary);
+        }
+
+        .plantuml-container {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .plantuml-container img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .toc {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem 2rem;
+            margin: 1.5rem 0 2rem;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            color: var(--primary-dark);
+        }
+
+        .toc ol {
+            margin: 0.75rem 0 0 1.5rem;
+        }
+
+        .toc li {
+            margin-bottom: 0.35rem;
+        }
+
+        .toc a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-blue {
+            background: #dbeafe;
+            color: var(--primary-dark);
+        }
+
+        .badge-green {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-orange {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-card {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .comparison-card h4 {
+            margin-top: 0;
+            color: var(--primary-dark);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SOAP — Simple Object Access Protocol</h1>
+            <div class="subtitle">Comprehensive Guide: Concepts, Architecture &amp; Testing with Java</div>
+            <div class="meta">Version 1.0 | March 31, 2026</div>
+        </header>
+
+        <div class="content">
+
+            <!-- Table of Contents -->
+            <div class="toc">
+                <h3>Table of Contents</h3>
+                <ol>
+                    <li><a href="#what-is-soap">What Is SOAP?</a></li>
+                    <li><a href="#history">History &amp; Evolution</a></li>
+                    <li><a href="#how-it-works">How SOAP Works</a></li>
+                    <li><a href="#message-structure">SOAP Message Structure</a></li>
+                    <li><a href="#wsdl">WSDL — Web Services Description Language</a></li>
+                    <li><a href="#soap-vs-rest">SOAP vs REST</a></li>
+                    <li><a href="#when-to-use">When to Use SOAP</a></li>
+                    <li><a href="#testing-overview">Testing SOAP Services — Overview</a></li>
+                    <li><a href="#java-tools">Java-Based Testing Tools</a></li>
+                    <li><a href="#testing-with-soapui">Testing with SoapUI (Java)</a></li>
+                    <li><a href="#testing-with-java-code">Testing with Java Code</a></li>
+                    <li><a href="#testing-with-rest-assured">Testing with REST Assured</a></li>
+                    <li><a href="#testing-with-karate">Testing with Karate DSL</a></li>
+                    <li><a href="#test-strategy">SOAP Test Strategy</a></li>
+                    <li><a href="#best-practices">Best Practices</a></li>
+                    <li><a href="#common-faults">Common SOAP Faults &amp; Troubleshooting</a></li>
+                    <li><a href="#security-testing">Security Testing for SOAP</a></li>
+                    <li><a href="#references">References</a></li>
+                </ol>
+            </div>
+
+            <!-- 1. What Is SOAP -->
+            <h1 id="what-is-soap">1. What Is SOAP?</h1>
+
+            <div class="first-section">
+                <p><strong>SOAP (Simple Object Access Protocol)</strong> is a messaging protocol specification for exchanging structured information in the implementation of web services. It uses <strong>XML</strong> as its message format and relies on application layer protocols — most commonly <strong>HTTP</strong> or <strong>SMTP</strong> — for message negotiation and transmission.</p>
+            </div>
+
+            <h3>Key Characteristics</h3>
+            <ul>
+                <li><strong>Protocol-based:</strong> SOAP is a strict protocol with a well-defined specification (W3C standard), not merely an architectural style.</li>
+                <li><strong>XML-only:</strong> All SOAP messages are encoded in XML, providing platform and language independence.</li>
+                <li><strong>Transport-agnostic:</strong> While HTTP is the most common transport, SOAP can work over SMTP, TCP, JMS, or any other protocol.</li>
+                <li><strong>Contract-driven:</strong> Services are described using WSDL (Web Services Description Language) files that act as a formal contract between provider and consumer.</li>
+                <li><strong>Built-in error handling:</strong> The SOAP Fault element provides a standardized mechanism for error reporting.</li>
+                <li><strong>Extensible:</strong> WS-* standards (WS-Security, WS-ReliableMessaging, WS-AtomicTransaction, etc.) extend SOAP's capabilities for enterprise use cases.</li>
+            </ul>
+
+            <h3>Core Standards</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Standard</th>
+                        <th>Purpose</th>
+                        <th>Maintained By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>SOAP 1.1 / 1.2</strong></td>
+                        <td>Message envelope and encoding rules</td>
+                        <td>W3C</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WSDL 1.1 / 2.0</strong></td>
+                        <td>Service interface description</td>
+                        <td>W3C</td>
+                    </tr>
+                    <tr>
+                        <td><strong>UDDI</strong></td>
+                        <td>Service registry and discovery</td>
+                        <td>OASIS</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WS-Security</strong></td>
+                        <td>Message-level security (encryption, signing)</td>
+                        <td>OASIS</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WS-ReliableMessaging</strong></td>
+                        <td>Guaranteed message delivery</td>
+                        <td>OASIS</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WS-AtomicTransaction</strong></td>
+                        <td>Distributed transaction support</td>
+                        <td>OASIS</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <!-- 2. History -->
+            <h1 id="history">2. History &amp; Evolution</h1>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Milestone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1998</strong></td>
+                        <td>XML-RPC created by Dave Winer (UserLand) and Microsoft — the precursor to SOAP.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>1999</strong></td>
+                        <td>SOAP 1.0 developed by Microsoft, DevelopMentor, and UserLand Software.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2000</strong></td>
+                        <td>SOAP 1.1 submitted to W3C as a W3C Note.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2003</strong></td>
+                        <td>SOAP 1.2 becomes a W3C Recommendation. The acronym is dropped — "SOAP" is now just a name.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2004–2010</strong></td>
+                        <td>WS-* standards mature (WS-Security, WS-Policy, WS-Addressing, etc.).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2010+</strong></td>
+                        <td>REST gains dominance for new APIs; SOAP remains prevalent in enterprise, financial, and government systems.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <!-- 3. How SOAP Works -->
+            <h1 id="how-it-works">3. How SOAP Works</h1>
+
+            <h3>Communication Flow</h3>
+            <p>SOAP follows a <strong>request-response</strong> model (though one-way messaging is also supported). Here is the typical flow:</p>
+
+            <div class="plantuml-container">
+                <div class="plantuml">
+@startuml
+skinparam backgroundColor transparent
+skinparam sequenceArrowThickness 2
+skinparam participantPadding 20
+skinparam sequenceGroupBorderColor #2563eb
+skinparam sequenceLifeLineBorderColor #475569
+skinparam participant {
+  BackgroundColor #dbeafe
+  BorderColor #2563eb
+  FontColor #1e40af
+}
+skinparam note {
+  BackgroundColor #f1f5f9
+  BorderColor #64748b
+}
+
+participant "Client\n(Consumer)" as C
+participant "Server\n(Provider)" as S
+
+C -> S : 1. Request WSDL (?wsdl)
+S --> C : Return WSDL contract
+note over C : 2. Construct SOAP\nXML Request
+C -> S : 3. HTTP POST with SOAP Envelope
+note over S : 4. Parse request &\nexecute business logic
+S --> C : 5. SOAP XML Response\n(or SOAP Fault)
+note over C : 6. Parse response &\nprocess result
+@enduml
+                </div>
+            </div>
+
+            <h3>Step-by-Step Explanation</h3>
+            <ol>
+                <li><strong>Service Discovery:</strong> The client retrieves the WSDL file (usually via a <code>?wsdl</code> URL) to learn about available operations, message formats, data types, and endpoint addresses.</li>
+                <li><strong>Request Construction:</strong> The client constructs a SOAP XML message with the proper envelope, headers, and body containing the operation name and parameters.</li>
+                <li><strong>Transport:</strong> The message is sent via HTTP POST (most common). The <code>Content-Type</code> header is set to <code>text/xml</code> (SOAP 1.1) or <code>application/soap+xml</code> (SOAP 1.2). A <code>SOAPAction</code> HTTP header identifies the operation.</li>
+                <li><strong>Server Processing:</strong> The server's SOAP engine deserializes the XML, routes to the appropriate service implementation, and executes the business logic.</li>
+                <li><strong>Response:</strong> The server packages the result (or fault) into a SOAP response envelope and sends it back.</li>
+                <li><strong>Client Processing:</strong> The client deserializes the response XML and processes the result.</li>
+            </ol>
+
+            <h3>Transport Bindings</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transport</th>
+                        <th>Use Case</th>
+                        <th>Content-Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>HTTP/HTTPS</strong></td>
+                        <td>Most common; synchronous request-response</td>
+                        <td><code>text/xml</code> (1.1) / <code>application/soap+xml</code> (1.2)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SMTP</strong></td>
+                        <td>Asynchronous messaging via email</td>
+                        <td><code>text/xml</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>JMS</strong></td>
+                        <td>Java Message Service queues — enterprise messaging</td>
+                        <td>Application-defined</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TCP</strong></td>
+                        <td>Raw socket communication for performance</td>
+                        <td>N/A</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <!-- 4. Message Structure -->
+            <h1 id="message-structure">4. SOAP Message Structure</h1>
+
+            <p>Every SOAP message is an XML document with a strict envelope structure:</p>
+
+            <div class="plantuml-container">
+                <div class="plantuml">
+@startuml
+skinparam backgroundColor transparent
+skinparam rectangleBorderThickness 2
+skinparam defaultFontSize 13
+
+skinparam rectangle {
+  RoundCorner 10
+}
+
+rectangle "**SOAP Envelope**" as envelope #dbeafe;line:2563eb;line.bold {
+  rectangle "**SOAP Header** (optional)" as header #f1f5f9;line:64748b {
+    rectangle "Header Block 1\n(e.g., WS-Security)" as hb1 #ffffff;line:94a3b8
+    rectangle "Header Block 2\n(e.g., WS-Addressing)" as hb2 #ffffff;line:94a3b8
+  }
+  rectangle "**SOAP Body**" as body #f1f5f9;line:64748b {
+    rectangle "Request / Response Payload (XML)\n\u2014 OR \u2014\nSOAP Fault" as payload #ffffff;line:94a3b8
+  }
+}
+
+hb1 -[hidden]right- hb2
+header -[hidden]down- body
+@enduml
+                </div>
+            </div>
+
+            <h3>4.1 SOAP Envelope</h3>
+            <p>The root element that identifies the XML document as a SOAP message.</p>
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;soap:Envelope
+    xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:ws="http://example.com/webservice"&gt;
+
+    &lt;soap:Header&gt;
+        &lt;!-- Optional headers --&gt;
+    &lt;/soap:Header&gt;
+
+    &lt;soap:Body&gt;
+        &lt;!-- Request or Response payload --&gt;
+    &lt;/soap:Body&gt;
+
+&lt;/soap:Envelope&gt;</code></pre>
+
+            <h3>4.2 SOAP Header (Optional)</h3>
+            <p>Contains metadata for processing — authentication tokens, transaction IDs, routing information, etc.</p>
+<pre><code>&lt;soap:Header&gt;
+    &lt;wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"&gt;
+        &lt;wsse:UsernameToken&gt;
+            &lt;wsse:Username&gt;admin&lt;/wsse:Username&gt;
+            &lt;wsse:Password Type="PasswordText"&gt;secret&lt;/wsse:Password&gt;
+        &lt;/wsse:UsernameToken&gt;
+    &lt;/wsse:Security&gt;
+&lt;/soap:Header&gt;</code></pre>
+
+            <h3>4.3 SOAP Body</h3>
+            <p>Contains the actual request or response data — the operation being called and its parameters.</p>
+
+            <h4>Request Example</h4>
+<pre><code>&lt;soap:Body&gt;
+    &lt;ws:GetUserDetails&gt;
+        &lt;ws:UserId&gt;12345&lt;/ws:UserId&gt;
+    &lt;/ws:GetUserDetails&gt;
+&lt;/soap:Body&gt;</code></pre>
+
+            <h4>Response Example</h4>
+<pre><code>&lt;soap:Body&gt;
+    &lt;ws:GetUserDetailsResponse&gt;
+        &lt;ws:User&gt;
+            &lt;ws:Id&gt;12345&lt;/ws:Id&gt;
+            &lt;ws:Name&gt;John Doe&lt;/ws:Name&gt;
+            &lt;ws:Email&gt;john.doe@example.com&lt;/ws:Email&gt;
+            &lt;ws:Role&gt;Admin&lt;/ws:Role&gt;
+        &lt;/ws:User&gt;
+    &lt;/ws:GetUserDetailsResponse&gt;
+&lt;/soap:Body&gt;</code></pre>
+
+            <h3>4.4 SOAP Fault</h3>
+            <p>A standardized error structure returned in the body when processing fails.</p>
+<pre><code>&lt;soap:Body&gt;
+    &lt;soap:Fault&gt;
+        &lt;soap:Code&gt;
+            &lt;soap:Value&gt;soap:Sender&lt;/soap:Value&gt;
+        &lt;/soap:Code&gt;
+        &lt;soap:Reason&gt;
+            &lt;soap:Text xml:lang="en"&gt;User ID 99999 not found&lt;/soap:Text&gt;
+        &lt;/soap:Reason&gt;
+        &lt;soap:Detail&gt;
+            &lt;ws:ErrorCode&gt;USER_NOT_FOUND&lt;/ws:ErrorCode&gt;
+            &lt;ws:Timestamp&gt;2026-03-31T10:30:00Z&lt;/ws:Timestamp&gt;
+        &lt;/soap:Detail&gt;
+    &lt;/soap:Fault&gt;
+&lt;/soap:Body&gt;</code></pre>
+
+            <h4>SOAP 1.2 Fault Codes</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fault Code</th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>soap:Sender</code></td>
+                        <td>The message was incorrectly formed or missing information (client error).</td>
+                    </tr>
+                    <tr>
+                        <td><code>soap:Receiver</code></td>
+                        <td>The server could not process the message due to an internal error.</td>
+                    </tr>
+                    <tr>
+                        <td><code>soap:VersionMismatch</code></td>
+                        <td>The SOAP version in the envelope namespace is not supported.</td>
+                    </tr>
+                    <tr>
+                        <td><code>soap:MustUnderstand</code></td>
+                        <td>A mandatory header entry was not understood by the receiver.</td>
+                    </tr>
+                    <tr>
+                        <td><code>soap:DataEncodingUnknown</code></td>
+                        <td>The data encoding style is not supported.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>4.5 Complete Request/Response Example</h3>
+
+            <h4>Full SOAP Request</h4>
+<pre><code>POST /UserService HTTP/1.1
+Host: api.example.com
+Content-Type: application/soap+xml; charset=utf-8
+Content-Length: 412
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;soap:Envelope
+    xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:ws="http://example.com/userservice"&gt;
+    &lt;soap:Header&gt;
+        &lt;ws:AuthToken&gt;Bearer eyJhbGciOiJIUzI1NiJ9...&lt;/ws:AuthToken&gt;
+    &lt;/soap:Header&gt;
+    &lt;soap:Body&gt;
+        &lt;ws:GetUserDetails&gt;
+            &lt;ws:UserId&gt;12345&lt;/ws:UserId&gt;
+        &lt;/ws:GetUserDetails&gt;
+    &lt;/soap:Body&gt;
+&lt;/soap:Envelope&gt;</code></pre>
+
+            <h4>Full SOAP Response</h4>
+<pre><code>HTTP/1.1 200 OK
+Content-Type: application/soap+xml; charset=utf-8
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;soap:Envelope
+    xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:ws="http://example.com/userservice"&gt;
+    &lt;soap:Body&gt;
+        &lt;ws:GetUserDetailsResponse&gt;
+            &lt;ws:User&gt;
+                &lt;ws:Id&gt;12345&lt;/ws:Id&gt;
+                &lt;ws:Name&gt;John Doe&lt;/ws:Name&gt;
+                &lt;ws:Email&gt;john.doe@example.com&lt;/ws:Email&gt;
+                &lt;ws:Role&gt;Admin&lt;/ws:Role&gt;
+                &lt;ws:Active&gt;true&lt;/ws:Active&gt;
+            &lt;/ws:User&gt;
+        &lt;/ws:GetUserDetailsResponse&gt;
+    &lt;/soap:Body&gt;
+&lt;/soap:Envelope&gt;</code></pre>
+
+
+            <!-- 5. WSDL -->
+            <h1 id="wsdl">5. WSDL — Web Services Description Language</h1>
+
+            <p>WSDL is an XML-based language that describes the public interface of a SOAP web service. It tells consumers <strong>what</strong> operations are available, <strong>what</strong> messages are exchanged, and <strong>where</strong> the service is located.</p>
+
+            <h3>WSDL Structure</h3>
+
+            <div class="plantuml-container">
+                <div class="plantuml">
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontSize 13
+skinparam rectangle {
+  RoundCorner 10
+}
+skinparam ArrowThickness 2
+skinparam ArrowColor #475569
+
+rectangle "**WSDL Document**" as WSDL #dbeafe;line:2563eb;line.bold
+rectangle "<types>\nXSD Schema definitions" as types #f1f5f9;line:64748b
+rectangle "<message>\nAbstract message parts" as message #f1f5f9;line:64748b
+rectangle "<portType>\nOperations (interface)" as portType #f1f5f9;line:64748b
+rectangle "<binding>\nProtocol & encoding details" as binding #f1f5f9;line:64748b
+rectangle "<service>\nEndpoint URL(s)" as service #ecfdf5;line:10b981;line.bold
+
+WSDL --> types
+types --> message
+message --> portType
+portType --> binding
+binding --> service
+@enduml
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Element</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>&lt;types&gt;</code></td>
+                        <td>Defines data types using XML Schema (XSD). Specifies the structure of request/response messages.</td>
+                    </tr>
+                    <tr>
+                        <td><code>&lt;message&gt;</code></td>
+                        <td>Defines abstract messages composed of parts, each referencing an XSD type.</td>
+                    </tr>
+                    <tr>
+                        <td><code>&lt;portType&gt;</code></td>
+                        <td>Defines the abstract set of operations (like a Java interface). Each operation maps input/output messages.</td>
+                    </tr>
+                    <tr>
+                        <td><code>&lt;binding&gt;</code></td>
+                        <td>Specifies the protocol (SOAP) and encoding details for each operation.</td>
+                    </tr>
+                    <tr>
+                        <td><code>&lt;service&gt;</code></td>
+                        <td>Defines the endpoint URL(s) where the service can be accessed.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>WSDL Example</h3>
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;definitions name="UserService"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:tns="http://example.com/userservice"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://example.com/userservice"&gt;
+
+    &lt;!-- Data Types --&gt;
+    &lt;types&gt;
+        &lt;xsd:schema targetNamespace="http://example.com/userservice"&gt;
+            &lt;xsd:element name="GetUserRequest"&gt;
+                &lt;xsd:complexType&gt;
+                    &lt;xsd:sequence&gt;
+                        &lt;xsd:element name="UserId" type="xsd:int"/&gt;
+                    &lt;/xsd:sequence&gt;
+                &lt;/xsd:complexType&gt;
+            &lt;/xsd:element&gt;
+            &lt;xsd:element name="GetUserResponse"&gt;
+                &lt;xsd:complexType&gt;
+                    &lt;xsd:sequence&gt;
+                        &lt;xsd:element name="Name" type="xsd:string"/&gt;
+                        &lt;xsd:element name="Email" type="xsd:string"/&gt;
+                        &lt;xsd:element name="Role" type="xsd:string"/&gt;
+                    &lt;/xsd:sequence&gt;
+                &lt;/xsd:complexType&gt;
+            &lt;/xsd:element&gt;
+        &lt;/xsd:schema&gt;
+    &lt;/types&gt;
+
+    &lt;!-- Messages --&gt;
+    &lt;message name="GetUserInput"&gt;
+        &lt;part name="parameters" element="tns:GetUserRequest"/&gt;
+    &lt;/message&gt;
+    &lt;message name="GetUserOutput"&gt;
+        &lt;part name="parameters" element="tns:GetUserResponse"/&gt;
+    &lt;/message&gt;
+
+    &lt;!-- Port Type (Interface) --&gt;
+    &lt;portType name="UserServicePortType"&gt;
+        &lt;operation name="GetUser"&gt;
+            &lt;input message="tns:GetUserInput"/&gt;
+            &lt;output message="tns:GetUserOutput"/&gt;
+        &lt;/operation&gt;
+    &lt;/portType&gt;
+
+    &lt;!-- Binding --&gt;
+    &lt;binding name="UserServiceBinding" type="tns:UserServicePortType"&gt;
+        &lt;soap:binding style="document"
+            transport="http://schemas.xmlsoap.org/soap/http"/&gt;
+        &lt;operation name="GetUser"&gt;
+            &lt;soap:operation soapAction="http://example.com/userservice/GetUser"/&gt;
+            &lt;input&gt;&lt;soap:body use="literal"/&gt;&lt;/input&gt;
+            &lt;output&gt;&lt;soap:body use="literal"/&gt;&lt;/output&gt;
+        &lt;/operation&gt;
+    &lt;/binding&gt;
+
+    &lt;!-- Service Endpoint --&gt;
+    &lt;service name="UserService"&gt;
+        &lt;port name="UserServicePort" binding="tns:UserServiceBinding"&gt;
+            &lt;soap:address location="https://api.example.com/UserService"/&gt;
+        &lt;/port&gt;
+    &lt;/service&gt;
+
+&lt;/definitions&gt;</code></pre>
+
+
+            <!-- 6. SOAP vs REST -->
+            <h1 id="soap-vs-rest">6. SOAP vs REST</h1>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>SOAP</th>
+                        <th>REST</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Type</strong></td>
+                        <td>Protocol</td>
+                        <td>Architectural style</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Format</strong></td>
+                        <td>XML only</td>
+                        <td>JSON, XML, HTML, plain text, etc.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transport</strong></td>
+                        <td>HTTP, SMTP, JMS, TCP</td>
+                        <td>Primarily HTTP/HTTPS</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contract</strong></td>
+                        <td>WSDL (formal, machine-readable)</td>
+                        <td>OpenAPI/Swagger (optional)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Statefulness</strong></td>
+                        <td>Can be stateful or stateless</td>
+                        <td>Stateless by design</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Security</strong></td>
+                        <td>WS-Security (message-level)</td>
+                        <td>TLS/SSL (transport-level)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transactions</strong></td>
+                        <td>WS-AtomicTransaction (ACID)</td>
+                        <td>No built-in support</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reliability</strong></td>
+                        <td>WS-ReliableMessaging</td>
+                        <td>Application-managed retries</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Error Handling</strong></td>
+                        <td>SOAP Fault (standardized)</td>
+                        <td>HTTP status codes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Performance</strong></td>
+                        <td>Higher overhead (XML parsing)</td>
+                        <td>Lightweight (especially JSON)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Caching</strong></td>
+                        <td>Not natively supported</td>
+                        <td>Built-in HTTP caching</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tooling</strong></td>
+                        <td>Strong (auto-generated clients from WSDL)</td>
+                        <td>Simple (curl, Postman, any HTTP client)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <!-- 7. When to Use SOAP -->
+            <h1 id="when-to-use">7. When to Use SOAP</h1>
+
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <h4>SOAP Is a Good Fit When...</h4>
+                    <ul>
+                        <li>Enterprise-grade security is required (WS-Security with XML signatures and encryption)</li>
+                        <li>ACID-compliant distributed transactions are needed</li>
+                        <li>Formal contracts between systems are mandatory (regulated industries)</li>
+                        <li>Guaranteed message delivery is critical (WS-ReliableMessaging)</li>
+                        <li>Integrating with legacy enterprise systems (ERP, banking, insurance)</li>
+                        <li>Asynchronous processing via message queues (JMS)</li>
+                    </ul>
+                </div>
+                <div class="comparison-card">
+                    <h4>REST Is Preferred When...</h4>
+                    <ul>
+                        <li>Building public-facing APIs with broad client support</li>
+                        <li>Lightweight, fast, bandwidth-efficient communication is needed</li>
+                        <li>Mobile or browser-based clients are the primary consumers</li>
+                        <li>CRUD operations map cleanly to HTTP methods</li>
+                        <li>Caching is important for performance</li>
+                        <li>Rapid development and simplicity are priorities</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <p><strong>Real-World Usage:</strong> SOAP remains heavily used in financial services (payment gateways like PayPal's classic API), healthcare (HL7/CDA), telecommunications, government systems, and enterprise integration platforms (SAP, Salesforce, Guidewire).</p>
+            </div>
+
+
+            <!-- 8. Testing Overview -->
+            <h1 id="testing-overview">8. Testing SOAP Services — Overview</h1>
+
+            <p>Testing SOAP web services involves validating that the service correctly processes requests, returns expected responses, handles errors gracefully, and meets non-functional requirements.</p>
+
+            <h3>Types of SOAP Testing</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test Type</th>
+                        <th>Focus</th>
+                        <th>Tools (Java)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Functional Testing</strong></td>
+                        <td>Validate operations return correct results for valid inputs</td>
+                        <td>SoapUI, JAX-WS client, REST Assured</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contract Testing</strong></td>
+                        <td>Verify WSDL compliance — schemas, namespaces, operations</td>
+                        <td>SoapUI, XMLUnit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Negative Testing</strong></td>
+                        <td>Send malformed XML, missing fields, invalid types — expect SOAP Faults</td>
+                        <td>SoapUI, JUnit + raw HTTP</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Security Testing</strong></td>
+                        <td>Test auth, WS-Security headers, XML injection, XXE attacks</td>
+                        <td>SoapUI Pro, OWASP ZAP, custom Java tests</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Performance Testing</strong></td>
+                        <td>Load testing, stress testing, response time benchmarks</td>
+                        <td>JMeter, Gatling, SoapUI LoadTest</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Integration Testing</strong></td>
+                        <td>End-to-end tests across services and databases</td>
+                        <td>JUnit, TestNG, Spring Boot Test</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Schema Validation</strong></td>
+                        <td>Validate request/response XML against XSD schemas</td>
+                        <td>javax.xml.validation, XMLUnit</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <!-- 9. Java-Based Tools -->
+            <h1 id="java-tools">9. Java-Based Testing Tools</h1>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Type</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>SoapUI (Open Source)</strong></td>
+                        <td>GUI + Scripting (Groovy/Java)</td>
+                        <td>Functional testing, mocking, WSDL exploration. Runs on JVM.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Apache CXF</strong></td>
+                        <td>Framework / Library</td>
+                        <td>Building and consuming SOAP services in Java. WSDL-first or code-first.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>JAX-WS (Jakarta XML Web Services)</strong></td>
+                        <td>Java API</td>
+                        <td>Standard Java API for SOAP. Generate client stubs from WSDL via <code>wsimport</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>REST Assured</strong></td>
+                        <td>Java Library</td>
+                        <td>HTTP-based testing. Can send raw SOAP XML over HTTP POST.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Karate DSL</strong></td>
+                        <td>BDD Framework (JVM)</td>
+                        <td>BDD-style API testing. Native support for SOAP XML with built-in assertions.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Apache JMeter</strong></td>
+                        <td>Performance Tool (Java)</td>
+                        <td>Load/stress testing SOAP services. SOAP/XML-RPC Request sampler.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XMLUnit</strong></td>
+                        <td>Java Library</td>
+                        <td>XML comparison, XPath assertions, schema validation in unit tests.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WireMock</strong></td>
+                        <td>Mock Server (Java)</td>
+                        <td>Mocking SOAP service endpoints for isolated testing.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Spring WS Test</strong></td>
+                        <td>Test Framework</td>
+                        <td>Testing Spring Web Services with MockWebServiceServer.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <!-- 10. Testing with SoapUI -->
+            <h1 id="testing-with-soapui">10. Testing with SoapUI (Java)</h1>
+
+            <p>SoapUI is the most popular tool for SOAP testing. It's a Java-based application that can import WSDL files and auto-generate requests for every operation.</p>
+
+            <h3>10.1 Getting Started</h3>
+            <ol>
+                <li>Download SoapUI from <code>https://www.soapui.org</code> (open-source edition).</li>
+                <li>Create a new SOAP project: <strong>File → New SOAP Project</strong>.</li>
+                <li>Enter the WSDL URL (e.g., <code>https://api.example.com/UserService?wsdl</code>).</li>
+                <li>SoapUI parses the WSDL and generates sample requests for each operation.</li>
+            </ol>
+
+            <h3>10.2 Creating Test Suites</h3>
+            <ol>
+                <li>Right-click the project → <strong>New TestSuite</strong>.</li>
+                <li>Add a <strong>TestCase</strong> → Add <strong>SOAP Request</strong> test steps.</li>
+                <li>Add <strong>Assertions</strong> to validate responses:
+                    <ul>
+                        <li><strong>Contains:</strong> Check for specific text in the response.</li>
+                        <li><strong>XPath Match:</strong> Assert specific XML element values.</li>
+                        <li><strong>Schema Compliance:</strong> Validate against the WSDL/XSD schema.</li>
+                        <li><strong>SOAP Fault:</strong> Assert that a fault IS or IS NOT returned.</li>
+                        <li><strong>Response SLA:</strong> Assert response time is under a threshold.</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>10.3 Groovy Script Assertions (JVM-based)</h3>
+<pre><code>// Groovy script assertion in SoapUI
+import groovy.xml.XmlSlurper
+
+def response = new XmlSlurper().parseText(messageExchange.responseContent)
+
+// Assert user name
+def userName = response.Body.GetUserDetailsResponse.User.Name.text()
+assert userName == "John Doe" : "Expected 'John Doe' but got '${userName}'"
+
+// Assert email format
+def email = response.Body.GetUserDetailsResponse.User.Email.text()
+assert email.matches(/^[\w.]+@[\w.]+\.\w+$/) : "Invalid email format: ${email}"
+
+// Assert response time
+def responseTime = messageExchange.timeTaken
+assert responseTime &lt; 2000 : "Response too slow: ${responseTime}ms"
+
+log.info "All assertions passed!"</code></pre>
+
+            <h3>10.4 Data-Driven Testing</h3>
+            <p>SoapUI supports data-driven tests using DataSource test steps:</p>
+            <ol>
+                <li>Add a <strong>DataSource</strong> step (Excel, CSV, JDBC, or Groovy).</li>
+                <li>Reference variables in your SOAP request: <code>${DataSource#UserId}</code>.</li>
+                <li>Add a <strong>DataSource Loop</strong> step to iterate through all rows.</li>
+                <li>Each iteration sends a request with different data and validates the response.</li>
+            </ol>
+
+
+            <!-- 11. Testing with Java Code -->
+            <h1 id="testing-with-java-code">11. Testing with Java Code</h1>
+
+            <h3>11.1 Maven Dependencies</h3>
+<pre><code>&lt;dependencies&gt;
+    &lt;!-- JAX-WS Runtime --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.sun.xml.ws&lt;/groupId&gt;
+        &lt;artifactId&gt;jaxws-rt&lt;/artifactId&gt;
+        &lt;version&gt;4.0.2&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- XMLUnit for XML assertions --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.xmlunit&lt;/groupId&gt;
+        &lt;artifactId&gt;xmlunit-core&lt;/artifactId&gt;
+        &lt;version&gt;2.9.1&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.xmlunit&lt;/groupId&gt;
+        &lt;artifactId&gt;xmlunit-matchers&lt;/artifactId&gt;
+        &lt;version&gt;2.9.1&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- JUnit 5 --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.junit.jupiter&lt;/groupId&gt;
+        &lt;artifactId&gt;junit-jupiter&lt;/artifactId&gt;
+        &lt;version&gt;5.10.2&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+
+&lt;!-- Generate client stubs from WSDL --&gt;
+&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;com.sun.xml.ws&lt;/groupId&gt;
+            &lt;artifactId&gt;jaxws-maven-plugin&lt;/artifactId&gt;
+            &lt;version&gt;4.0.2&lt;/version&gt;
+            &lt;executions&gt;
+                &lt;execution&gt;
+                    &lt;goals&gt;&lt;goal&gt;wsimport&lt;/goal&gt;&lt;/goals&gt;
+                    &lt;configuration&gt;
+                        &lt;wsdlUrls&gt;
+                            &lt;wsdlUrl&gt;https://api.example.com/UserService?wsdl&lt;/wsdlUrl&gt;
+                        &lt;/wsdlUrls&gt;
+                        &lt;packageName&gt;com.example.userservice.client&lt;/packageName&gt;
+                    &lt;/configuration&gt;
+                &lt;/execution&gt;
+            &lt;/executions&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;</code></pre>
+
+            <h3>11.2 Using JAX-WS Generated Client</h3>
+<pre><code>import com.example.userservice.client.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class UserServiceTest {
+
+    private static UserServicePortType port;
+
+    @BeforeAll
+    static void setup() {
+        UserService service = new UserService();
+        port = service.getUserServicePort();
+    }
+
+    @Test
+    void shouldReturnUserDetails() {
+        GetUserRequest request = new GetUserRequest();
+        request.setUserId(12345);
+
+        GetUserResponse response = port.getUser(request);
+
+        assertNotNull(response);
+        assertEquals("John Doe", response.getName());
+        assertEquals("john.doe@example.com", response.getEmail());
+        assertEquals("Admin", response.getRole());
+    }
+
+    @Test
+    void shouldReturnFaultForInvalidUser() {
+        GetUserRequest request = new GetUserRequest();
+        request.setUserId(-1);
+
+        assertThrows(SOAPFaultException.class, () -> {
+            port.getUser(request);
+        });
+    }
+}</code></pre>
+
+            <h3>11.3 Raw SOAP Request with HttpURLConnection</h3>
+<pre><code>import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class RawSoapRequestTest {
+
+    private static final String ENDPOINT = "https://api.example.com/UserService";
+
+    @Test
+    void shouldGetUserViaRawSoapRequest() throws Exception {
+        String soapRequest = """
+            &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+            &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+                           xmlns:ws="http://example.com/userservice"&gt;
+                &lt;soap:Body&gt;
+                    &lt;ws:GetUserDetails&gt;
+                        &lt;ws:UserId&gt;12345&lt;/ws:UserId&gt;
+                    &lt;/ws:GetUserDetails&gt;
+                &lt;/soap:Body&gt;
+            &lt;/soap:Envelope&gt;
+            """;
+
+        HttpURLConnection conn = (HttpURLConnection) URI.create(ENDPOINT).toURL().openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/soap+xml; charset=utf-8");
+        conn.setDoOutput(true);
+
+        try (OutputStream os = conn.getOutputStream()) {
+            os.write(soapRequest.getBytes("UTF-8"));
+        }
+
+        assertEquals(200, conn.getResponseCode());
+
+        String response;
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            response = sb.toString();
+        }
+
+        assertTrue(response.contains("John Doe"));
+        assertTrue(response.contains("GetUserDetailsResponse"));
+    }
+}</code></pre>
+
+            <h3>11.4 XML Validation with XMLUnit</h3>
+<pre><code>import org.junit.jupiter.api.Test;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.diff.Diff;
+import org.xmlunit.matchers.HasXPathMatcher;
+import org.xmlunit.validation.Languages;
+import org.xmlunit.validation.ValidationResult;
+import org.xmlunit.validation.Validator;
+
+import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.xmlunit.matchers.HasXPathMatcher.hasXPath;
+
+class XmlValidationTest {
+
+    @Test
+    void shouldValidateResponseAgainstSchema() {
+        String xsd = "&lt;!-- XSD schema content --&gt;";
+        String responseXml = "&lt;!-- SOAP response body XML --&gt;";
+
+        Validator validator = Validator.forLanguage(Languages.W3C_XML_SCHEMA_NS_URI);
+        validator.setSchemaSource(new StreamSource(new StringReader(xsd)));
+
+        ValidationResult result = validator.validateInstance(
+            new StreamSource(new StringReader(responseXml)));
+
+        assertTrue(result.isValid(), "Response does not match XSD schema");
+    }
+
+    @Test
+    void shouldMatchExpectedXmlStructure() {
+        String expected = "&lt;User&gt;&lt;Name&gt;John Doe&lt;/Name&gt;&lt;/User&gt;";
+        String actual = "&lt;User&gt;&lt;Name&gt;John Doe&lt;/Name&gt;&lt;/User&gt;";
+
+        Diff diff = DiffBuilder.compare(expected)
+            .withTest(actual)
+            .ignoreWhitespace()
+            .build();
+
+        assertFalse(diff.hasDifferences(), diff.toString());
+    }
+
+    @Test
+    void shouldAssertXPathValues() {
+        String xml = """
+            &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"&gt;
+                &lt;soap:Body&gt;
+                    &lt;GetUserResponse xmlns="http://example.com/userservice"&gt;
+                        &lt;Name&gt;John Doe&lt;/Name&gt;
+                        &lt;Email&gt;john@example.com&lt;/Email&gt;
+                    &lt;/GetUserResponse&gt;
+                &lt;/soap:Body&gt;
+            &lt;/soap:Envelope&gt;
+            """;
+
+        assertThat(xml, hasXPath("//Name"));
+        assertThat(xml, hasXPath("//Email"));
+    }
+}</code></pre>
+
+
+            <!-- 12. Testing with REST Assured -->
+            <h1 id="testing-with-rest-assured">12. Testing with REST Assured</h1>
+
+            <p>REST Assured, despite its name, can send any HTTP request — including SOAP XML payloads. It provides a fluent Java API for constructing requests and asserting responses.</p>
+
+            <h3>Maven Dependency</h3>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;io.rest-assured&lt;/groupId&gt;
+    &lt;artifactId&gt;rest-assured&lt;/artifactId&gt;
+    &lt;version&gt;5.4.0&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+
+            <h3>SOAP Test with REST Assured</h3>
+<pre><code>import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+class SoapRestAssuredTest {
+
+    private static final String ENDPOINT = "https://api.example.com/UserService";
+
+    @Test
+    void shouldGetUserDetailsViaSoap() {
+        String requestBody = """
+            &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+                           xmlns:ws="http://example.com/userservice"&gt;
+                &lt;soap:Body&gt;
+                    &lt;ws:GetUserDetails&gt;
+                        &lt;ws:UserId&gt;12345&lt;/ws:UserId&gt;
+                    &lt;/ws:GetUserDetails&gt;
+                &lt;/soap:Body&gt;
+            &lt;/soap:Envelope&gt;
+            """;
+
+        given()
+            .contentType("application/soap+xml; charset=utf-8")
+            .body(requestBody)
+        .when()
+            .post(ENDPOINT)
+        .then()
+            .statusCode(200)
+            .body(hasXPath("//GetUserDetailsResponse/User/Name",
+                equalTo("John Doe")))
+            .body(hasXPath("//GetUserDetailsResponse/User/Email",
+                equalTo("john.doe@example.com")))
+            .time(lessThan(3000L));
+    }
+
+    @Test
+    void shouldReturnSoapFaultForMissingUserId() {
+        String requestBody = """
+            &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+                           xmlns:ws="http://example.com/userservice"&gt;
+                &lt;soap:Body&gt;
+                    &lt;ws:GetUserDetails&gt;
+                        &lt;!-- UserId intentionally omitted --&gt;
+                    &lt;/ws:GetUserDetails&gt;
+                &lt;/soap:Body&gt;
+            &lt;/soap:Envelope&gt;
+            """;
+
+        given()
+            .contentType("application/soap+xml; charset=utf-8")
+            .body(requestBody)
+        .when()
+            .post(ENDPOINT)
+        .then()
+            .statusCode(500)
+            .body(hasXPath("//Fault/Code/Value",
+                containsString("Sender")));
+    }
+
+    @Test
+    void shouldReturnMultipleUsersFromListOperation() {
+        String requestBody = """
+            &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+                           xmlns:ws="http://example.com/userservice"&gt;
+                &lt;soap:Body&gt;
+                    &lt;ws:ListUsers&gt;
+                        &lt;ws:Department&gt;Engineering&lt;/ws:Department&gt;
+                    &lt;/ws:ListUsers&gt;
+                &lt;/soap:Body&gt;
+            &lt;/soap:Envelope&gt;
+            """;
+
+        Response response = given()
+            .contentType("application/soap+xml; charset=utf-8")
+            .body(requestBody)
+        .when()
+            .post(ENDPOINT);
+
+        response.then()
+            .statusCode(200);
+
+        // Extract and count users using XPath
+        String responseBody = response.getBody().asString();
+        assertThat(responseBody, containsString("ListUsersResponse"));
+    }
+}</code></pre>
+
+
+            <!-- 13. Testing with Karate DSL -->
+            <h1 id="testing-with-karate">13. Testing with Karate DSL</h1>
+
+            <p>Karate is a JVM-based BDD testing framework that combines API test automation, mocking, and performance testing. It has first-class support for SOAP/XML.</p>
+
+            <h3>Maven Dependency</h3>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;com.intuit.karate&lt;/groupId&gt;
+    &lt;artifactId&gt;karate-junit5&lt;/artifactId&gt;
+    &lt;version&gt;1.4.1&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+
+            <h3>Karate Feature File — soap-user-service.feature</h3>
+<pre><code>Feature: User Service SOAP Tests
+
+  Background:
+    * url 'https://api.example.com/UserService'
+    * header Content-Type = 'application/soap+xml; charset=utf-8'
+
+  Scenario: Get user details by ID
+    Given request
+    """
+    &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+                   xmlns:ws="http://example.com/userservice"&gt;
+        &lt;soap:Body&gt;
+            &lt;ws:GetUserDetails&gt;
+                &lt;ws:UserId&gt;12345&lt;/ws:UserId&gt;
+            &lt;/ws:GetUserDetails&gt;
+        &lt;/soap:Body&gt;
+    &lt;/soap:Envelope&gt;
+    """
+    When soap action 'http://example.com/userservice/GetUserDetails'
+    Then status 200
+    And match /Envelope/Body/GetUserDetailsResponse/User/Name == 'John Doe'
+    And match /Envelope/Body/GetUserDetailsResponse/User/Email == 'john.doe@example.com'
+
+  Scenario: Validate SOAP fault for invalid user
+    Given request
+    """
+    &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+                   xmlns:ws="http://example.com/userservice"&gt;
+        &lt;soap:Body&gt;
+            &lt;ws:GetUserDetails&gt;
+                &lt;ws:UserId&gt;-1&lt;/ws:UserId&gt;
+            &lt;/ws:GetUserDetails&gt;
+        &lt;/soap:Body&gt;
+    &lt;/soap:Envelope&gt;
+    """
+    When soap action 'http://example.com/userservice/GetUserDetails'
+    Then status 500
+    And match /Envelope/Body/Fault/Code/Value contains 'Sender'
+
+  Scenario Outline: Data-driven user lookup
+    Given request
+    """
+    &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+                   xmlns:ws="http://example.com/userservice"&gt;
+        &lt;soap:Body&gt;
+            &lt;ws:GetUserDetails&gt;
+                &lt;ws:UserId&gt;&lt;userId&gt;&lt;/ws:UserId&gt;
+            &lt;/ws:GetUserDetails&gt;
+        &lt;/soap:Body&gt;
+    &lt;/soap:Envelope&gt;
+    """
+    When soap action 'http://example.com/userservice/GetUserDetails'
+    Then status 200
+    And match /Envelope/Body/GetUserDetailsResponse/User/Name == '&lt;expectedName&gt;'
+
+    Examples:
+      | userId | expectedName |
+      | 12345  | John Doe     |
+      | 67890  | Jane Smith   |
+      | 11111  | Bob Wilson   |</code></pre>
+
+            <h3>JUnit 5 Runner Class</h3>
+<pre><code>import com.intuit.karate.junit5.Karate;
+
+class SoapKarateTest {
+
+    @Karate.Test
+    Karate testUserService() {
+        return Karate.run("soap-user-service").relativeTo(getClass());
+    }
+}</code></pre>
+
+
+            <!-- 14. Test Strategy -->
+            <h1 id="test-strategy">14. SOAP Test Strategy</h1>
+
+            <h3>14.1 Test Pyramid for SOAP Services</h3>
+            <div class="plantuml-container">
+                <div class="plantuml">
+@startuml
+skinparam backgroundColor transparent
+skinparam defaultFontSize 13
+skinparam rectangle {
+  RoundCorner 10
+}
+
+rectangle "**E2E / UI Tests**\n(Few: Full integration across multiple SOAP services)" as e2e #fee2e2;line:ef4444;text:991b1b;line.bold
+rectangle "**Integration Tests**\n(Moderate: Service-to-service with mocked dependencies)" as int #ffedd5;line:f59e0b;text:9a3412;line.bold
+rectangle "**Contract / Schema Validation Tests**\n(Many: WSDL compliance, XSD validation)" as contract #dbeafe;line:2563eb;text:1e40af;line.bold
+rectangle "**Unit / Component Tests**\n(Many: Individual operation testing with assertions)" as unit #d1fae5;line:10b981;text:065f46;line.bold
+
+e2e -[hidden]down- int
+int -[hidden]down- contract
+contract -[hidden]down- unit
+@enduml
+                </div>
+            </div>
+
+            <h3>14.2 Test Scenario Checklist</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Test Scenarios</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Happy Path</strong></td>
+                        <td>Valid requests return expected data; correct HTTP 200 status; correct SOAP response structure.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Boundary Values</strong></td>
+                        <td>Empty strings, max-length strings, zero/negative numbers, very large numbers, special characters in fields.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Missing Fields</strong></td>
+                        <td>Omit required elements — verify proper SOAP Fault with <code>soap:Sender</code> code.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Invalid Types</strong></td>
+                        <td>String where integer expected, malformed dates, invalid enum values.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Malformed XML</strong></td>
+                        <td>Unclosed tags, invalid namespaces, wrong SOAP version namespace.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Authentication</strong></td>
+                        <td>Missing credentials, expired tokens, invalid tokens, insufficient permissions.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WSDL Contract</strong></td>
+                        <td>Response conforms to XSD schema; all documented operations exist; correct namespaces.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Error Handling</strong></td>
+                        <td>SOAP Faults have correct fault codes, readable messages, and useful detail elements.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Concurrency</strong></td>
+                        <td>Simultaneous requests don't cause data corruption or deadlocks.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Idempotency</strong></td>
+                        <td>Repeating the same request produces the same result (where applicable).</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>14.3 Service Mocking with WireMock</h3>
+<pre><code>import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import org.junit.jupiter.api.*;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+
+class SoapMockTest {
+
+    static WireMockServer wireMock;
+
+    @BeforeAll
+    static void startMock() {
+        wireMock = new WireMockServer(8089);
+        wireMock.start();
+        WireMock.configureFor("localhost", 8089);
+    }
+
+    @AfterAll
+    static void stopMock() {
+        wireMock.stop();
+    }
+
+    @Test
+    void shouldMockSoapServiceResponse() {
+        String mockResponse = """
+            &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"&gt;
+                &lt;soap:Body&gt;
+                    &lt;GetUserDetailsResponse xmlns="http://example.com/userservice"&gt;
+                        &lt;User&gt;
+                            &lt;Name&gt;Mock User&lt;/Name&gt;
+                            &lt;Email&gt;mock@example.com&lt;/Email&gt;
+                        &lt;/User&gt;
+                    &lt;/GetUserDetailsResponse&gt;
+                &lt;/soap:Body&gt;
+            &lt;/soap:Envelope&gt;
+            """;
+
+        stubFor(post(urlEqualTo("/UserService"))
+            .withHeader("Content-Type", containing("soap+xml"))
+            .withRequestBody(containing("GetUserDetails"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/soap+xml")
+                .withBody(mockResponse)));
+
+        // Now test against http://localhost:8089/UserService
+        // ... (use any of the Java clients above)
+    }
+
+    @Test
+    void shouldMockSoapFault() {
+        String faultResponse = """
+            &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"&gt;
+                &lt;soap:Body&gt;
+                    &lt;soap:Fault&gt;
+                        &lt;soap:Code&gt;
+                            &lt;soap:Value&gt;soap:Receiver&lt;/soap:Value&gt;
+                        &lt;/soap:Code&gt;
+                        &lt;soap:Reason&gt;
+                            &lt;soap:Text xml:lang="en"&gt;Internal Server Error&lt;/soap:Text&gt;
+                        &lt;/soap:Reason&gt;
+                    &lt;/soap:Fault&gt;
+                &lt;/soap:Body&gt;
+            &lt;/soap:Envelope&gt;
+            """;
+
+        stubFor(post(urlEqualTo("/UserService"))
+            .withRequestBody(containing("UserId&gt;99999"))
+            .willReturn(aResponse()
+                .withStatus(500)
+                .withHeader("Content-Type", "application/soap+xml")
+                .withBody(faultResponse)));
+    }
+}</code></pre>
+
+
+            <!-- 15. Best Practices -->
+            <h1 id="best-practices">15. Best Practices</h1>
+
+            <h3>Testing Best Practices</h3>
+            <ol>
+                <li><strong>Always validate against the WSDL/XSD schema</strong> — don't just check individual fields. Schema validation catches structural regressions early.</li>
+                <li><strong>Use XPath for assertions, not string matching</strong> — XML formatting can change (whitespace, prefixes) without affecting semantics.</li>
+                <li><strong>Test all SOAP operations</strong> — auto-generate test stubs from the WSDL using tools like JAX-WS <code>wsimport</code> or SoapUI.</li>
+                <li><strong>Test SOAP Faults explicitly</strong> — verify fault codes, fault strings, and detail elements match expectations.</li>
+                <li><strong>Mock external dependencies</strong> — use WireMock or SoapUI MockService to isolate the service under test.</li>
+                <li><strong>Parameterize test data</strong> — use data-driven approaches (CSV, Excel, DataSource) rather than duplicating test cases.</li>
+                <li><strong>Validate namespaces</strong> — SOAP is namespace-sensitive. Tests should verify the correct namespace URIs.</li>
+                <li><strong>Test WS-Security independently</strong> — token validation, signature verification, and encryption should each have dedicated tests.</li>
+                <li><strong>Measure response times</strong> — add SLA assertions to catch performance regressions.</li>
+                <li><strong>Version your WSDL</strong> — track changes to the service contract and run regression tests when the WSDL changes.</li>
+            </ol>
+
+            <h3>Development Best Practices</h3>
+            <ol>
+                <li><strong>Contract-first development:</strong> Define the WSDL/XSD before writing code. This ensures a clean contract.</li>
+                <li><strong>Use document/literal style</strong> over RPC/encoded — it's the WS-I Basic Profile recommendation.</li>
+                <li><strong>Keep messages small:</strong> XML verbosity is SOAP's biggest performance cost. Avoid unnecessarily deep structures.</li>
+                <li><strong>Use MTOM for binary data:</strong> Don't Base64-encode large binaries in XML — use MTOM (Message Transmission Optimization Mechanism).</li>
+                <li><strong>Implement proper error handling:</strong> Return meaningful SOAP Faults with application-specific detail elements.</li>
+            </ol>
+
+
+            <!-- 16. Common Faults & Troubleshooting -->
+            <h1 id="common-faults">16. Common SOAP Faults &amp; Troubleshooting</h1>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Issue</th>
+                        <th>Symptom</th>
+                        <th>Solution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Namespace mismatch</strong></td>
+                        <td>Server returns "unexpected element" or ignores request body</td>
+                        <td>Compare request namespaces against WSDL. Ensure target namespace matches exactly.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SOAPAction header missing</strong></td>
+                        <td>HTTP 500 or "operation not found"</td>
+                        <td>Add the correct <code>SOAPAction</code> HTTP header as defined in the WSDL binding.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Wrong Content-Type</strong></td>
+                        <td>Server rejects request or parses incorrectly</td>
+                        <td>Use <code>text/xml</code> for SOAP 1.1, <code>application/soap+xml</code> for SOAP 1.2.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WSDL unreachable</strong></td>
+                        <td>Client cannot generate stubs</td>
+                        <td>Verify network connectivity. Try accessing <code>?wsdl</code> URL directly in a browser.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SSL/TLS errors</strong></td>
+                        <td>Connection refused or certificate errors</td>
+                        <td>Import the server's certificate into the Java truststore: <code>keytool -import</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XML parsing failure</strong></td>
+                        <td>"Content is not allowed in prolog" error</td>
+                        <td>Remove BOM characters. Ensure XML declaration encoding matches actual encoding.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Timeout errors</strong></td>
+                        <td>Connection or read timeout</td>
+                        <td>Configure client timeouts. Check server health. Increase timeout for long operations.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WS-Security rejection</strong></td>
+                        <td>"Security header invalid" fault</td>
+                        <td>Verify timestamp freshness, username/password, and that the security policy matches.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="tip-box">
+                <p><strong>Debugging Tip:</strong> Enable SOAP message logging in Java using system properties:<br>
+                <code>-Dcom.sun.xml.ws.transport.http.client.HttpTransportPipe.dump=true</code><br>
+                This prints the full SOAP request/response XML to stdout, which is invaluable for troubleshooting.</p>
+            </div>
+
+
+            <!-- 17. Security Testing -->
+            <h1 id="security-testing">17. Security Testing for SOAP</h1>
+
+            <p>SOAP services are vulnerable to specific attack vectors due to their XML-based nature. Testing should cover the following:</p>
+
+            <h3>17.1 Common Vulnerabilities</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Vulnerability</th>
+                        <th>Description</th>
+                        <th>Test Approach</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>XML External Entity (XXE)</strong></td>
+                        <td>Attacker injects external entity references to read files or cause SSRF</td>
+                        <td>Send requests with <code>&lt;!DOCTYPE&gt;</code> declarations containing external entities. Verify they are rejected.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XML Bomb (Billion Laughs)</strong></td>
+                        <td>Recursive entity expansion causes DoS via memory exhaustion</td>
+                        <td>Send deeply nested entity definitions. Verify server limits entity expansion.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SOAP Injection</strong></td>
+                        <td>Injecting XML into user-controlled fields to alter SOAP message structure</td>
+                        <td>Include XML special characters (<code>&lt; &gt; &amp;</code>) in input fields. Verify proper encoding.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WS-Security Bypass</strong></td>
+                        <td>Removing or modifying security headers to bypass authentication</td>
+                        <td>Send requests without <code>wsse:Security</code> headers. Verify rejection.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WSDL Exposure</strong></td>
+                        <td>Public WSDL reveals internal service structure and operations</td>
+                        <td>Verify that production WSDL is not publicly accessible (or is appropriately limited).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XPath Injection</strong></td>
+                        <td>Manipulating XPath queries through user input</td>
+                        <td>Include XPath syntax (<code>' or 1=1</code>) in input fields. Verify server does not evaluate them.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>17.2 XXE Test Example (Java)</h3>
+<pre><code>@Test
+void shouldRejectXxePayload() {
+    // This payload attempts to read a server file via XXE
+    String xxePayload = """
+        &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+        &lt;!DOCTYPE foo [
+            &lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;
+        ]&gt;
+        &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+                       xmlns:ws="http://example.com/userservice"&gt;
+            &lt;soap:Body&gt;
+                &lt;ws:GetUserDetails&gt;
+                    &lt;ws:UserId&gt;&amp;xxe;&lt;/ws:UserId&gt;
+                &lt;/ws:GetUserDetails&gt;
+            &lt;/soap:Body&gt;
+        &lt;/soap:Envelope&gt;
+        """;
+
+    given()
+        .contentType("application/soap+xml; charset=utf-8")
+        .body(xxePayload)
+    .when()
+        .post(ENDPOINT)
+    .then()
+        // Server should reject DTD/external entities
+        .statusCode(anyOf(is(400), is(500)))
+        .body(not(containsString("root:")));  // Ensure file content NOT returned
+}</code></pre>
+
+            <h3>17.3 XML Bomb Test Example</h3>
+<pre><code>@Test
+void shouldRejectXmlBomb() {
+    String xmlBomb = """
+        &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+        &lt;!DOCTYPE lolz [
+            &lt;!ENTITY lol "lol"&gt;
+            &lt;!ENTITY lol2 "&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;&amp;lol;"&gt;
+            &lt;!ENTITY lol3 "&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;&amp;lol2;"&gt;
+        ]&gt;
+        &lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+                       xmlns:ws="http://example.com/userservice"&gt;
+            &lt;soap:Body&gt;
+                &lt;ws:GetUserDetails&gt;
+                    &lt;ws:UserId&gt;&amp;lol3;&lt;/ws:UserId&gt;
+                &lt;/ws:GetUserDetails&gt;
+            &lt;/soap:Body&gt;
+        &lt;/soap:Envelope&gt;
+        """;
+
+    given()
+        .contentType("application/soap+xml; charset=utf-8")
+        .body(xmlBomb)
+    .when()
+        .post(ENDPOINT)
+    .then()
+        .statusCode(anyOf(is(400), is(500)));
+        // Server should reject or fail gracefully, not OOM
+}</code></pre>
+
+            <div class="warning-box">
+                <p><strong>Warning:</strong> Only run security tests against services you own or have explicit authorization to test. Never run XXE or XML Bomb tests against production systems without prior approval.</p>
+            </div>
+
+
+            <!-- 18. References -->
+            <h1 id="references">18. References</h1>
+
+            <ul>
+                <li><strong>W3C SOAP 1.2 Specification:</strong> <code>https://www.w3.org/TR/soap12/</code></li>
+                <li><strong>W3C WSDL 1.1 Specification:</strong> <code>https://www.w3.org/TR/wsdl.html</code></li>
+                <li><strong>WS-I Basic Profile:</strong> <code>https://ws-i.org/profiles/basicprofile-1.2-2010-11-09.html</code></li>
+                <li><strong>OASIS WS-Security:</strong> <code>https://docs.oasis-open.org/wss/</code></li>
+                <li><strong>SoapUI Documentation:</strong> <code>https://www.soapui.org/docs/</code></li>
+                <li><strong>Apache CXF:</strong> <code>https://cxf.apache.org/</code></li>
+                <li><strong>Karate DSL:</strong> <code>https://github.com/karatelabs/karate</code></li>
+                <li><strong>REST Assured:</strong> <code>https://rest-assured.io/</code></li>
+                <li><strong>XMLUnit:</strong> <code>https://www.xmlunit.org/</code></li>
+                <li><strong>WireMock:</strong> <code>https://wiremock.org/</code></li>
+                <li><strong>Apache JMeter:</strong> <code>https://jmeter.apache.org/</code></li>
+                <li><strong>OWASP XML Security Cheat Sheet:</strong> <code>https://cheatsheetseries.owasp.org/cheatsheets/XML_Security_Cheat_Sheet.html</code></li>
+            </ul>
+
+        </div><!-- end .content -->
+    </div><!-- end .container -->
+
+    <script>
+    (function() {
+        // PlantUML text encoder (deflate-free, uses hex encoding)
+        function encode64(data) {
+            var r = '';
+            for (var i = 0; i < data.length; i += 3) {
+                if (i + 2 == data.length) {
+                    r += append3bytes(data.charCodeAt(i), data.charCodeAt(i + 1), 0);
+                } else if (i + 1 == data.length) {
+                    r += append3bytes(data.charCodeAt(i), 0, 0);
+                } else {
+                    r += append3bytes(data.charCodeAt(i), data.charCodeAt(i + 1), data.charCodeAt(i + 2));
+                }
+            }
+            return r;
+        }
+
+        function append3bytes(b1, b2, b3) {
+            var c1 = b1 >> 2;
+            var c2 = ((b1 & 0x3) << 4) | (b2 >> 4);
+            var c3 = ((b2 & 0xF) << 2) | (b3 >> 6);
+            var c4 = b3 & 0x3F;
+            var r = '';
+            r += encode6bit(c1 & 0x3F);
+            r += encode6bit(c2 & 0x3F);
+            r += encode6bit(c3 & 0x3F);
+            r += encode6bit(c4 & 0x3F);
+            return r;
+        }
+
+        function encode6bit(b) {
+            if (b < 10) return String.fromCharCode(48 + b);
+            b -= 10;
+            if (b < 26) return String.fromCharCode(65 + b);
+            b -= 26;
+            if (b < 26) return String.fromCharCode(97 + b);
+            b -= 26;
+            if (b == 0) return '-';
+            if (b == 1) return '_';
+            return '?';
+        }
+
+        function compress(s) {
+            s = unescape(encodeURIComponent(s));
+            var arr = [];
+            for (var i = 0; i < s.length; i++) {
+                arr.push(s.charCodeAt(i));
+            }
+            var deflated = rawDeflate(arr);
+            return encode64(String.fromCharCode.apply(null, deflated));
+        }
+
+        // Minimal raw deflate (store-only, no compression—reliable for all PlantUML sizes)
+        function rawDeflate(data) {
+            var out = [];
+            var pos = 0;
+            while (pos < data.length) {
+                var blockSize = Math.min(65535, data.length - pos);
+                var last = (pos + blockSize >= data.length) ? 1 : 0;
+                out.push(last);
+                out.push(blockSize & 0xFF);
+                out.push((blockSize >> 8) & 0xFF);
+                out.push((~blockSize) & 0xFF);
+                out.push(((~blockSize) >> 8) & 0xFF);
+                for (var i = 0; i < blockSize; i++) {
+                    out.push(data[pos + i]);
+                }
+                pos += blockSize;
+            }
+            return out;
+        }
+
+        // Render all .plantuml divs
+        var elements = document.querySelectorAll('.plantuml');
+        elements.forEach(function(el) {
+            var src = el.textContent.trim();
+            var encoded = compress(src);
+            var img = document.createElement('img');
+            img.src = 'https://www.plantuml.com/plantuml/svg/' + encoded;
+            img.alt = 'PlantUML Diagram';
+            img.style.maxWidth = '100%';
+            el.innerHTML = '';
+            el.appendChild(img);
+        });
+    })();
+    </script>
+</body>
+</html>
