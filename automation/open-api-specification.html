@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAPI Specification — What It Is, How It Works & How to Test It</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4338ca;
+            --accent: #06b6d4;
+            --accent-light: #ecfeff;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --bg: #f9fafb;
+            --bg-card: #ffffff;
+            --bg-code: #1e1e2e;
+            --text: #111827;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgb(0 0 0 / .06), 0 1px 2px rgb(0 0 0 / .04);
+            --shadow-lg: 0 10px 25px rgb(0 0 0 / .08);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        /* ── STICKY NAV ── */
+        .topnav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255,255,255,.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: .75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            overflow-x: auto;
+        }
+        .topnav a {
+            font-size: .82rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-decoration: none;
+            white-space: nowrap;
+            transition: color .2s;
+        }
+        .topnav a:hover, .topnav a.active { color: var(--primary); }
+        .topnav .brand { font-weight: 700; color: var(--primary); font-size: .95rem; }
+
+        /* ── HERO ── */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 60%, #312e81 100%);
+            color: #fff;
+            padding: 5rem 2rem 4rem;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.25rem);
+            font-weight: 800;
+            letter-spacing: -.5px;
+            margin-bottom: .75rem;
+        }
+        .hero p {
+            max-width: 640px;
+            margin: 0 auto;
+            font-size: 1.15rem;
+            opacity: .9;
+        }
+        .hero .badge-row {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: .75rem;
+            flex-wrap: wrap;
+        }
+        .hero .badge {
+            display: inline-block;
+            background: rgba(255,255,255,.15);
+            border: 1px solid rgba(255,255,255,.25);
+            padding: .3rem .85rem;
+            border-radius: 999px;
+            font-size: .8rem;
+            font-weight: 500;
+        }
+
+        /* ── LAYOUT ── */
+        .wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        section { margin-bottom: 3rem; }
+
+        /* ── TYPOGRAPHY ── */
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            padding-bottom: .5rem;
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        h2 .icon { font-size: 1.4rem; }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.75rem 0 .75rem;
+            color: var(--text);
+        }
+
+        h4 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 1.25rem 0 .5rem;
+        }
+
+        p { margin-bottom: 1rem; color: var(--text-muted); }
+
+        a { color: var(--primary); }
+
+        ul, ol { margin: 0 0 1rem 1.75rem; color: var(--text-muted); }
+        li { margin-bottom: .4rem; }
+
+        strong { color: var(--text); }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: var(--shadow);
+        }
+        .card h4 { margin-top: 0; }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0 1.5rem;
+        }
+        .card-grid .card { margin-bottom: 0; }
+
+        .card-accent { border-left: 4px solid var(--primary); }
+        .card-success { border-left: 4px solid var(--success); background: var(--success-light); }
+        .card-warning { border-left: 4px solid var(--warning); background: var(--warning-light); }
+        .card-info { border-left: 4px solid var(--accent); background: var(--accent-light); }
+
+        /* ── CODE BLOCKS ── */
+        pre {
+            background: var(--bg-code);
+            color: #cdd6f4;
+            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius);
+            overflow-x: auto;
+            font-size: .85rem;
+            line-height: 1.65;
+            margin: 1rem 0 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        pre .comment { color: #6c7086; }
+        pre .key { color: #89b4fa; }
+        pre .string { color: #a6e3a1; }
+        pre .number { color: #fab387; }
+        pre .keyword { color: #cba6f7; }
+        pre .method { color: #f38ba8; }
+
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', Consolas, monospace;
+            font-size: .88em;
+        }
+        :not(pre) > code {
+            background: #f3f4f6;
+            padding: .15em .4em;
+            border-radius: 4px;
+            color: var(--primary-dark);
+        }
+
+        /* ── TABLE ── */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1rem 0 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            font-size: .92rem;
+        }
+        thead { background: var(--primary); color: #fff; }
+        th { padding: .85rem 1rem; text-align: left; font-weight: 600; }
+        td { padding: .85rem 1rem; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #f9fafb; }
+
+        /* ── CALLOUT ── */
+        .callout {
+            display: flex;
+            gap: .75rem;
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius);
+            margin: 1rem 0 1.5rem;
+            font-size: .92rem;
+        }
+        .callout-tip { background: var(--success-light); border-left: 4px solid var(--success); }
+        .callout-warn { background: var(--warning-light); border-left: 4px solid var(--warning); }
+        .callout-info { background: var(--accent-light); border-left: 4px solid var(--accent); }
+        .callout .icon { font-size: 1.2rem; flex-shrink: 0; }
+        .callout p { margin: 0; color: var(--text); }
+
+        /* ── FLOW DIAGRAM ── */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+        .flow-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: .6rem 1.1rem;
+            font-size: .85rem;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+        }
+        .flow-arrow { color: var(--primary); font-weight: 700; font-size: 1.1rem; }
+
+        /* ── HTTP METHOD BADGES ── */
+        .method-badge {
+            display: inline-block;
+            padding: .15rem .55rem;
+            border-radius: 4px;
+            font-size: .78rem;
+            font-weight: 700;
+            font-family: monospace;
+            color: #fff;
+        }
+        .method-get { background: var(--success); }
+        .method-post { background: var(--primary); }
+        .method-put { background: var(--warning); color: #000; }
+        .method-delete { background: var(--danger); }
+
+        /* ── BACK TO TOP ── */
+        .back-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: grid;
+            place-items: center;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transition: opacity .3s;
+        }
+        .back-top.visible { opacity: 1; }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            font-size: .82rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .wrapper { padding: 1.5rem 1rem; }
+            pre { padding: 1rem; font-size: .8rem; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- =============== NAVIGATION =============== -->
+<nav class="topnav">
+    <span class="brand">OAS Guide</span>
+    <a href="#what">What Is OAS</a>
+    <a href="#structure">Structure</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#example">Example</a>
+    <a href="#testing">Testing</a>
+    <a href="#tools">Tools</a>
+    <a href="#best-practices">Best Practices</a>
+</nav>
+
+<!-- =============== HERO =============== -->
+<div class="hero">
+    <h1>OpenAPI Specification</h1>
+    <p>The industry-standard format for describing, producing, consuming, and testing RESTful APIs.</p>
+    <div class="badge-row">
+        <span class="badge">OAS 3.1</span>
+        <span class="badge">REST APIs</span>
+        <span class="badge">Contract-First</span>
+        <span class="badge">Language-Agnostic</span>
+    </div>
+</div>
+
+<div class="wrapper">
+
+    <!-- =============== WHAT IS OAS =============== -->
+    <section id="what">
+        <h2><span class="icon">📄</span> What Is the OpenAPI Specification?</h2>
+
+        <p>The <strong>OpenAPI Specification (OAS)</strong> is a language-agnostic, machine-readable definition format for HTTP APIs. Originally known as <strong>Swagger</strong>, it was donated to the <a href="https://www.openapis.org/" target="_blank" rel="noopener">OpenAPI Initiative</a> (part of the Linux Foundation) in 2015 and has since evolved into the dominant standard for API contracts.</p>
+
+        <div class="card card-info">
+            <h4>In Plain Terms</h4>
+            <p>An OpenAPI document is a single source of truth (YAML or JSON) that describes <em>every</em> endpoint, parameter, request body, response, authentication scheme, and data model your API exposes — without requiring any running code.</p>
+        </div>
+
+        <h3>Why Does It Matter?</h3>
+        <div class="card-grid">
+            <div class="card card-accent">
+                <h4>🤝 Contract-First Design</h4>
+                <p>Teams agree on the API shape before writing code, reducing rework and misalignment between front-end and back-end.</p>
+            </div>
+            <div class="card card-accent">
+                <h4>🔄 Code Generation</h4>
+                <p>Auto-generate server stubs, client SDKs, and data models in dozens of languages from a single spec file.</p>
+            </div>
+            <div class="card card-accent">
+                <h4>📖 Living Documentation</h4>
+                <p>Interactive docs (Swagger UI, Redoc) stay in sync with the spec — no more stale wikis.</p>
+            </div>
+            <div class="card card-accent">
+                <h4>✅ Automated Testing</h4>
+                <p>Validate requests, responses, schemas, and security requirements against the spec automatically.</p>
+            </div>
+        </div>
+
+        <h3>Version History</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Version</th><th>Released</th><th>Key Changes</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Swagger 2.0</strong></td><td>2014</td><td>Original specification format, JSON Schema subset</td></tr>
+                    <tr><td><strong>OAS 3.0</strong></td><td>2017</td><td>Renamed to OpenAPI; added <code>components</code>, <code>links</code>, <code>callbacks</code>; improved security schemes</td></tr>
+                    <tr><td><strong>OAS 3.1</strong></td><td>2021</td><td>Full JSON Schema 2020-12 alignment; <code>webhooks</code> top-level object; <code>pathItems</code> in components</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =============== STRUCTURE =============== -->
+    <section id="structure">
+        <h2><span class="icon">🏗️</span> Anatomy of an OpenAPI Document</h2>
+
+        <p>Every OAS 3.x document is organized into a handful of top-level objects. Understanding these building blocks is the key to reading and writing specs effectively.</p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Object</th><th>Required</th><th>Purpose</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>openapi</code></td><td>✅</td><td>Spec version string, e.g. <code>"3.1.0"</code></td></tr>
+                    <tr><td><code>info</code></td><td>✅</td><td>API metadata — title, version, description, license</td></tr>
+                    <tr><td><code>servers</code></td><td></td><td>Base URLs (dev, staging, prod)</td></tr>
+                    <tr><td><code>paths</code></td><td>✅</td><td>Available endpoints and their HTTP operations</td></tr>
+                    <tr><td><code>components</code></td><td></td><td>Reusable schemas, parameters, responses, security schemes</td></tr>
+                    <tr><td><code>security</code></td><td></td><td>Global security requirements</td></tr>
+                    <tr><td><code>tags</code></td><td></td><td>Logical grouping of operations</td></tr>
+                    <tr><td><code>webhooks</code></td><td></td><td>Incoming webhook definitions (3.1+)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>How the Pieces Fit Together</h3>
+        <div class="flow">
+            <span class="flow-step">openapi + info</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">servers</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">paths / operations</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">parameters + requestBody</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">responses</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">components ($ref)</span>
+        </div>
+
+        <div class="callout callout-tip">
+            <span class="icon">💡</span>
+            <p><strong>Tip:</strong> Use <code>$ref</code> pointers to reference reusable components. This keeps your spec DRY and maintainable — e.g. <code>$ref: '#/components/schemas/User'</code>.</p>
+        </div>
+    </section>
+
+    <!-- =============== HOW IT WORKS =============== -->
+    <section id="how-it-works">
+        <h2><span class="icon">⚙️</span> How It Works</h2>
+
+        <h3>The Contract-First Workflow</h3>
+        <p>In a contract-first approach, the OpenAPI document is authored <em>before</em> any code is written. The spec becomes the single source of truth from which everything else flows.</p>
+
+        <div class="flow">
+            <span class="flow-step">1. Design Spec</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">2. Review & Agree</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">3. Generate Code</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">4. Implement Logic</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">5. Validate & Test</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">6. Publish Docs</span>
+        </div>
+
+        <h3>Key Concepts</h3>
+
+        <h4>Paths &amp; Operations</h4>
+        <p>Each <strong>path</strong> (e.g. <code>/users/{userId}</code>) supports one or more <strong>operations</strong> — the HTTP methods that can be called on that path.</p>
+
+        <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin:.75rem 0 1rem;">
+            <span class="method-badge method-get">GET</span>
+            <span class="method-badge method-post">POST</span>
+            <span class="method-badge method-put">PUT</span>
+            <span class="method-badge method-delete">DELETE</span>
+        </div>
+
+        <h4>Parameters</h4>
+        <p>Parameters can live in four locations:</p>
+        <ul>
+            <li><strong>path</strong> — embedded in the URL, e.g. <code>/users/{id}</code></li>
+            <li><strong>query</strong> — appended as <code>?key=value</code></li>
+            <li><strong>header</strong> — custom HTTP headers</li>
+            <li><strong>cookie</strong> — sent via cookies</li>
+        </ul>
+
+        <h4>Request Bodies &amp; Content Types</h4>
+        <p>The <code>requestBody</code> object defines what the client sends. It supports multiple media types (<code>application/json</code>, <code>multipart/form-data</code>, etc.), each with its own schema.</p>
+
+        <h4>Responses &amp; Status Codes</h4>
+        <p>Every operation declares expected responses keyed by HTTP status code. Each response can include headers, content schemas, and links to related operations.</p>
+
+        <h4>Security Schemes</h4>
+        <p>OAS supports several authentication mechanisms out of the box:</p>
+        <ul>
+            <li><strong>apiKey</strong> — header, query, or cookie-based key</li>
+            <li><strong>http</strong> — Basic, Bearer, Digest, etc.</li>
+            <li><strong>oauth2</strong> — all four OAuth 2.0 flows</li>
+            <li><strong>openIdConnect</strong> — discovery-based OIDC</li>
+        </ul>
+    </section>
+
+    <!-- =============== FULL EXAMPLE =============== -->
+    <section id="example">
+        <h2><span class="icon">📝</span> Complete Example</h2>
+
+        <p>Below is a minimal but realistic OAS 3.1 document for a <strong>User Management API</strong>. It covers CRUD operations, reusable schemas, and Bearer authentication.</p>
+
+<pre><code><span class="key">openapi</span>: <span class="string">"3.1.0"</span>
+
+<span class="key">info</span>:
+  <span class="key">title</span>: <span class="string">User Management API</span>
+  <span class="key">version</span>: <span class="string">"1.0.0"</span>
+  <span class="key">description</span>: <span class="string">A simple API for managing users.</span>
+
+<span class="key">servers</span>:
+  - <span class="key">url</span>: <span class="string">https://api.example.com/v1</span>
+    <span class="key">description</span>: <span class="string">Production</span>
+  - <span class="key">url</span>: <span class="string">http://localhost:3000/v1</span>
+    <span class="key">description</span>: <span class="string">Local development</span>
+
+<span class="key">security</span>:
+  - <span class="key">bearerAuth</span>: []
+
+<span class="key">tags</span>:
+  - <span class="key">name</span>: <span class="string">Users</span>
+    <span class="key">description</span>: <span class="string">Operations on user accounts</span>
+
+<span class="key">paths</span>:
+  <span class="key">/users</span>:
+    <span class="method">get</span>:
+      <span class="key">summary</span>: <span class="string">List all users</span>
+      <span class="key">operationId</span>: <span class="string">listUsers</span>
+      <span class="key">tags</span>: [<span class="string">Users</span>]
+      <span class="key">parameters</span>:
+        - <span class="key">name</span>: <span class="string">limit</span>
+          <span class="key">in</span>: <span class="string">query</span>
+          <span class="key">schema</span>:
+            <span class="key">type</span>: <span class="string">integer</span>
+            <span class="key">default</span>: <span class="number">20</span>
+            <span class="key">maximum</span>: <span class="number">100</span>
+        - <span class="key">name</span>: <span class="string">offset</span>
+          <span class="key">in</span>: <span class="string">query</span>
+          <span class="key">schema</span>:
+            <span class="key">type</span>: <span class="string">integer</span>
+            <span class="key">default</span>: <span class="number">0</span>
+      <span class="key">responses</span>:
+        <span class="string">"200"</span>:
+          <span class="key">description</span>: <span class="string">A paginated list of users</span>
+          <span class="key">content</span>:
+            <span class="key">application/json</span>:
+              <span class="key">schema</span>:
+                <span class="key">type</span>: <span class="string">object</span>
+                <span class="key">properties</span>:
+                  <span class="key">data</span>:
+                    <span class="key">type</span>: <span class="string">array</span>
+                    <span class="key">items</span>:
+                      <span class="key">$ref</span>: <span class="string">"#/components/schemas/User"</span>
+                  <span class="key">total</span>:
+                    <span class="key">type</span>: <span class="string">integer</span>
+
+    <span class="method">post</span>:
+      <span class="key">summary</span>: <span class="string">Create a new user</span>
+      <span class="key">operationId</span>: <span class="string">createUser</span>
+      <span class="key">tags</span>: [<span class="string">Users</span>]
+      <span class="key">requestBody</span>:
+        <span class="key">required</span>: <span class="keyword">true</span>
+        <span class="key">content</span>:
+          <span class="key">application/json</span>:
+            <span class="key">schema</span>:
+              <span class="key">$ref</span>: <span class="string">"#/components/schemas/CreateUser"</span>
+      <span class="key">responses</span>:
+        <span class="string">"201"</span>:
+          <span class="key">description</span>: <span class="string">User created</span>
+          <span class="key">content</span>:
+            <span class="key">application/json</span>:
+              <span class="key">schema</span>:
+                <span class="key">$ref</span>: <span class="string">"#/components/schemas/User"</span>
+        <span class="string">"400"</span>:
+          <span class="key">description</span>: <span class="string">Validation error</span>
+          <span class="key">content</span>:
+            <span class="key">application/json</span>:
+              <span class="key">schema</span>:
+                <span class="key">$ref</span>: <span class="string">"#/components/schemas/Error"</span>
+
+  <span class="key">/users/{userId}</span>:
+    <span class="method">get</span>:
+      <span class="key">summary</span>: <span class="string">Get user by ID</span>
+      <span class="key">operationId</span>: <span class="string">getUser</span>
+      <span class="key">tags</span>: [<span class="string">Users</span>]
+      <span class="key">parameters</span>:
+        - <span class="key">name</span>: <span class="string">userId</span>
+          <span class="key">in</span>: <span class="string">path</span>
+          <span class="key">required</span>: <span class="keyword">true</span>
+          <span class="key">schema</span>:
+            <span class="key">type</span>: <span class="string">string</span>
+            <span class="key">format</span>: <span class="string">uuid</span>
+      <span class="key">responses</span>:
+        <span class="string">"200"</span>:
+          <span class="key">description</span>: <span class="string">User found</span>
+          <span class="key">content</span>:
+            <span class="key">application/json</span>:
+              <span class="key">schema</span>:
+                <span class="key">$ref</span>: <span class="string">"#/components/schemas/User"</span>
+        <span class="string">"404"</span>:
+          <span class="key">description</span>: <span class="string">User not found</span>
+
+    <span class="method">put</span>:
+      <span class="key">summary</span>: <span class="string">Update a user</span>
+      <span class="key">operationId</span>: <span class="string">updateUser</span>
+      <span class="key">tags</span>: [<span class="string">Users</span>]
+      <span class="key">parameters</span>:
+        - <span class="key">name</span>: <span class="string">userId</span>
+          <span class="key">in</span>: <span class="string">path</span>
+          <span class="key">required</span>: <span class="keyword">true</span>
+          <span class="key">schema</span>:
+            <span class="key">type</span>: <span class="string">string</span>
+            <span class="key">format</span>: <span class="string">uuid</span>
+      <span class="key">requestBody</span>:
+        <span class="key">required</span>: <span class="keyword">true</span>
+        <span class="key">content</span>:
+          <span class="key">application/json</span>:
+            <span class="key">schema</span>:
+              <span class="key">$ref</span>: <span class="string">"#/components/schemas/CreateUser"</span>
+      <span class="key">responses</span>:
+        <span class="string">"200"</span>:
+          <span class="key">description</span>: <span class="string">User updated</span>
+        <span class="string">"404"</span>:
+          <span class="key">description</span>: <span class="string">User not found</span>
+
+    <span class="method">delete</span>:
+      <span class="key">summary</span>: <span class="string">Delete a user</span>
+      <span class="key">operationId</span>: <span class="string">deleteUser</span>
+      <span class="key">tags</span>: [<span class="string">Users</span>]
+      <span class="key">parameters</span>:
+        - <span class="key">name</span>: <span class="string">userId</span>
+          <span class="key">in</span>: <span class="string">path</span>
+          <span class="key">required</span>: <span class="keyword">true</span>
+          <span class="key">schema</span>:
+            <span class="key">type</span>: <span class="string">string</span>
+            <span class="key">format</span>: <span class="string">uuid</span>
+      <span class="key">responses</span>:
+        <span class="string">"204"</span>:
+          <span class="key">description</span>: <span class="string">User deleted</span>
+        <span class="string">"404"</span>:
+          <span class="key">description</span>: <span class="string">User not found</span>
+
+<span class="key">components</span>:
+  <span class="key">schemas</span>:
+    <span class="key">User</span>:
+      <span class="key">type</span>: <span class="string">object</span>
+      <span class="key">properties</span>:
+        <span class="key">id</span>:
+          <span class="key">type</span>: <span class="string">string</span>
+          <span class="key">format</span>: <span class="string">uuid</span>
+        <span class="key">name</span>:
+          <span class="key">type</span>: <span class="string">string</span>
+          <span class="key">example</span>: <span class="string">"Jane Doe"</span>
+        <span class="key">email</span>:
+          <span class="key">type</span>: <span class="string">string</span>
+          <span class="key">format</span>: <span class="string">email</span>
+        <span class="key">role</span>:
+          <span class="key">type</span>: <span class="string">string</span>
+          <span class="key">enum</span>: [<span class="string">admin</span>, <span class="string">editor</span>, <span class="string">viewer</span>]
+        <span class="key">createdAt</span>:
+          <span class="key">type</span>: <span class="string">string</span>
+          <span class="key">format</span>: <span class="string">date-time</span>
+      <span class="key">required</span>: [<span class="string">id</span>, <span class="string">name</span>, <span class="string">email</span>]
+
+    <span class="key">CreateUser</span>:
+      <span class="key">type</span>: <span class="string">object</span>
+      <span class="key">properties</span>:
+        <span class="key">name</span>:
+          <span class="key">type</span>: <span class="string">string</span>
+          <span class="key">minLength</span>: <span class="number">1</span>
+          <span class="key">maxLength</span>: <span class="number">100</span>
+        <span class="key">email</span>:
+          <span class="key">type</span>: <span class="string">string</span>
+          <span class="key">format</span>: <span class="string">email</span>
+        <span class="key">role</span>:
+          <span class="key">type</span>: <span class="string">string</span>
+          <span class="key">enum</span>: [<span class="string">admin</span>, <span class="string">editor</span>, <span class="string">viewer</span>]
+          <span class="key">default</span>: <span class="string">viewer</span>
+      <span class="key">required</span>: [<span class="string">name</span>, <span class="string">email</span>]
+
+    <span class="key">Error</span>:
+      <span class="key">type</span>: <span class="string">object</span>
+      <span class="key">properties</span>:
+        <span class="key">code</span>:
+          <span class="key">type</span>: <span class="string">integer</span>
+        <span class="key">message</span>:
+          <span class="key">type</span>: <span class="string">string</span>
+
+  <span class="key">securitySchemes</span>:
+    <span class="key">bearerAuth</span>:
+      <span class="key">type</span>: <span class="string">http</span>
+      <span class="key">scheme</span>: <span class="string">bearer</span>
+      <span class="key">bearerFormat</span>: <span class="string">JWT</span></code></pre>
+    </section>
+
+    <!-- =============== TESTING =============== -->
+    <section id="testing">
+        <h2><span class="icon">🧪</span> How to Test an OpenAPI-Defined API (Java)</h2>
+
+        <p>An OpenAPI specification unlocks multiple layers of testing — from static validation of the spec itself to runtime contract testing of live endpoints. The entire testing stack below is <strong>Java-based</strong>, making it ideal for JVM projects using Maven or Gradle.</p>
+
+        <h3>Maven Dependencies</h3>
+        <p>Add these to your <code>pom.xml</code> to get started with the tools covered below.</p>
+
+        <div class="card">
+<pre><code><span class="comment">&lt;!-- pom.xml — key test dependencies --&gt;</span>
+<span class="key">&lt;dependencies&gt;</span>
+  <span class="comment">&lt;!-- Swagger Parser — spec parsing &amp; validation --&gt;</span>
+  <span class="key">&lt;dependency&gt;</span>
+    <span class="key">&lt;groupId&gt;</span><span class="string">io.swagger.parser.v3</span><span class="key">&lt;/groupId&gt;</span>
+    <span class="key">&lt;artifactId&gt;</span><span class="string">swagger-parser</span><span class="key">&lt;/artifactId&gt;</span>
+    <span class="key">&lt;version&gt;</span><span class="number">2.1.22</span><span class="key">&lt;/version&gt;</span>
+    <span class="key">&lt;scope&gt;</span><span class="string">test</span><span class="key">&lt;/scope&gt;</span>
+  <span class="key">&lt;/dependency&gt;</span>
+
+  <span class="comment">&lt;!-- REST Assured — fluent HTTP testing --&gt;</span>
+  <span class="key">&lt;dependency&gt;</span>
+    <span class="key">&lt;groupId&gt;</span><span class="string">io.rest-assured</span><span class="key">&lt;/groupId&gt;</span>
+    <span class="key">&lt;artifactId&gt;</span><span class="string">rest-assured</span><span class="key">&lt;/artifactId&gt;</span>
+    <span class="key">&lt;version&gt;</span><span class="number">5.4.0</span><span class="key">&lt;/version&gt;</span>
+    <span class="key">&lt;scope&gt;</span><span class="string">test</span><span class="key">&lt;/scope&gt;</span>
+  <span class="key">&lt;/dependency&gt;</span>
+
+  <span class="comment">&lt;!-- Atlassian Swagger Request Validator — contract testing --&gt;</span>
+  <span class="key">&lt;dependency&gt;</span>
+    <span class="key">&lt;groupId&gt;</span><span class="string">com.atlassian.oai</span><span class="key">&lt;/groupId&gt;</span>
+    <span class="key">&lt;artifactId&gt;</span><span class="string">swagger-request-validator-restassured</span><span class="key">&lt;/artifactId&gt;</span>
+    <span class="key">&lt;version&gt;</span><span class="number">2.40.0</span><span class="key">&lt;/version&gt;</span>
+    <span class="key">&lt;scope&gt;</span><span class="string">test</span><span class="key">&lt;/scope&gt;</span>
+  <span class="key">&lt;/dependency&gt;</span>
+
+  <span class="comment">&lt;!-- WireMock — mock server --&gt;</span>
+  <span class="key">&lt;dependency&gt;</span>
+    <span class="key">&lt;groupId&gt;</span><span class="string">org.wiremock</span><span class="key">&lt;/groupId&gt;</span>
+    <span class="key">&lt;artifactId&gt;</span><span class="string">wiremock</span><span class="key">&lt;/artifactId&gt;</span>
+    <span class="key">&lt;version&gt;</span><span class="number">3.6.0</span><span class="key">&lt;/version&gt;</span>
+    <span class="key">&lt;scope&gt;</span><span class="string">test</span><span class="key">&lt;/scope&gt;</span>
+  <span class="key">&lt;/dependency&gt;</span>
+
+  <span class="comment">&lt;!-- JUnit 5 --&gt;</span>
+  <span class="key">&lt;dependency&gt;</span>
+    <span class="key">&lt;groupId&gt;</span><span class="string">org.junit.jupiter</span><span class="key">&lt;/groupId&gt;</span>
+    <span class="key">&lt;artifactId&gt;</span><span class="string">junit-jupiter</span><span class="key">&lt;/artifactId&gt;</span>
+    <span class="key">&lt;version&gt;</span><span class="number">5.10.2</span><span class="key">&lt;/version&gt;</span>
+    <span class="key">&lt;scope&gt;</span><span class="string">test</span><span class="key">&lt;/scope&gt;</span>
+  <span class="key">&lt;/dependency&gt;</span>
+<span class="key">&lt;/dependencies&gt;</span></code></pre>
+        </div>
+
+        <h3>1. Spec Validation &amp; Parsing</h3>
+        <p>Before anything runs, make sure the spec file is well-formed. <strong>Swagger Parser</strong> (Java) parses OAS 3.x files and reports structural errors.</p>
+
+        <div class="card">
+            <h4>Swagger Parser</h4>
+            <p>The official Java parser for OpenAPI documents. It resolves <code>$ref</code> pointers, validates the schema, and returns a strongly-typed model.</p>
+<pre><code><span class="keyword">import</span> io.swagger.v3.parser.OpenAPIV3Parser;
+<span class="keyword">import</span> io.swagger.v3.parser.core.models.SwaggerParseResult;
+
+<span class="keyword">class</span> SpecValidationTest {
+
+    <span class="keyword">@Test</span>
+    <span class="keyword">void</span> <span class="method">specShouldBeValid</span>() {
+        SwaggerParseResult result = <span class="keyword">new</span> OpenAPIV3Parser()
+            .readLocation(<span class="string">"src/main/resources/openapi.yaml"</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);
+
+        <span class="comment">// Fail if any parsing/validation errors exist</span>
+        assertThat(result.getMessages()).isEmpty();
+
+        <span class="comment">// Access the parsed model</span>
+        OpenAPI api = result.getOpenAPI();
+        assertThat(api.getInfo().getTitle()).isNotBlank();
+        assertThat(api.getPaths()).isNotEmpty();
+    }
+}</code></pre>
+            <p>Run this as a unit test on every build — it catches missing fields, invalid <code>$ref</code> targets, and schema violations instantly.</p>
+        </div>
+
+        <h3>2. Schema &amp; Contract Validation with REST Assured</h3>
+        <p>Validate that actual API responses conform to the schemas defined in the spec using <strong>REST Assured</strong> combined with the <strong>Atlassian Swagger Request Validator</strong>.</p>
+
+        <div class="card">
+            <h4>REST Assured + Swagger Request Validator</h4>
+            <p>This integration automatically validates every request and response against the OpenAPI contract — status codes, headers, content types, and JSON schemas.</p>
+<pre><code><span class="keyword">import static</span> io.restassured.RestAssured.*;
+<span class="keyword">import static</span> com.atlassian.oai.validator.restassured.OpenApiValidationFilter;
+
+<span class="keyword">class</span> UserApiContractTest {
+
+    <span class="keyword">private static final</span> OpenApiValidationFilter validationFilter =
+        <span class="keyword">new</span> OpenApiValidationFilter(<span class="string">"src/main/resources/openapi.yaml"</span>);
+
+    <span class="keyword">@Test</span>
+    <span class="keyword">void</span> <span class="method">listUsersShouldMatchContract</span>() {
+        given()
+            .filter(validationFilter)          <span class="comment">// validates req + res against spec</span>
+            .header(<span class="string">"Authorization"</span>, <span class="string">"Bearer "</span> + token)
+            .queryParam(<span class="string">"limit"</span>, <span class="number">10</span>)
+        .when()
+            .get(<span class="string">"/users"</span>)
+        .then()
+            .statusCode(<span class="number">200</span>)
+            .body(<span class="string">"data.size()"</span>, lessThanOrEqualTo(<span class="number">10</span>));
+    }
+
+    <span class="keyword">@Test</span>
+    <span class="keyword">void</span> <span class="method">createUserShouldReturn201</span>() {
+        String payload = <span class="string">"""
+            { "name": "Jane Doe", "email": "jane@example.com" }
+            """</span>;
+
+        given()
+            .filter(validationFilter)
+            .contentType(<span class="string">"application/json"</span>)
+            .header(<span class="string">"Authorization"</span>, <span class="string">"Bearer "</span> + token)
+            .body(payload)
+        .when()
+            .post(<span class="string">"/users"</span>)
+        .then()
+            .statusCode(<span class="number">201</span>)
+            .body(<span class="string">"id"</span>, notNullValue())
+            .body(<span class="string">"email"</span>, equalTo(<span class="string">"jane@example.com"</span>));
+    }
+
+    <span class="keyword">@Test</span>
+    <span class="keyword">void</span> <span class="method">getUserByIdShouldReturn404ForUnknown</span>() {
+        given()
+            .filter(validationFilter)
+            .header(<span class="string">"Authorization"</span>, <span class="string">"Bearer "</span> + token)
+        .when()
+            .get(<span class="string">"/users/{id}"</span>, UUID.randomUUID())
+        .then()
+            .statusCode(<span class="number">404</span>);
+    }
+}</code></pre>
+        </div>
+
+        <div class="callout callout-tip">
+            <span class="icon">💡</span>
+            <p><strong>Key benefit:</strong> The <code>OpenApiValidationFilter</code> will <em>fail the test automatically</em> if the response body doesn't match the schema, if an undocumented status code is returned, or if required headers are missing — no manual assertions needed.</p>
+        </div>
+
+        <h3>3. Standalone Contract Validation (No Running Server)</h3>
+        <p>Use the Swagger Request Validator core library to validate raw JSON payloads against the spec without sending HTTP requests.</p>
+
+        <div class="card">
+            <h4>Swagger Request Validator — Core API</h4>
+<pre><code><span class="keyword">import</span> com.atlassian.oai.validator.OpenApiInteractionValidator;
+<span class="keyword">import</span> com.atlassian.oai.validator.model.SimpleRequest;
+<span class="keyword">import</span> com.atlassian.oai.validator.model.SimpleResponse;
+<span class="keyword">import</span> com.atlassian.oai.validator.report.ValidationReport;
+
+<span class="keyword">class</span> OfflineContractTest {
+
+    <span class="keyword">private final</span> OpenApiInteractionValidator validator =
+        OpenApiInteractionValidator
+            .createForSpecificationUrl(<span class="string">"src/main/resources/openapi.yaml"</span>)
+            .build();
+
+    <span class="keyword">@Test</span>
+    <span class="keyword">void</span> <span class="method">responseShouldMatchUserSchema</span>() {
+        SimpleRequest request = SimpleRequest.Builder
+            .get(<span class="string">"/users"</span>)
+            .withHeader(<span class="string">"Authorization"</span>, <span class="string">"Bearer test-token"</span>)
+            .build();
+
+        SimpleResponse response = SimpleResponse.Builder
+            .status(<span class="number">200</span>)
+            .withContentType(<span class="string">"application/json"</span>)
+            .withBody(<span class="string">"{\"data\": [{\"id\": \"abc\", \"name\": \"Jane\", \"email\": \"j@x.com\"}], \"total\": 1}"</span>)
+            .build();
+
+        ValidationReport report = validator.validate(request, response);
+        assertThat(report.hasErrors()).isFalse();
+    }
+}</code></pre>
+            <p>This approach is ideal for unit testing serializers, interceptors, or gateway response transformations without spinning up the entire application.</p>
+        </div>
+
+        <h3>4. Integration Testing with REST Assured</h3>
+        <p>Beyond contract validation, REST Assured gives you a fluent Java DSL for complete integration test workflows.</p>
+
+        <div class="card">
+            <h4>Full CRUD Integration Test</h4>
+<pre><code><span class="keyword">class</span> UserCrudIntegrationTest {
+
+    <span class="keyword">@Test</span>
+    <span class="keyword">void</span> <span class="method">fullUserLifecycle</span>() {
+        <span class="comment">// CREATE</span>
+        String userId = given()
+            .contentType(<span class="string">"application/json"</span>)
+            .body(<span class="string">"{\"name\":\"Alice\",\"email\":\"alice@test.com\"}"</span>)
+        .when()
+            .post(<span class="string">"/users"</span>)
+        .then()
+            .statusCode(<span class="number">201</span>)
+            .extract().path(<span class="string">"id"</span>);
+
+        <span class="comment">// READ</span>
+        given()
+        .when()
+            .get(<span class="string">"/users/{id}"</span>, userId)
+        .then()
+            .statusCode(<span class="number">200</span>)
+            .body(<span class="string">"name"</span>, equalTo(<span class="string">"Alice"</span>));
+
+        <span class="comment">// UPDATE</span>
+        given()
+            .contentType(<span class="string">"application/json"</span>)
+            .body(<span class="string">"{\"name\":\"Alice Updated\",\"email\":\"alice@test.com\"}"</span>)
+        .when()
+            .put(<span class="string">"/users/{id}"</span>, userId)
+        .then()
+            .statusCode(<span class="number">200</span>);
+
+        <span class="comment">// DELETE</span>
+        given()
+        .when()
+            .delete(<span class="string">"/users/{id}"</span>, userId)
+        .then()
+            .statusCode(<span class="number">204</span>);
+    }
+}</code></pre>
+        </div>
+
+        <h3>5. Mock Testing with WireMock</h3>
+        <p>Spin up a mock server so consumer teams can develop and test without the real back-end. <strong>WireMock</strong> is a powerful Java-native HTTP mock server with built-in OpenAPI support.</p>
+
+        <div class="card">
+            <h4>WireMock with JUnit 5</h4>
+<pre><code><span class="keyword">import</span> com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+<span class="keyword">import static</span> com.github.tomakehurst.wiremock.client.WireMock.*;
+
+<span class="keyword">@ExtendWith</span>(WireMockExtension.<span class="keyword">class</span>)
+<span class="keyword">class</span> UserApiMockTest {
+
+    <span class="keyword">@RegisterExtension</span>
+    <span class="keyword">static</span> WireMockExtension wireMock = WireMockExtension.newInstance()
+        .options(wireMockConfig().dynamicPort())
+        .build();
+
+    <span class="keyword">@Test</span>
+    <span class="keyword">void</span> <span class="method">mockListUsersEndpoint</span>() {
+        <span class="comment">// Stub the GET /users endpoint</span>
+        wireMock.stubFor(
+            get(urlPathEqualTo(<span class="string">"/v1/users"</span>))
+                .willReturn(okJson(<span class="string">"""
+                    {
+                      "data": [
+                        { "id": "abc-123", "name": "Jane", "email": "jane@x.com" }
+                      ],
+                      "total": 1
+                    }
+                    """</span>))
+        );
+
+        <span class="comment">// Test against the mock</span>
+        given()
+            .baseUri(wireMock.baseUrl())
+        .when()
+            .get(<span class="string">"/v1/users"</span>)
+        .then()
+            .statusCode(<span class="number">200</span>)
+            .body(<span class="string">"data[0].name"</span>, equalTo(<span class="string">"Jane"</span>));
+    }
+}</code></pre>
+        </div>
+
+        <div class="card card-info">
+            <h4>WireMock Standalone Mode</h4>
+            <p>WireMock can also run as a standalone JAR for non-Java consumers:</p>
+<pre><code><span class="comment"># Download and run standalone</span>
+java -jar wiremock-standalone-3.6.0.jar --port <span class="number">8080</span>
+
+<span class="comment"># Load stubs from JSON files in ./mappings/</span>
+java -jar wiremock-standalone-3.6.0.jar \
+  --root-dir ./wiremock --port <span class="number">8080</span></code></pre>
+        </div>
+
+        <h3>6. Security Testing</h3>
+        <p>Use the spec to drive automated security scanning with Java-based tools.</p>
+
+        <div class="card-grid">
+            <div class="card card-warning">
+                <h4>OWASP ZAP (Java)</h4>
+                <p>ZAP is a Java application that imports OpenAPI specs to auto-discover endpoints, then runs active/passive scans for OWASP Top 10 vulnerabilities.</p>
+<pre><code><span class="comment">// ZAP Java API Client</span>
+<span class="keyword">import</span> org.zaproxy.clientapi.core.ClientApi;
+
+ClientApi zap = <span class="keyword">new</span> ClientApi(
+    <span class="string">"localhost"</span>, <span class="number">8090</span>);
+
+<span class="comment">// Import OpenAPI spec</span>
+zap.openapi.importUrl(
+    <span class="string">"http://localhost:3000/openapi.json"</span>,
+    <span class="keyword">null</span>);
+
+<span class="comment">// Start active scan</span>
+zap.ascan.scan(
+    <span class="string">"http://localhost:3000"</span>,
+    <span class="string">"true"</span>, <span class="string">"false"</span>,
+    <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</code></pre>
+            </div>
+            <div class="card card-warning">
+                <h4>42Crunch Audit</h4>
+                <p>Static analysis of the spec itself — identifies security misconfigurations, missing auth, overly permissive schemas. Available as a Maven plugin.</p>
+<pre><code><span class="comment">&lt;!-- Maven plugin --&gt;</span>
+<span class="key">&lt;plugin&gt;</span>
+  <span class="key">&lt;groupId&gt;</span><span class="string">com.42crunch</span><span class="key">&lt;/groupId&gt;</span>
+  <span class="key">&lt;artifactId&gt;</span><span class="string">api-security-audit</span><span class="key">&lt;/artifactId&gt;</span>
+<span class="key">&lt;/plugin&gt;</span></code></pre>
+            </div>
+        </div>
+
+        <h3>7. Performance Testing with Gatling</h3>
+        <p><strong>Gatling</strong> is a high-performance, Scala/Java load testing framework. You can craft load scenarios that exercise your OpenAPI-defined endpoints.</p>
+
+        <div class="card">
+            <h4>Gatling Simulation (Java DSL)</h4>
+<pre><code><span class="keyword">import</span> io.gatling.javaapi.core.*;
+<span class="keyword">import</span> io.gatling.javaapi.http.*;
+<span class="keyword">import static</span> io.gatling.javaapi.core.CoreDsl.*;
+<span class="keyword">import static</span> io.gatling.javaapi.http.HttpDsl.*;
+
+<span class="keyword">public class</span> UserApiSimulation <span class="keyword">extends</span> Simulation {
+
+    HttpProtocolBuilder httpProtocol = http
+        .baseUrl(<span class="string">"http://localhost:3000/v1"</span>)
+        .header(<span class="string">"Authorization"</span>, <span class="string">"Bearer ${token}"</span>)
+        .acceptHeader(<span class="string">"application/json"</span>);
+
+    ScenarioBuilder listUsers = scenario(<span class="string">"List Users"</span>)
+        .exec(
+            http(<span class="string">"GET /users"</span>)
+                .get(<span class="string">"/users"</span>)
+                .queryParam(<span class="string">"limit"</span>, <span class="string">"20"</span>)
+                .check(status().is(<span class="number">200</span>))
+                .check(jsonPath(<span class="string">"$.data"</span>).exists())
+        );
+
+    ScenarioBuilder createUser = scenario(<span class="string">"Create User"</span>)
+        .exec(
+            http(<span class="string">"POST /users"</span>)
+                .post(<span class="string">"/users"</span>)
+                .body(StringBody(<span class="string">"""
+                    {"name":"Load Test","email":"load@test.com"}
+                    """</span>))
+                .asJson()
+                .check(status().is(<span class="number">201</span>))
+        );
+
+    {
+        setUp(
+            listUsers.injectOpen(rampUsers(<span class="number">100</span>).during(<span class="number">60</span>)),
+            createUser.injectOpen(rampUsers(<span class="number">50</span>).during(<span class="number">60</span>))
+        ).protocols(httpProtocol);
+    }
+}</code></pre>
+<pre><code><span class="comment"># Run the simulation with Maven</span>
+mvn gatling:test -Dgatling.simulationClass=UserApiSimulation</code></pre>
+        </div>
+
+        <h3>Testing Pyramid for OpenAPI APIs</h3>
+        <div class="callout callout-info">
+            <span class="icon">🔺</span>
+            <p>
+                <strong>Layer 1 — Spec Parsing:</strong> Swagger Parser validates structure on every build.<br>
+                <strong>Layer 2 — Schema Validation:</strong> Swagger Request Validator checks payloads offline.<br>
+                <strong>Layer 3 — Contract Tests:</strong> REST Assured + Validation Filter against live API.<br>
+                <strong>Layer 4 — Integration Tests:</strong> Full CRUD workflows with REST Assured + WireMock.<br>
+                <strong>Layer 5 — Security &amp; Performance:</strong> ZAP scans + Gatling load tests.
+            </p>
+        </div>
+    </section>
+
+    <!-- =============== TOOLS =============== -->
+    <section id="tools">
+        <h2><span class="icon">🛠️</span> Tools Ecosystem</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Category</th><th>Tool</th><th>Language</th><th>Use Case</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Editor</strong></td><td>Swagger Editor / Stoplight Studio</td><td>Web</td><td>Visual spec authoring with live preview</td></tr>
+                    <tr><td><strong>Docs</strong></td><td>Swagger UI / Springdoc</td><td>Java</td><td>Interactive API documentation</td></tr>
+                    <tr><td><strong>Parsing</strong></td><td>Swagger Parser</td><td>Java</td><td>Spec parsing, validation &amp; resolution</td></tr>
+                    <tr><td><strong>API Testing</strong></td><td>REST Assured</td><td>Java</td><td>Fluent HTTP testing DSL</td></tr>
+                    <tr><td><strong>Contract</strong></td><td>Swagger Request Validator (Atlassian)</td><td>Java</td><td>Contract validation against OpenAPI spec</td></tr>
+                    <tr><td><strong>Mocking</strong></td><td>WireMock</td><td>Java</td><td>HTTP mock server with stub matching</td></tr>
+                    <tr><td><strong>Codegen</strong></td><td>OpenAPI Generator (Maven plugin)</td><td>Java</td><td>Server stubs &amp; client SDKs</td></tr>
+                    <tr><td><strong>Security</strong></td><td>OWASP ZAP / 42Crunch</td><td>Java / SaaS</td><td>API security scanning</td></tr>
+                    <tr><td><strong>Perf</strong></td><td>Gatling</td><td>Java / Scala</td><td>High-performance load testing</td></tr>
+                    <tr><td><strong>CI/CD</strong></td><td>Maven + JUnit 5 + Gatling plugin</td><td>Java</td><td>Pipeline quality gates</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =============== BEST PRACTICES =============== -->
+    <section id="best-practices">
+        <h2><span class="icon">🎯</span> Best Practices</h2>
+
+        <div class="card-grid">
+            <div class="card card-success">
+                <h4>Version Your Spec</h4>
+                <p>Store <code>openapi.yaml</code> in source control alongside your code. Use semantic versioning in the <code>info.version</code> field.</p>
+            </div>
+            <div class="card card-success">
+                <h4>Validate in CI</h4>
+                <p>Run Swagger Parser validation on every build. Block merges that introduce spec errors.</p>
+            </div>
+            <div class="card card-success">
+                <h4>Use <code>$ref</code> Liberally</h4>
+                <p>Extract schemas, parameters, and responses into <code>components</code>. Avoid duplication.</p>
+            </div>
+            <div class="card card-success">
+                <h4>Add Examples</h4>
+                <p>Include <code>example</code> values in your schemas. They power mock servers and make docs instantly understandable.</p>
+            </div>
+            <div class="card card-success">
+                <h4>Contract Test in CI</h4>
+                <p>Run REST Assured + Swagger Request Validator against a staging environment on every deployment to catch API drift.</p>
+            </div>
+            <div class="card card-success">
+                <h4>Adopt Contract-First</h4>
+                <p>Design the spec first, generate code from it. This ensures the implementation matches the documented behavior by construction.</p>
+            </div>
+        </div>
+
+        <h3>CI Pipeline Example</h3>
+<pre><code><span class="comment"># .github/workflows/api-quality.yml</span>
+<span class="key">name</span>: <span class="string">API Quality Gate</span>
+<span class="key">on</span>: [<span class="string">push</span>, <span class="string">pull_request</span>]
+
+<span class="key">jobs</span>:
+  <span class="key">validate-and-test</span>:
+    <span class="key">runs-on</span>: <span class="string">ubuntu-latest</span>
+    <span class="key">steps</span>:
+      - <span class="key">uses</span>: <span class="string">actions/checkout@v4</span>
+
+      - <span class="key">name</span>: <span class="string">Set up JDK 21</span>
+        <span class="key">uses</span>: <span class="string">actions/setup-java@v4</span>
+        <span class="key">with</span>:
+          <span class="key">java-version</span>: <span class="string">'21'</span>
+          <span class="key">distribution</span>: <span class="string">'temurin'</span>
+
+      - <span class="key">name</span>: <span class="string">Spec validation + contract tests</span>
+        <span class="key">run</span>: <span class="string">mvn verify -Pcontract-tests</span>
+
+  <span class="key">load-test</span>:
+    <span class="key">runs-on</span>: <span class="string">ubuntu-latest</span>
+    <span class="key">needs</span>: <span class="string">validate-and-test</span>
+    <span class="key">steps</span>:
+      - <span class="key">uses</span>: <span class="string">actions/checkout@v4</span>
+      - <span class="key">run</span>: <span class="string">docker compose up -d api</span>
+      - <span class="key">name</span>: <span class="string">Gatling load test</span>
+        <span class="key">run</span>: <span class="string">mvn gatling:test</span></code></pre>
+    </section>
+
+</div>
+
+<!-- =============== FOOTER =============== -->
+<footer>
+    <p>OpenAPI Specification Guide &mdash; Last updated March 2026</p>
+</footer>
+
+<!-- =============== BACK TO TOP BUTTON =============== -->
+<button class="back-top" onclick="window.scrollTo({top:0})" aria-label="Back to top">↑</button>
+
+<script>
+    // Show/hide back-to-top button
+    const btn = document.querySelector('.back-top');
+    window.addEventListener('scroll', () => {
+        btn.classList.toggle('visible', window.scrollY > 400);
+    });
+</script>
+
+</body>
+</html></code></pre>
