@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java 21 - Comprehensive Documentation</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border: #e2e8f0;
+            --java-orange: #e76f00;
+            --java-blue: #5382a1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        header .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            margin-bottom: 0.5rem;
+        }
+
+        header .meta {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--primary-dark);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin: 1.25rem 0 0.5rem;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        li p {
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: var(--bg-secondary);
+            transition: background 0.2s;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        code {
+            background: var(--bg-tertiary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: var(--primary-dark);
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            line-height: 1.5;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .first-section {
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin: 0 0 2rem 0;
+            border-radius: 8px;
+        }
+
+        .info-box {
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--secondary);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info-box.success {
+            border-left-color: var(--success);
+        }
+
+        .info-box.warning {
+            border-left-color: var(--warning);
+        }
+
+        .info-box.danger {
+            border-left-color: var(--danger);
+        }
+
+        .info-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .diagram {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .toc {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1.5rem 2rem;
+            margin: 0 0 2rem 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            color: var(--primary-dark);
+        }
+
+        .toc ol {
+            margin: 0.75rem 0 0 1.5rem;
+        }
+
+        .toc li {
+            margin-bottom: 0.3rem;
+        }
+
+        .toc a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .badge-lts { background: var(--success); }
+        .badge-new { background: var(--primary); }
+        .badge-preview { background: var(--warning); color: var(--text-primary); }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+        }
+
+        .card h4 {
+            margin-top: 0;
+            color: var(--primary-dark);
+        }
+
+        .card p:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>JAVA 21 &mdash; COMPREHENSIVE DOCUMENTATION</h1>
+            <div class="subtitle">Architecture, Core Concepts, and Ecosystem Tooling</div>
+            <div class="meta"><span class="badge badge-lts">LTS</span> &nbsp; Version 21 | April 2026</div>
+        </header>
+
+        <div class="content">
+
+            <!-- TABLE OF CONTENTS -->
+            <div class="toc">
+                <h3>Table of Contents</h3>
+                <ol>
+                    <li><a href="#overview">Overview &amp; History</a></li>
+                    <li><a href="#architecture">Java Platform Architecture</a></li>
+                    <li><a href="#how-java-works">How Java Works &mdash; Compilation &amp; Execution</a></li>
+                    <li><a href="#jvm-deep-dive">JVM Deep Dive</a></li>
+                    <li><a href="#language-fundamentals">Language Fundamentals</a></li>
+                    <li><a href="#java21-features">Java 21 Features</a></li>
+                    <li><a href="#memory-model">Memory Model &amp; Garbage Collection</a></li>
+                    <li><a href="#concurrency">Concurrency &amp; Virtual Threads</a></li>
+                    <li><a href="#modules">Module System (JPMS)</a></li>
+                    <li><a href="#tooling">Build Tools &amp; Dependency Management</a></li>
+                    <li><a href="#testing">Testing Frameworks</a></li>
+                    <li><a href="#ides">IDEs &amp; Development Tools</a></li>
+                    <li><a href="#frameworks">Popular Frameworks &amp; Libraries</a></li>
+                    <li><a href="#devops">DevOps, Containers &amp; Cloud-Native</a></li>
+                    <li><a href="#security">Security</a></li>
+                    <li><a href="#best-practices">Best Practices</a></li>
+                    <li><a href="#deployment">Deployment Strategies</a></li>
+                    <li><a href="#aws-deployment">Deploying to AWS</a></li>
+                </ol>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 1. OVERVIEW -->
+            <!-- ============================================================ -->
+            <h1 id="overview">1. Overview &amp; History</h1>
+
+            <div class="first-section">
+                <p><strong>Java</strong> is a general-purpose, class-based, object-oriented programming language designed to have as few implementation dependencies as possible. It follows the principle of <strong>"Write Once, Run Anywhere" (WORA)</strong>, meaning compiled Java code can run on all platforms that support Java without the need for recompilation.</p>
+            </div>
+
+            <h2>Key Facts</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Attribute</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Created by</strong></td><td>James Gosling at Sun Microsystems (1995)</td></tr>
+                    <tr><td><strong>Current steward</strong></td><td>Oracle Corporation (acquired Sun in 2010)</td></tr>
+                    <tr><td><strong>Latest LTS</strong></td><td>Java 21 (September 2023) <span class="badge badge-lts">LTS</span></td></tr>
+                    <tr><td><strong>Paradigm</strong></td><td>Object-oriented, imperative, functional (since Java 8)</td></tr>
+                    <tr><td><strong>Typing</strong></td><td>Statically typed, strongly typed</td></tr>
+                    <tr><td><strong>Memory management</strong></td><td>Automatic garbage collection</td></tr>
+                    <tr><td><strong>Specification</strong></td><td>Java Language Specification (JLS) &amp; Java Community Process (JCP)</td></tr>
+                    <tr><td><strong>Release cadence</strong></td><td>6-month feature releases; LTS every 2 years</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Release Timeline (Recent)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Version</th>
+                        <th>Release Date</th>
+                        <th>Type</th>
+                        <th>Notable Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Java 8</td><td>Mar 2014</td><td><span class="badge badge-lts">LTS</span></td><td>Lambdas, Streams, Optional, Date/Time API</td></tr>
+                    <tr><td>Java 11</td><td>Sep 2018</td><td><span class="badge badge-lts">LTS</span></td><td>HTTP Client, var in lambdas, Flight Recorder</td></tr>
+                    <tr><td>Java 17</td><td>Sep 2021</td><td><span class="badge badge-lts">LTS</span></td><td>Sealed classes, pattern matching (instanceof), records</td></tr>
+                    <tr><td>Java 21</td><td>Sep 2023</td><td><span class="badge badge-lts">LTS</span></td><td>Virtual threads, pattern matching (switch), sequenced collections, record patterns</td></tr>
+                </tbody>
+            </table>
+
+            <!-- ============================================================ -->
+            <!-- 2. ARCHITECTURE -->
+            <!-- ============================================================ -->
+            <h1 id="architecture">2. Java Platform Architecture</h1>
+
+            <p>The Java platform consists of several interrelated components that together provide a complete environment for developing and running applications.</p>
+
+            <div class="diagram">
+┌─────────────────────────────────────────────────────────────────┐
+│                      Java Application                          │
+├─────────────────────────────────────────────────────────────────┤
+│                    Java Standard Library                        │
+│        (java.lang, java.util, java.io, java.net, ...)          │
+├─────────────────────────────────────────────────────────────────┤
+│                 Java Development Kit (JDK)                      │
+│   ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐     │
+│   │   javac      │  │   javadoc    │  │   jshell          │     │
+│   │  (compiler)  │  │   (docs)     │  │   (REPL)          │     │
+│   └──────────────┘  └──────────────┘  └──────────────────┘     │
+├─────────────────────────────────────────────────────────────────┤
+│                 Java Runtime Environment (JRE)                  │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │              Java Virtual Machine (JVM)                 │   │
+│   │   ┌─────────────┐ ┌────────────┐ ┌──────────────────┐  │   │
+│   │   │ Class       │ │ Execution  │ │ Garbage          │  │   │
+│   │   │ Loader      │ │ Engine     │ │ Collector        │  │   │
+│   │   └─────────────┘ └────────────┘ └──────────────────┘  │   │
+│   │   ┌─────────────┐ ┌────────────┐ ┌──────────────────┐  │   │
+│   │   │ JIT         │ │ Runtime    │ │ Native Method    │  │   │
+│   │   │ Compiler    │ │ Data Areas │ │ Interface (JNI)  │  │   │
+│   │   └─────────────┘ └────────────┘ └──────────────────┘  │   │
+│   └─────────────────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────────────────┤
+│                 Operating System / Hardware                     │
+└─────────────────────────────────────────────────────────────────┘
+            </div>
+
+            <h2>Platform Editions</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <h4>Java SE (Standard Edition)</h4>
+                    <p>Core platform. Includes the JVM, standard libraries, and development tools. Foundation for all Java development.</p>
+                </div>
+                <div class="card">
+                    <h4>Jakarta EE (Enterprise Edition)</h4>
+                    <p>Extends Java SE with specifications for enterprise features: servlets, JPA, CDI, JMS, JAX-RS, and more. Managed by Eclipse Foundation.</p>
+                </div>
+                <div class="card">
+                    <h4>Java ME (Micro Edition)</h4>
+                    <p>Subset for embedded and mobile devices. Largely superseded by Android (which uses its own runtime) and IoT-specific solutions.</p>
+                </div>
+            </div>
+
+            <h2>Key Components</h2>
+
+            <h3>JDK (Java Development Kit)</h3>
+            <p>The complete development environment including the compiler (<code>javac</code>), debugger (<code>jdb</code>), archiver (<code>jar</code>), documentation generator (<code>javadoc</code>), and the JRE. In Java 21, the JRE is no longer distributed separately &mdash; the JDK is the single distribution.</p>
+
+            <h3>JRE (Java Runtime Environment)</h3>
+            <p>Contains the JVM, core libraries, and supporting files needed to run Java applications. Since Java 11, Oracle no longer ships a standalone JRE; the <code>jlink</code> tool allows creation of custom runtime images.</p>
+
+            <h3>JVM (Java Virtual Machine)</h3>
+            <p>An abstract computing machine that enables the computer to run Java bytecode. The JVM is platform-specific but provides a platform-independent execution environment. Major implementations include HotSpot (Oracle), OpenJ9 (Eclipse), and GraalVM.</p>
+
+            <!-- ============================================================ -->
+            <!-- 3. HOW JAVA WORKS -->
+            <!-- ============================================================ -->
+            <h1 id="how-java-works">3. How Java Works &mdash; Compilation &amp; Execution</h1>
+
+            <h2>The Compilation Pipeline</h2>
+            <div class="diagram">
+  ┌────────────────┐     javac      ┌────────────────┐     JVM       ┌────────────────┐
+  │  Source Code    │ ────────────▶  │   Bytecode     │ ───────────▶  │  Machine Code  │
+  │  (.java)       │   Compile      │   (.class)     │   Execute     │  (Native)      │
+  └────────────────┘    Time        └────────────────┘   Runtime     └────────────────┘
+                                           │
+                                           ▼
+                                    ┌────────────────┐
+                                    │  JAR / Module   │
+                                    │  Packaging      │
+                                    └────────────────┘
+            </div>
+
+            <h3>Step-by-step Process</h3>
+            <ol>
+                <li><strong>Write</strong> &mdash; Developer writes source code in <code>.java</code> files.</li>
+                <li><strong>Compile</strong> &mdash; The <code>javac</code> compiler parses, validates, and transforms source code into platform-independent <strong>bytecode</strong> stored in <code>.class</code> files.</li>
+                <li><strong>Package</strong> &mdash; Class files are optionally bundled into <code>.jar</code> (Java Archive) or modular <code>.jmod</code> files.</li>
+                <li><strong>Load</strong> &mdash; The JVM's <strong>Class Loader</strong> subsystem locates and loads classes into memory on demand.</li>
+                <li><strong>Verify</strong> &mdash; The <strong>Bytecode Verifier</strong> ensures the bytecode is valid and does not violate security constraints.</li>
+                <li><strong>Interpret / Compile</strong> &mdash; The execution engine initially <em>interprets</em> bytecode. The <strong>JIT (Just-In-Time) compiler</strong> identifies "hot" code paths and compiles them to optimized native machine code.</li>
+                <li><strong>Execute</strong> &mdash; Native machine code runs on the underlying hardware.</li>
+            </ol>
+
+            <h2>Example: Hello World</h2>
+<pre><code>// HelloWorld.java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, Java 21!");
+    }
+}</code></pre>
+
+<pre><code># Compile
+$ javac HelloWorld.java
+
+# Run
+$ java HelloWorld
+Hello, Java 21!
+
+# Or use single-file source-code execution (Java 11+)
+$ java HelloWorld.java</code></pre>
+
+            <div class="info-box success">
+                <p><strong>Java 21 Enhancement:</strong> Unnamed classes and instance main methods (JEP 463, preview) allow writing simpler programs without the <code>public static void main</code> boilerplate:</p>
+            </div>
+
+<pre><code>// In Java 21 (preview feature)
+void main() {
+    System.out.println("Hello, Java 21!");
+}</code></pre>
+
+            <!-- ============================================================ -->
+            <!-- 4. JVM DEEP DIVE -->
+            <!-- ============================================================ -->
+            <h1 id="jvm-deep-dive">4. JVM Deep Dive</h1>
+
+            <h2>Class Loader Subsystem</h2>
+            <p>The class loader follows a <strong>delegation model</strong> with three layers:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Class Loader</th>
+                        <th>Responsibility</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Bootstrap Class Loader</strong></td><td>Loads core Java classes from <code>java.base</code> module (e.g., <code>java.lang.Object</code>, <code>java.lang.String</code>). Written in native code.</td></tr>
+                    <tr><td><strong>Platform Class Loader</strong></td><td>Loads platform modules not in <code>java.base</code> (replaces the old Extension class loader).</td></tr>
+                    <tr><td><strong>Application Class Loader</strong></td><td>Loads classes from the application classpath and module path.</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Runtime Data Areas</h2>
+            <div class="diagram">
+┌──────────────────────────────────────────────────────┐
+│                    JVM Memory                        │
+│                                                      │
+│  ┌─────────────────────┐  ┌────────────────────┐     │
+│  │       Heap          │  │   Method Area      │     │
+│  │  ┌───────────────┐  │  │  (Class metadata,  │     │
+│  │  │  Young Gen     │  │  │   constant pool,   │     │
+│  │  │  ┌──────────┐  │  │  │   static vars)     │     │
+│  │  │  │  Eden    │  │  │  └────────────────────┘     │
+│  │  │  ├──────────┤  │  │                              │
+│  │  │  │ Survivor │  │  │  ┌────────────────────┐     │
+│  │  │  └──────────┘  │  │  │  Stack (per thread) │     │
+│  │  ├───────────────┤  │  │  │  ┌──────────────┐ │     │
+│  │  │  Old Gen      │  │  │  │  │ Local vars   │ │     │
+│  │  └───────────────┘  │  │  │  │ Operand stack│ │     │
+│  └─────────────────────┘  │  │  │ Frame data   │ │     │
+│                            │  │  └──────────────┘ │     │
+│  ┌─────────────────────┐  │  └────────────────────┘     │
+│  │  PC Register        │  │                              │
+│  │  (per thread)       │  │  ┌────────────────────┐     │
+│  └─────────────────────┘  │  │  Native Method     │     │
+│                            │  │  Stack              │     │
+│                            │  └────────────────────┘     │
+└──────────────────────────────────────────────────────┘
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Area</th>
+                        <th>Description</th>
+                        <th>Thread Scope</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Heap</strong></td><td>Stores all object instances and arrays. Divided into Young and Old generations for GC purposes.</td><td>Shared</td></tr>
+                    <tr><td><strong>Method Area</strong></td><td>Stores class structures, method data, constant pool, and static variables. Implemented as Metaspace since Java 8.</td><td>Shared</td></tr>
+                    <tr><td><strong>Stack</strong></td><td>Each thread gets its own stack. Stores frames for method calls with local variables, operand stack, and frame data.</td><td>Per-thread</td></tr>
+                    <tr><td><strong>PC Register</strong></td><td>Holds the address of the currently executing JVM instruction for each thread.</td><td>Per-thread</td></tr>
+                    <tr><td><strong>Native Method Stack</strong></td><td>Supports native method execution via JNI.</td><td>Per-thread</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Execution Engine</h2>
+            <ul>
+                <li><strong>Interpreter</strong> &mdash; Reads and executes bytecode instructions one by one. Fast startup but slower sustained execution.</li>
+                <li><strong>JIT Compiler (C1 &amp; C2)</strong> &mdash; Compiles hot bytecode to optimized native code at runtime.
+                    <ul>
+                        <li><strong>C1 (Client compiler)</strong> &mdash; Fast compilation with basic optimizations. Used for quick startup.</li>
+                        <li><strong>C2 (Server compiler)</strong> &mdash; Aggressive optimizations (inlining, escape analysis, loop unrolling). Used for long-running applications.</li>
+                        <li><strong>Tiered Compilation</strong> &mdash; Default in Java 21. Starts with C1, promotes hot methods to C2.</li>
+                    </ul>
+                </li>
+                <li><strong>GraalVM JIT</strong> &mdash; Alternative high-performance JIT compiler written in Java, offering superior peak performance for certain workloads.</li>
+            </ul>
+
+            <!-- ============================================================ -->
+            <!-- 5. LANGUAGE FUNDAMENTALS -->
+            <!-- ============================================================ -->
+            <h1 id="language-fundamentals">5. Language Fundamentals</h1>
+
+            <h2>Type System</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Primitive Types</h4>
+                    <p><code>byte</code> (8-bit), <code>short</code> (16-bit), <code>int</code> (32-bit), <code>long</code> (64-bit), <code>float</code> (32-bit FP), <code>double</code> (64-bit FP), <code>boolean</code>, <code>char</code> (16-bit Unicode).</p>
+                </div>
+                <div class="card">
+                    <h4>Reference Types</h4>
+                    <p>Classes, interfaces, arrays, enums, records, annotations. All inherit from <code>java.lang.Object</code>. Stored on the heap.</p>
+                </div>
+            </div>
+
+            <h2>Object-Oriented Principles</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Principle</th>
+                        <th>Java Implementation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Encapsulation</strong></td><td>Access modifiers (<code>private</code>, <code>protected</code>, <code>public</code>, package-private), getter/setter pattern, records</td></tr>
+                    <tr><td><strong>Inheritance</strong></td><td>Single class inheritance (<code>extends</code>), multiple interface implementation (<code>implements</code>)</td></tr>
+                    <tr><td><strong>Polymorphism</strong></td><td>Method overriding (runtime), method overloading (compile-time), interface default methods</td></tr>
+                    <tr><td><strong>Abstraction</strong></td><td>Abstract classes, interfaces, sealed classes/interfaces (Java 17+)</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Key Language Constructs (Modern Java)</h2>
+
+            <h3>Records (Java 16+)</h3>
+<pre><code>// Immutable data carrier &mdash; generates equals, hashCode, toString, accessors
+public record Point(int x, int y) { }
+
+var p = new Point(3, 4);
+System.out.println(p.x()); // 3</code></pre>
+
+            <h3>Sealed Classes (Java 17+)</h3>
+<pre><code>public sealed interface Shape
+    permits Circle, Rectangle, Triangle {
+    double area();
+}
+
+public record Circle(double radius) implements Shape {
+    public double area() { return Math.PI * radius * radius; }
+}
+
+public record Rectangle(double w, double h) implements Shape {
+    public double area() { return w * h; }
+}
+
+public record Triangle(double base, double height) implements Shape {
+    public double area() { return 0.5 * base * height; }
+}</code></pre>
+
+            <h3>Text Blocks (Java 15+)</h3>
+<pre><code>String json = """
+        {
+            "name": "Java",
+            "version": 21,
+            "lts": true
+        }
+        """;</code></pre>
+
+            <h3>Local Variable Type Inference (Java 10+)</h3>
+<pre><code>var list = List.of("Java", "Kotlin", "Scala");  // inferred as List&lt;String&gt;
+var map = Map.of("key", 42);                      // inferred as Map&lt;String, Integer&gt;</code></pre>
+
+            <!-- ============================================================ -->
+            <!-- 6. JAVA 21 FEATURES -->
+            <!-- ============================================================ -->
+            <h1 id="java21-features">6. Java 21 Features</h1>
+
+            <div class="info-box">
+                <p><strong>Java 21</strong> is a Long-Term Support (LTS) release, making it an excellent target for production systems. It includes 15 JEPs (JDK Enhancement Proposals), finalizing several features that were in preview in earlier releases.</p>
+            </div>
+
+            <h2>Finalized Features</h2>
+
+            <h3>Virtual Threads (JEP 444)</h3>
+            <p>Lightweight threads managed by the JVM rather than the OS. Enables highly concurrent applications with a simple thread-per-request model.</p>
+<pre><code>// Create and start a virtual thread
+Thread.startVirtualThread(() -&gt; {
+    System.out.println("Running in virtual thread: " + Thread.currentThread());
+});
+
+// Using ExecutorService
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    IntStream.range(0, 10_000).forEach(i -&gt;
+        executor.submit(() -&gt; {
+            Thread.sleep(Duration.ofSeconds(1));
+            return i;
+        })
+    );
+}</code></pre>
+
+            <h3>Pattern Matching for switch (JEP 441)</h3>
+<pre><code>static String describe(Object obj) {
+    return switch (obj) {
+        case Integer i when i &gt; 0  -&gt; "Positive integer: " + i;
+        case Integer i             -&gt; "Non-positive integer: " + i;
+        case String s              -&gt; "String of length " + s.length();
+        case Point(int x, int y)   -&gt; "Point at (%d, %d)".formatted(x, y);
+        case null                  -&gt; "null value";
+        default                    -&gt; "Unknown: " + obj;
+    };
+}</code></pre>
+
+            <h3>Record Patterns (JEP 440)</h3>
+<pre><code>// Deconstruct records in pattern matching
+record Pair&lt;T&gt;(T first, T second) { }
+
+static void printPair(Object obj) {
+    if (obj instanceof Pair(String a, String b)) {
+        System.out.println("Pair of strings: " + a + ", " + b);
+    }
+}</code></pre>
+
+            <h3>Sequenced Collections (JEP 431)</h3>
+<pre><code>// New interfaces: SequencedCollection, SequencedSet, SequencedMap
+SequencedCollection&lt;String&gt; list = new ArrayList&lt;&gt;(List.of("a", "b", "c"));
+
+list.getFirst();      // "a"
+list.getLast();        // "c"
+list.reversed();      // reversed view: ["c", "b", "a"]
+
+SequencedMap&lt;String, Integer&gt; map = new LinkedHashMap&lt;&gt;();
+map.put("one", 1);
+map.put("two", 2);
+map.firstEntry();     // one=1
+map.lastEntry();      // two=2</code></pre>
+
+            <h3>String Templates (JEP 430 &mdash; Preview)</h3>
+<pre><code>// Preview feature &mdash; use --enable-preview flag
+String name = "Java";
+int version = 21;
+String message = STR."Welcome to \{name} \{version}!";</code></pre>
+
+            <h2>Summary of All Java 21 JEPs</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>JEP</th>
+                        <th>Feature</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>430</td><td>String Templates</td><td><span class="badge badge-preview">Preview</span></td></tr>
+                    <tr><td>431</td><td>Sequenced Collections</td><td><span class="badge badge-new">Final</span></td></tr>
+                    <tr><td>439</td><td>Generational ZGC</td><td><span class="badge badge-new">Final</span></td></tr>
+                    <tr><td>440</td><td>Record Patterns</td><td><span class="badge badge-new">Final</span></td></tr>
+                    <tr><td>441</td><td>Pattern Matching for switch</td><td><span class="badge badge-new">Final</span></td></tr>
+                    <tr><td>442</td><td>Foreign Function &amp; Memory API (Third Preview)</td><td><span class="badge badge-preview">Preview</span></td></tr>
+                    <tr><td>443</td><td>Unnamed Patterns and Variables</td><td><span class="badge badge-preview">Preview</span></td></tr>
+                    <tr><td>444</td><td>Virtual Threads</td><td><span class="badge badge-new">Final</span></td></tr>
+                    <tr><td>445</td><td>Unnamed Classes and Instance Main Methods</td><td><span class="badge badge-preview">Preview</span></td></tr>
+                    <tr><td>446</td><td>Scoped Values</td><td><span class="badge badge-preview">Preview</span></td></tr>
+                    <tr><td>448</td><td>Vector API (Sixth Incubator)</td><td><span class="badge badge-preview">Incubator</span></td></tr>
+                    <tr><td>449</td><td>Deprecate Windows 32-bit x86 Port</td><td><span class="badge badge-new">Final</span></td></tr>
+                    <tr><td>451</td><td>Prepare to Disallow Dynamic Loading of Agents</td><td><span class="badge badge-new">Final</span></td></tr>
+                    <tr><td>452</td><td>Key Encapsulation Mechanism API</td><td><span class="badge badge-new">Final</span></td></tr>
+                    <tr><td>453</td><td>Structured Concurrency</td><td><span class="badge badge-preview">Preview</span></td></tr>
+                </tbody>
+            </table>
+
+            <!-- ============================================================ -->
+            <!-- 7. MEMORY MODEL & GC -->
+            <!-- ============================================================ -->
+            <h1 id="memory-model">7. Memory Model &amp; Garbage Collection</h1>
+
+            <h2>Java Memory Model (JMM)</h2>
+            <p>The JMM defines how threads interact through memory and what behaviors are allowed in concurrent execution. Key concepts:</p>
+            <ul>
+                <li><strong>Happens-before relationship</strong> &mdash; Guarantees visibility of writes across threads (e.g., unlocking a monitor happens-before subsequent locking).</li>
+                <li><strong>volatile</strong> &mdash; Ensures visibility and ordering of a variable across threads without locking.</li>
+                <li><strong>final fields</strong> &mdash; Guaranteed to be visible to all threads after construction completes.</li>
+            </ul>
+
+            <h2>Garbage Collectors in Java 21</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Collector</th>
+                        <th>Description</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>G1 GC</strong> (default)</td><td>Region-based collector balancing throughput and latency. Divides heap into regions, collects garbage-first regions.</td><td>General-purpose workloads</td></tr>
+                    <tr><td><strong>ZGC</strong> (Generational)</td><td>Ultra-low latency collector. Pause times &lt; 1ms regardless of heap size. Java 21 adds generational support (JEP 439).</td><td>Low-latency applications, large heaps (multi-TB)</td></tr>
+                    <tr><td><strong>Shenandoah</strong></td><td>Low-pause collector that performs concurrent compaction. Available in OpenJDK distributions.</td><td>Low-latency requirements</td></tr>
+                    <tr><td><strong>Parallel GC</strong></td><td>Throughput-oriented collector using multiple threads for young and old generation collection.</td><td>Batch processing, throughput priority</td></tr>
+                    <tr><td><strong>Serial GC</strong></td><td>Single-threaded collector with minimal footprint.</td><td>Small heaps, single-core or containerized environments</td></tr>
+                    <tr><td><strong>Epsilon GC</strong></td><td>No-op collector &mdash; allocates memory but never reclaims it.</td><td>Performance testing, short-lived processes</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Common GC Tuning Flags</h3>
+<pre><code># Use Generational ZGC
+java -XX:+UseZGC -XX:+ZGenerational -Xmx4g MyApp
+
+# Use G1 with tuning
+java -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xms2g -Xmx4g MyApp
+
+# GC logging (Java 21)
+java -Xlog:gc*:file=gc.log:time,uptime,level,tags MyApp</code></pre>
+
+            <!-- ============================================================ -->
+            <!-- 8. CONCURRENCY -->
+            <!-- ============================================================ -->
+            <h1 id="concurrency">8. Concurrency &amp; Virtual Threads</h1>
+
+            <h2>Traditional Threading Model</h2>
+            <p>Java threads map 1:1 to OS threads (platform threads). Creating thousands is expensive due to memory overhead (~1MB stack per thread) and OS scheduling costs.</p>
+
+            <h2>Virtual Threads (Project Loom)</h2>
+            <p>Virtual threads are lightweight threads managed by the JVM. They are <strong>mounted</strong> on platform threads (carrier threads) and can be unmounted when performing blocking operations (I/O, sleep, locks).</p>
+
+            <div class="diagram">
+┌────────────────────────────────────────────────────────────┐
+│                     JVM Scheduler                          │
+│                                                            │
+│  Virtual Thread 1 ──┐                                      │
+│  Virtual Thread 2 ──┤    ┌──────────────┐                  │
+│  Virtual Thread 3 ──┼───▶│ Platform     │──▶ OS Thread 1   │
+│  Virtual Thread 4 ──┤    │ Thread Pool  │                  │
+│  Virtual Thread 5 ──┤    │ (Carrier     │──▶ OS Thread 2   │
+│      ...           ─┤    │  Threads)    │                  │
+│  Virtual Thread N ──┘    │              │──▶ OS Thread M   │
+│                          └──────────────┘                  │
+│                                                            │
+│  N can be millions         M ≈ CPU cores                   │
+└────────────────────────────────────────────────────────────┘
+            </div>
+
+<pre><code>// Structured Concurrency (Preview in Java 21, JEP 453)
+try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+    Subtask&lt;String&gt;  user  = scope.fork(() -&gt; fetchUser(id));
+    Subtask&lt;Integer&gt; order = scope.fork(() -&gt; fetchOrder(id));
+
+    scope.join();           // Wait for both
+    scope.throwIfFailed();  // Propagate errors
+
+    return new Response(user.get(), order.get());
+}
+
+// Scoped Values (Preview in Java 21, JEP 446)
+private static final ScopedValue&lt;String&gt; USER = ScopedValue.newInstance();
+
+ScopedValue.where(USER, "admin").run(() -&gt; {
+    System.out.println(USER.get());  // "admin"
+    processRequest();                 // USER is accessible in callees
+});</code></pre>
+
+            <h2>Concurrency Utilities</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Utility</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>ExecutorService</code></td><td>Thread pool management for submitting and managing async tasks.</td></tr>
+                    <tr><td><code>CompletableFuture</code></td><td>Composable asynchronous programming with callbacks and chaining.</td></tr>
+                    <tr><td><code>ReentrantLock</code></td><td>Explicit lock with try-lock, timed lock, and condition variables.</td></tr>
+                    <tr><td><code>ConcurrentHashMap</code></td><td>Thread-safe hash map with fine-grained locking (segment-based).</td></tr>
+                    <tr><td><code>BlockingQueue</code></td><td>Thread-safe queue implementations for producer-consumer patterns.</td></tr>
+                    <tr><td><code>StampedLock</code></td><td>Optimistic read locking for read-heavy workloads.</td></tr>
+                    <tr><td><code>Atomic*</code> classes</td><td>Lock-free thread-safe operations on single variables (CAS-based).</td></tr>
+                    <tr><td><code>ForkJoinPool</code></td><td>Work-stealing pool for divide-and-conquer parallelism.</td></tr>
+                </tbody>
+            </table>
+
+            <!-- ============================================================ -->
+            <!-- 9. MODULES -->
+            <!-- ============================================================ -->
+            <h1 id="modules">9. Module System (JPMS)</h1>
+
+            <p>Introduced in Java 9, the <strong>Java Platform Module System</strong> (Project Jigsaw) provides strong encapsulation and reliable configuration at the package level.</p>
+
+<pre><code>// module-info.java
+module com.example.myapp {
+    requires java.net.http;            // depends on HTTP client module
+    requires java.sql;                 // depends on JDBC module
+    requires transitive com.example.lib; // transitive dependency
+
+    exports com.example.myapp.api;     // expose packages to other modules
+    opens com.example.myapp.model to   // allow reflection (e.g., for Jackson)
+        com.fasterxml.jackson.databind;
+}</code></pre>
+
+            <h3>Key Module Commands</h3>
+<pre><code># Compile with modules
+javac -d out --module-source-path src $(find src -name "*.java")
+
+# Run a modular application
+java --module-path out -m com.example.myapp/com.example.myapp.Main
+
+# Create a custom runtime image
+jlink --module-path out --add-modules com.example.myapp --output myapp-runtime
+
+# List modules in a JDK
+java --list-modules</code></pre>
+
+            <!-- ============================================================ -->
+            <!-- 10. TOOLING -->
+            <!-- ============================================================ -->
+            <h1 id="tooling">10. Build Tools &amp; Dependency Management</h1>
+
+            <h2>Maven</h2>
+            <p>The most widely used build tool in the Java ecosystem. Uses an XML-based POM (Project Object Model) for declarative build configuration.</p>
+
+<pre><code>&lt;!-- pom.xml --&gt;
+&lt;project&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;com.example&lt;/groupId&gt;
+    &lt;artifactId&gt;myapp&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+
+    &lt;properties&gt;
+        &lt;maven.compiler.source&gt;21&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;21&lt;/maven.compiler.target&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+            &lt;version&gt;3.2.0&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/project&gt;</code></pre>
+
+<pre><code># Common Maven commands
+mvn clean install          # Clean, compile, test, package, install
+mvn test                   # Run tests
+mvn package                # Create JAR/WAR
+mvn dependency:tree        # Show dependency tree
+mvn versions:display-dependency-updates  # Check for updates</code></pre>
+
+            <h2>Gradle</h2>
+            <p>A flexible build tool using Groovy or Kotlin DSL. Faster than Maven due to incremental builds, build cache, and daemon process.</p>
+
+<pre><code>// build.gradle.kts (Kotlin DSL)
+plugins {
+    java
+    id("org.springframework.boot") version "3.2.0"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
+}</code></pre>
+
+<pre><code># Common Gradle commands
+./gradlew build            # Compile, test, package
+./gradlew test             # Run tests
+./gradlew dependencies     # Show dependency tree
+./gradlew bootRun          # Run Spring Boot app</code></pre>
+
+            <h2>Maven vs Gradle Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Maven</th>
+                        <th>Gradle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Configuration</strong></td><td>XML (pom.xml)</td><td>Groovy/Kotlin DSL</td></tr>
+                    <tr><td><strong>Build speed</strong></td><td>Slower (no incremental builds)</td><td>Faster (daemon, cache, incremental)</td></tr>
+                    <tr><td><strong>Learning curve</strong></td><td>Convention-based, predictable</td><td>More flexible, steeper curve</td></tr>
+                    <tr><td><strong>Ecosystem</strong></td><td>Largest plugin ecosystem</td><td>Growing, strong Android support</td></tr>
+                    <tr><td><strong>Dependency Management</strong></td><td>Central (Maven Central)</td><td>Central + custom repos</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Other Build &amp; Package Tools</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>jlink</strong></td><td>Creates custom, minimal JRE images containing only required modules.</td></tr>
+                    <tr><td><strong>jpackage</strong></td><td>Packages Java applications as native installers (DMG, MSI, DEB, RPM).</td></tr>
+                    <tr><td><strong>jdeps</strong></td><td>Analyzes class file dependencies. Useful for modularization.</td></tr>
+                    <tr><td><strong>jar</strong></td><td>Creates and manages Java Archive files.</td></tr>
+                    <tr><td><strong>javadoc</strong></td><td>Generates API documentation from source code comments.</td></tr>
+                    <tr><td><strong>jshell</strong></td><td>Interactive REPL for exploring Java APIs and prototyping code.</td></tr>
+                    <tr><td><strong>jcmd</strong></td><td>Sends diagnostic commands to running JVMs (thread dumps, heap dumps, GC).</td></tr>
+                </tbody>
+            </table>
+
+            <!-- ============================================================ -->
+            <!-- 11. TESTING -->
+            <!-- ============================================================ -->
+            <h1 id="testing">11. Testing Frameworks</h1>
+
+            <h2>JUnit 5 (Jupiter)</h2>
+            <p>The de facto standard testing framework for Java. Modular architecture with JUnit Platform, JUnit Jupiter, and JUnit Vintage.</p>
+<pre><code>import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class CalculatorTest {
+
+    private Calculator calc;
+
+    @BeforeEach
+    void setUp() {
+        calc = new Calculator();
+    }
+
+    @Test
+    @DisplayName("Addition of two positive numbers")
+    void addPositiveNumbers() {
+        assertEquals(5, calc.add(2, 3));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"1, 1, 2", "2, 3, 5", "10, -5, 5"})
+    void addParameterized(int a, int b, int expected) {
+        assertEquals(expected, calc.add(a, b));
+    }
+
+    @Test
+    void divideByZeroThrowsException() {
+        assertThrows(ArithmeticException.class,
+            () -&gt; calc.divide(1, 0));
+    }
+}</code></pre>
+
+            <h2>Mockito</h2>
+            <p>The most popular mocking framework. Creates test doubles for unit testing in isolation.</p>
+<pre><code>import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class OrderServiceTest {
+
+    @Mock
+    private OrderRepository repository;
+
+    @InjectMocks
+    private OrderService service;
+
+    @Test
+    void findOrderReturnsCorrectOrder() {
+        var order = new Order(1L, "Widget", 3);
+        when(repository.findById(1L)).thenReturn(Optional.of(order));
+
+        var result = service.findOrder(1L);
+
+        assertEquals("Widget", result.product());
+        verify(repository).findById(1L);
+    }
+}</code></pre>
+
+            <h2>Testing Ecosystem</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>JUnit 5</strong></td><td>Unit and integration testing framework</td></tr>
+                    <tr><td><strong>Mockito</strong></td><td>Mocking framework for test isolation</td></tr>
+                    <tr><td><strong>AssertJ</strong></td><td>Fluent assertion library with rich matchers</td></tr>
+                    <tr><td><strong>Testcontainers</strong></td><td>Disposable Docker containers for integration testing (databases, message brokers, etc.)</td></tr>
+                    <tr><td><strong>WireMock</strong></td><td>HTTP mock server for API contract testing and service virtualization</td></tr>
+                    <tr><td><strong>ArchUnit</strong></td><td>Architecture testing &mdash; enforces architectural rules in code</td></tr>
+                    <tr><td><strong>JaCoCo</strong></td><td>Code coverage analysis and reporting</td></tr>
+                    <tr><td><strong>Pitest (PIT)</strong></td><td>Mutation testing to evaluate test suite effectiveness</td></tr>
+                    <tr><td><strong>REST Assured</strong></td><td>DSL for testing RESTful APIs</td></tr>
+                    <tr><td><strong>Selenium / Playwright</strong></td><td>Browser automation for E2E testing</td></tr>
+                    <tr><td><strong>Gatling / JMeter</strong></td><td>Performance and load testing</td></tr>
+                    <tr><td><strong>Cucumber</strong></td><td>BDD testing with Gherkin syntax</td></tr>
+                </tbody>
+            </table>
+
+            <!-- ============================================================ -->
+            <!-- 12. IDES -->
+            <!-- ============================================================ -->
+            <h1 id="ides">12. IDEs &amp; Development Tools</h1>
+
+            <h2>Integrated Development Environments</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>IDE</th>
+                        <th>Description</th>
+                        <th>License</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>IntelliJ IDEA</strong></td><td>Most popular Java IDE. Superior code analysis, refactoring, and framework support. Community and Ultimate editions.</td><td>Free / Commercial</td></tr>
+                    <tr><td><strong>VS Code</strong></td><td>Lightweight editor with Java support via Extension Pack for Java (Red Hat, Microsoft). Great for polyglot development.</td><td>Free</td></tr>
+                    <tr><td><strong>Eclipse IDE</strong></td><td>Long-standing open-source IDE. Strong plugin ecosystem. Foundation for many enterprise tools.</td><td>Free (EPL)</td></tr>
+                    <tr><td><strong>Apache NetBeans</strong></td><td>Open-source IDE with strong Maven and Gradle integration. Good Jakarta EE support.</td><td>Free (Apache)</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Code Quality &amp; Analysis Tools</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>SonarQube / SonarCloud</strong></td><td>Continuous code quality inspection &mdash; bugs, vulnerabilities, code smells, coverage</td></tr>
+                    <tr><td><strong>SpotBugs</strong></td><td>Static analysis to find bugs in Java bytecode (successor to FindBugs)</td></tr>
+                    <tr><td><strong>Checkstyle</strong></td><td>Enforces coding standards and style consistency</td></tr>
+                    <tr><td><strong>PMD</strong></td><td>Source code analyzer for common programming flaws</td></tr>
+                    <tr><td><strong>Error Prone</strong></td><td>Google's compile-time static analysis tool for common Java mistakes</td></tr>
+                    <tr><td><strong>Lombok</strong></td><td>Annotation processor reducing boilerplate (getters, setters, builders, etc.)</td></tr>
+                    <tr><td><strong>MapStruct</strong></td><td>Compile-time code generator for type-safe bean mapping</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Profiling &amp; Monitoring</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>JDK Flight Recorder (JFR)</strong></td><td>Low-overhead profiling and event recording built into the JVM</td></tr>
+                    <tr><td><strong>JDK Mission Control (JMC)</strong></td><td>GUI tool for analyzing JFR recordings</td></tr>
+                    <tr><td><strong>VisualVM</strong></td><td>Visual tool for monitoring, profiling, and troubleshooting Java applications</td></tr>
+                    <tr><td><strong>async-profiler</strong></td><td>Low-overhead sampling profiler for CPU, allocation, lock profiling</td></tr>
+                    <tr><td><strong>Micrometer</strong></td><td>Application metrics facade supporting Prometheus, Datadog, CloudWatch, etc.</td></tr>
+                    <tr><td><strong>OpenTelemetry</strong></td><td>Observability framework for distributed tracing, metrics, and logging</td></tr>
+                    <tr><td><strong>jconsole / jvisualvm</strong></td><td>JMX-based monitoring of heap, threads, classes, and MBeans</td></tr>
+                </tbody>
+            </table>
+
+            <!-- ============================================================ -->
+            <!-- 13. FRAMEWORKS -->
+            <!-- ============================================================ -->
+            <h1 id="frameworks">13. Popular Frameworks &amp; Libraries</h1>
+
+            <h2>Application Frameworks</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Framework</th>
+                        <th>Description</th>
+                        <th>Key Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Spring Boot 3.x</strong></td><td>The dominant Java framework for building production applications. Convention-over-configuration, auto-configuration, embedded servers.</td><td>Dependency injection, Spring Data, Spring Security, Spring Cloud, WebFlux (reactive)</td></tr>
+                    <tr><td><strong>Quarkus</strong></td><td>Kubernetes-native framework optimized for GraalVM native compilation. Fast startup, low memory.</td><td>CDI, REST, reactive, dev mode with live reload</td></tr>
+                    <tr><td><strong>Micronaut</strong></td><td>Compile-time DI and AOP framework. No reflection at runtime. Low memory footprint.</td><td>AOT compilation, cloud-native, serverless support</td></tr>
+                    <tr><td><strong>Jakarta EE 10</strong></td><td>Enterprise specification suite (formerly Java EE). Implementations include WildFly, Payara, Open Liberty.</td><td>Servlets, JPA, CDI, JAX-RS, JMS, Bean Validation</td></tr>
+                    <tr><td><strong>Helidon</strong></td><td>Oracle's lightweight framework for microservices. SE (functional) and MP (MicroProfile) variants.</td><td>Reactive, WebServer, Config, built-in observability</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Data Access &amp; Persistence</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Library</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Hibernate / JPA</strong></td><td>ORM framework mapping Java objects to relational databases. JPA is the standard API; Hibernate is the most popular implementation.</td></tr>
+                    <tr><td><strong>Spring Data JPA</strong></td><td>Repository abstraction over JPA with query derivation and pagination.</td></tr>
+                    <tr><td><strong>jOOQ</strong></td><td>Type-safe SQL query builder generating code from database schema.</td></tr>
+                    <tr><td><strong>MyBatis</strong></td><td>SQL-centric persistence framework with XML or annotation-based mapping.</td></tr>
+                    <tr><td><strong>Flyway / Liquibase</strong></td><td>Database migration and versioning tools.</td></tr>
+                    <tr><td><strong>HikariCP</strong></td><td>High-performance JDBC connection pooling (default in Spring Boot).</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Web &amp; API</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Library</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Spring WebFlux</strong></td><td>Reactive web framework for non-blocking I/O.</td></tr>
+                    <tr><td><strong>Jackson</strong></td><td>JSON serialization/deserialization. Standard in Spring Boot.</td></tr>
+                    <tr><td><strong>Gson</strong></td><td>Google's JSON library. Simple API, lightweight.</td></tr>
+                    <tr><td><strong>OpenAPI / Swagger</strong></td><td>API documentation and code generation from OpenAPI specifications.</td></tr>
+                    <tr><td><strong>gRPC-Java</strong></td><td>High-performance RPC framework using Protocol Buffers.</td></tr>
+                    <tr><td><strong>GraphQL Java</strong></td><td>GraphQL implementation for Java, with Spring for GraphQL integration.</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Utility Libraries</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Library</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Guava</strong></td><td>Google's core library: collections, caching, I/O, concurrency utilities.</td></tr>
+                    <tr><td><strong>Apache Commons</strong></td><td>Reusable Java components (Lang, IO, Collections, Math, etc.).</td></tr>
+                    <tr><td><strong>SLF4J + Logback</strong></td><td>Logging facade + implementation. Standard logging stack for Java.</td></tr>
+                    <tr><td><strong>Log4j 2</strong></td><td>High-performance logging framework with async appenders.</td></tr>
+                    <tr><td><strong>Caffeine</strong></td><td>High-performance, near-optimal caching library.</td></tr>
+                    <tr><td><strong>Resilience4j</strong></td><td>Fault-tolerance library (circuit breaker, retry, rate limiter, bulkhead).</td></tr>
+                </tbody>
+            </table>
+
+            <!-- ============================================================ -->
+            <!-- 14. DEVOPS -->
+            <!-- ============================================================ -->
+            <h1 id="devops">14. DevOps, Containers &amp; Cloud-Native</h1>
+
+            <h2>Containerization</h2>
+            <h3>Dockerfile for Java 21</h3>
+<pre><code># Multi-stage build for minimal image
+FROM eclipse-temurin:21-jdk-jammy AS build
+WORKDIR /app
+COPY . .
+RUN ./gradlew build -x test
+
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+COPY --from=build /app/build/libs/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]</code></pre>
+
+            <h3>GraalVM Native Image</h3>
+            <p>Ahead-of-time (AOT) compilation to create standalone native executables with instant startup and reduced memory.</p>
+<pre><code># With Spring Boot 3 and GraalVM
+./gradlew nativeCompile
+
+# Result: standalone binary, no JVM required
+./build/native/nativeCompile/myapp   # Starts in ~50ms</code></pre>
+
+            <h2>JDK Distributions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Distribution</th>
+                        <th>Vendor</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Eclipse Temurin</strong></td><td>Adoptium</td><td>Community favorite. Free, TCK-certified, multi-platform.</td></tr>
+                    <tr><td><strong>Oracle JDK</strong></td><td>Oracle</td><td>Free for production (NFTC license since JDK 17).</td></tr>
+                    <tr><td><strong>Amazon Corretto</strong></td><td>Amazon</td><td>Production-ready, optimized for AWS. Free, long-term support.</td></tr>
+                    <tr><td><strong>Azul Zulu</strong></td><td>Azul Systems</td><td>TCK-certified, available in Community and Enterprise editions.</td></tr>
+                    <tr><td><strong>GraalVM</strong></td><td>Oracle</td><td>High-perf JIT + native image AOT compilation. Polyglot (JS, Python, Ruby).</td></tr>
+                    <tr><td><strong>Microsoft Build of OpenJDK</strong></td><td>Microsoft</td><td>Optimized for Azure. Free, LTS supported.</td></tr>
+                    <tr><td><strong>SAP Machine</strong></td><td>SAP</td><td>OpenJDK build for SAP ecosystem.</td></tr>
+                    <tr><td><strong>IBM Semeru (OpenJ9)</strong></td><td>IBM / Eclipse</td><td>Alternative JVM with fast startup and low memory footprint.</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Version Management</h2>
+<pre><code># SDKMAN! &mdash; manage multiple JDK versions
+curl -s "https://get.sdkman.io" | bash
+sdk install java 21.0.2-tem    # Install Temurin 21
+sdk use java 21.0.2-tem        # Switch to JDK 21
+sdk list java                  # List available JDKs
+
+# jenv (macOS/Linux alternative)
+jenv add /path/to/jdk-21
+jenv global 21
+jenv local 21                  # Per-project version</code></pre>
+
+            <h2>CI/CD Integration</h2>
+<pre><code># GitHub Actions example
+name: Java CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+      - run: ./gradlew build
+      - run: ./gradlew test</code></pre>
+
+            <h2>Cloud-Native Stack</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Spring Cloud</strong></td><td>Distributed system patterns: config, discovery, gateway, circuit breakers.</td></tr>
+                    <tr><td><strong>Kubernetes Java client</strong></td><td>Java SDK for interacting with Kubernetes API.</td></tr>
+                    <tr><td><strong>Jib</strong></td><td>Google's containerization tool for Java. Builds Docker images without a Dockerfile.</td></tr>
+                    <tr><td><strong>Buildpacks (Paketo)</strong></td><td>Cloud Native Buildpacks for creating OCI images from source code.</td></tr>
+                    <tr><td><strong>Helm</strong></td><td>Kubernetes package manager for templating deployments.</td></tr>
+                </tbody>
+            </table>
+
+            <!-- ============================================================ -->
+            <!-- 15. SECURITY -->
+            <!-- ============================================================ -->
+            <h1 id="security">15. Security</h1>
+
+            <h2>Built-in Security Features</h2>
+            <ul>
+                <li><strong>Bytecode Verification</strong> &mdash; Class files are verified before execution, preventing invalid code.</li>
+                <li><strong>Strong Typing</strong> &mdash; Eliminates entire categories of memory-related vulnerabilities (no pointer arithmetic, bounds checking).</li>
+                <li><strong>Security Manager</strong> &mdash; (Deprecated in Java 17, removal pending) Sandboxing mechanism for restricting code access.</li>
+                <li><strong>Cryptography</strong> &mdash; Java Cryptography Architecture (JCA/JCE) with pluggable providers.</li>
+                <li><strong>TLS/SSL</strong> &mdash; Built-in support via JSSE. Java 21 supports TLS 1.3.</li>
+                <li><strong>Key Encapsulation Mechanism (KEM)</strong> &mdash; New in Java 21 (JEP 452) for post-quantum key exchange preparation.</li>
+            </ul>
+
+            <h2>Security-Related Tools &amp; Libraries</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Spring Security</strong></td><td>Comprehensive authentication and authorization framework.</td></tr>
+                    <tr><td><strong>keytool</strong></td><td>JDK tool for managing cryptographic keys and certificates.</td></tr>
+                    <tr><td><strong>OWASP Dependency-Check</strong></td><td>Scans dependencies for known CVEs.</td></tr>
+                    <tr><td><strong>Snyk</strong></td><td>Vulnerability scanning for dependencies and container images.</td></tr>
+                    <tr><td><strong>Bouncy Castle</strong></td><td>Third-party cryptography provider with extended algorithm support.</td></tr>
+                    <tr><td><strong>Vault (HashiCorp)</strong></td><td>Secrets management integrated via Spring Cloud Vault or direct API.</td></tr>
+                </tbody>
+            </table>
+
+            <!-- ============================================================ -->
+            <!-- 16. BEST PRACTICES -->
+            <!-- ============================================================ -->
+            <h1 id="best-practices">16. Best Practices</h1>
+
+            <h2>Code Style &amp; Design</h2>
+            <ul>
+                <li>Prefer <strong>records</strong> for immutable data carriers over POJOs with boilerplate.</li>
+                <li>Use <strong>sealed classes</strong> to model closed type hierarchies.</li>
+                <li>Favor <strong>pattern matching</strong> (instanceof, switch) over manual type-checking and casting.</li>
+                <li>Prefer <strong>composition over inheritance</strong>. Use interfaces with default methods judiciously.</li>
+                <li>Return <code>Optional&lt;T&gt;</code> instead of <code>null</code> from methods that may not produce a result.</li>
+                <li>Use <code>var</code> for local variables when the type is obvious from context.</li>
+                <li>Follow <strong>package-by-feature</strong> over package-by-layer organization.</li>
+            </ul>
+
+            <h2>Performance</h2>
+            <ul>
+                <li>Use <strong>virtual threads</strong> for I/O-bound workloads instead of platform thread pools.</li>
+                <li>Profile before optimizing &mdash; use <strong>JFR + JMC</strong> or <strong>async-profiler</strong>.</li>
+                <li>Choose the right <strong>garbage collector</strong> for your workload (G1 for general, ZGC for low-latency).</li>
+                <li>Use <code>StringBuilder</code> for string concatenation in loops (though the compiler optimizes simple cases).</li>
+                <li>Prefer <strong>Streams</strong> for declarative collection processing; use parallel streams only for CPU-bound work on large datasets.</li>
+                <li>Use <strong>jlink</strong> to create minimal runtime images for production deployments.</li>
+            </ul>
+
+            <h2>Project Structure (Maven/Gradle Standard)</h2>
+<pre><code>my-project/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/example/myapp/
+│   │   │       ├── Application.java
+│   │   │       ├── config/
+│   │   │       ├── controller/
+│   │   │       ├── service/
+│   │   │       ├── repository/
+│   │   │       └── model/
+│   │   └── resources/
+│   │       ├── application.yml
+│   │       └── static/
+│   └── test/
+│       ├── java/
+│       │   └── com/example/myapp/
+│       │       ├── controller/
+│       │       ├── service/
+│       │       └── repository/
+│       └── resources/
+├── build.gradle.kts (or pom.xml)
+├── settings.gradle.kts
+├── Dockerfile
+├── .gitignore
+└── README.md</code></pre>
+
+            <h2>Recommended JVM Flags for Production (Java 21)</h2>
+<pre><code>java \
+  -Xms2g -Xmx2g \                    # Fixed heap size (avoid resizing)
+  -XX:+UseZGC -XX:+ZGenerational \    # Generational ZGC for low latency
+  -XX:+UseContainerSupport \          # Respect container memory limits
+  -XX:MaxRAMPercentage=75.0 \         # Use 75% of container memory
+  -XX:+HeapDumpOnOutOfMemoryError \   # Dump heap on OOM
+  -XX:HeapDumpPath=/tmp/heapdump.hprof \
+  -Xlog:gc*:file=/var/log/gc.log:time,level,tags \
+  -jar app.jar</code></pre>
+
+            <!-- ============================================================ -->
+            <!-- 17. DEPLOYMENT STRATEGIES -->
+            <!-- ============================================================ -->
+            <h1 id="deployment">17. Deployment Strategies</h1>
+
+            <h2>Packaging Formats</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Format</th>
+                        <th>Description</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Fat/Uber JAR</strong></td><td>Single JAR containing application code and all dependencies. Created by Spring Boot plugin or Maven Shade.</td><td>Standalone microservices, CLI tools</td></tr>
+                    <tr><td><strong>Thin JAR + libs/</strong></td><td>Application JAR with dependencies in a separate directory. Better for layer caching in Docker.</td><td>Containerized deployments</td></tr>
+                    <tr><td><strong>WAR</strong></td><td>Web Application Archive deployed to servlet containers (Tomcat, Jetty).</td><td>Traditional Jakarta EE applications</td></tr>
+                    <tr><td><strong>Native Image</strong></td><td>Ahead-of-time compiled binary via GraalVM. No JVM required at runtime.</td><td>Serverless, CLI tools, fast-startup services</td></tr>
+                    <tr><td><strong>Docker Image</strong></td><td>Containerized application with JRE and app code.</td><td>Kubernetes, ECS, any container platform</td></tr>
+                    <tr><td><strong>Custom Runtime (jlink)</strong></td><td>Minimal JRE image containing only required modules. Reduces image size significantly.</td><td>Size-constrained deployments, embedded</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Building a Deployable Artifact</h2>
+
+            <h3>Spring Boot Fat JAR</h3>
+<pre><code># Maven
+mvn clean package -DskipTests
+# Output: target/myapp-1.0.0.jar
+
+# Gradle
+./gradlew bootJar
+# Output: build/libs/myapp-1.0.0.jar
+
+# Run it
+java -jar target/myapp-1.0.0.jar --server.port=8080</code></pre>
+
+            <h3>Layered JAR for Docker (Spring Boot)</h3>
+<pre><code># Extract layers for efficient Docker caching
+java -Djarmode=layertools -jar myapp.jar extract
+
+# Produces:
+#   dependencies/
+#   spring-boot-loader/
+#   snapshot-dependencies/
+#   application/</code></pre>
+
+<pre><code># Optimized Dockerfile using layers
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+
+COPY dependencies/ ./
+COPY spring-boot-loader/ ./
+COPY snapshot-dependencies/ ./
+COPY application/ ./
+
+EXPOSE 8080
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]</code></pre>
+
+            <h3>GraalVM Native Image</h3>
+<pre><code># Spring Boot 3 + GraalVM
+./gradlew nativeCompile
+
+# Or with Maven
+mvn -Pnative native:compile
+
+# Run the native binary (no JVM needed)
+./build/native/nativeCompile/myapp
+# Starts in ~50ms, uses ~50MB RSS</code></pre>
+
+            <h3>Custom Runtime with jlink</h3>
+<pre><code># Analyze required modules
+jdeps --print-module-deps --ignore-missing-deps target/myapp.jar
+
+# Create minimal JRE
+jlink \
+  --add-modules java.base,java.logging,java.net.http,java.sql \
+  --strip-debug \
+  --no-man-pages \
+  --no-header-files \
+  --compress=zip-9 \
+  --output custom-jre
+
+# Result: ~30-50MB custom JRE vs ~300MB full JDK</code></pre>
+
+            <h2>Deployment Models</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Traditional (VM-based)</h4>
+                    <ul>
+                        <li>Deploy JAR/WAR to a VM or bare-metal server</li>
+                        <li>Use systemd or init.d for process management</li>
+                        <li>Configure reverse proxy (Nginx/Apache) in front</li>
+                        <li>Manage JDK installation separately</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>Containerized</h4>
+                    <ul>
+                        <li>Package app + JRE in Docker image</li>
+                        <li>Orchestrate with Kubernetes, ECS, or Docker Compose</li>
+                        <li>Use multi-stage builds for small images</li>
+                        <li>Leverage health checks and graceful shutdown</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>Serverless</h4>
+                    <ul>
+                        <li>Deploy as Lambda functions (AWS) or Cloud Functions</li>
+                        <li>Use GraalVM native image or SnapStart for cold starts</li>
+                        <li>Event-driven, pay-per-invocation</li>
+                        <li>Frameworks: Spring Cloud Function, Quarkus, Micronaut</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>Platform-as-a-Service</h4>
+                    <ul>
+                        <li>Deploy to managed platforms (AWS Elastic Beanstalk, Azure App Service)</li>
+                        <li>Platform handles scaling, load balancing, health monitoring</li>
+                        <li>Upload JAR/WAR or connect to Git repo</li>
+                        <li>Minimal infrastructure management</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Systemd Service (Linux VM Deployment)</h2>
+<pre><code># /etc/systemd/system/myapp.service
+[Unit]
+Description=My Java Application
+After=network.target
+
+[Service]
+User=appuser
+Group=appuser
+Type=simple
+ExecStart=/usr/bin/java \
+  -Xms512m -Xmx512m \
+  -XX:+UseZGC -XX:+ZGenerational \
+  -jar /opt/myapp/myapp.jar \
+  --spring.profiles.active=production
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment=JAVA_HOME=/usr/lib/jvm/temurin-21-jdk
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+
+<pre><code># Manage the service
+sudo systemctl daemon-reload
+sudo systemctl enable myapp
+sudo systemctl start myapp
+sudo systemctl status myapp
+journalctl -u myapp -f    # Tail logs</code></pre>
+
+            <h2>Health Checks &amp; Graceful Shutdown</h2>
+<pre><code>// application.yml (Spring Boot)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true   # Enables /actuator/health/liveness and /readiness
+
+server:
+  shutdown: graceful    # Wait for active requests to complete
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s</code></pre>
+
+            <!-- ============================================================ -->
+            <!-- 18. DEPLOYING TO AWS -->
+            <!-- ============================================================ -->
+            <h1 id="aws-deployment">18. Deploying to AWS</h1>
+
+            <p>AWS provides multiple services for running Java applications, each suited to different requirements around control, scalability, and operational overhead.</p>
+
+            <h2>AWS Service Selection Guide</h2>
+            <div class="diagram">
+┌────────────────────────────────────────────────────────────────────────────┐
+│                     How to Choose an AWS Compute Service                  │
+│                                                                          │
+│  Need full control over OS/networking?                                    │
+│    └─ YES ──▶ EC2 (Virtual Machines)                                     │
+│    └─ NO                                                                 │
+│        │                                                                 │
+│        ├── Event-driven / short-lived tasks?                             │
+│        │     └─ YES ──▶ Lambda (Serverless)                              │
+│        │     └─ NO                                                       │
+│        │                                                                 │
+│        ├── Running containers?                                           │
+│        │     ├─ Want managed Kubernetes? ──▶ EKS                         │
+│        │     └─ Want simpler orchestration? ──▶ ECS (Fargate or EC2)     │
+│        │                                                                 │
+│        ├── Want zero infrastructure management?                          │
+│        │     └─ YES ──▶ Elastic Beanstalk or App Runner                  │
+│        │                                                                 │
+│        └── Long-running web app, minimal config?                         │
+│              └─ YES ──▶ App Runner                                       │
+└────────────────────────────────────────────────────────────────────────────┘
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>AWS Service</th>
+                        <th>Description</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>EC2</strong></td><td>Virtual machines with full OS control. Deploy JARs directly with systemd.</td><td>Full control, legacy apps, custom networking</td></tr>
+                    <tr><td><strong>Elastic Beanstalk</strong></td><td>PaaS that auto-provisions EC2, ALB, ASG. Upload JAR/WAR and go.</td><td>Quick deployments, traditional web apps</td></tr>
+                    <tr><td><strong>ECS (Fargate)</strong></td><td>Serverless container orchestration. No EC2 management. Task-based.</td><td>Containerized microservices, simple orchestration</td></tr>
+                    <tr><td><strong>ECS (EC2)</strong></td><td>Container orchestration on self-managed EC2 instances.</td><td>Cost-optimized containers, GPU workloads</td></tr>
+                    <tr><td><strong>EKS</strong></td><td>Managed Kubernetes. Full K8s API compatibility.</td><td>Complex microservice architectures, multi-cloud portability</td></tr>
+                    <tr><td><strong>Lambda</strong></td><td>Serverless functions. Pay per invocation. Cold start considerations for Java.</td><td>Event-driven processing, APIs, scheduled tasks</td></tr>
+                    <tr><td><strong>App Runner</strong></td><td>Fully managed service for containerized web apps. Source or image deployment.</td><td>Simple web services, APIs, minimal ops</td></tr>
+                </tbody>
+            </table>
+
+            <!-- EC2 -->
+            <h2>Option 1: EC2 (Virtual Machine)</h2>
+            <p>Deploy a Java application directly on an EC2 instance with full control over the environment.</p>
+
+<pre><code># 1. Launch EC2 instance (Amazon Linux 2023, t3.medium)
+#    - Configure Security Group: allow ports 22 (SSH), 8080 (app), 443 (HTTPS)
+#    - Attach IAM role with required permissions
+
+# 2. SSH into the instance
+ssh -i my-key.pem ec2-user@&lt;public-ip&gt;
+
+# 3. Install Java 21
+sudo yum install -y java-21-amazon-corretto-headless
+java -version
+
+# 4. Upload and deploy the application
+scp -i my-key.pem target/myapp.jar ec2-user@&lt;public-ip&gt;:/opt/myapp/
+
+# 5. Create systemd service (see Section 17)
+sudo systemctl enable myapp &amp;&amp; sudo systemctl start myapp
+
+# 6. (Optional) Set up Nginx reverse proxy
+sudo yum install -y nginx
+# Configure proxy_pass to localhost:8080</code></pre>
+
+            <div class="info-box warning">
+                <p><strong>Production Note:</strong> For production EC2 deployments, use an Application Load Balancer (ALB) with Auto Scaling Groups (ASG) for high availability. Store configuration in AWS Systems Manager Parameter Store or Secrets Manager &mdash; never hardcode credentials.</p>
+            </div>
+
+            <!-- ELASTIC BEANSTALK -->
+            <h2>Option 2: Elastic Beanstalk</h2>
+            <p>The simplest path to deploying a Java app on AWS. Beanstalk handles provisioning, load balancing, auto-scaling, and health monitoring.</p>
+
+<pre><code># 1. Install the EB CLI
+pip install awsebcli
+
+# 2. Initialize the project
+eb init my-java-app --platform "Corretto 21 running on 64bit Amazon Linux 2023" --region ap-southeast-2
+
+# 3. Create an environment and deploy
+eb create production-env \
+  --instance_type t3.medium \
+  --single        # Use --single for dev; remove for load-balanced prod
+
+# 4. Deploy updates
+mvn clean package -DskipTests
+eb deploy
+
+# 5. View logs and status
+eb status
+eb logs
+eb health
+
+# 6. Open in browser
+eb open</code></pre>
+
+            <h3>Procfile for Beanstalk</h3>
+<pre><code># Procfile (in project root)
+web: java -Xms256m -Xmx512m -XX:+UseZGC -jar target/myapp.jar --server.port=5000</code></pre>
+
+            <h3>.ebextensions for Custom Configuration</h3>
+<pre><code># .ebextensions/01-jvm-options.config
+option_settings:
+  aws:elasticbeanstalk:application:environment:
+    SERVER_PORT: "5000"
+    SPRING_PROFILES_ACTIVE: "production"
+    JAVA_TOOL_OPTIONS: "-XX:+UseZGC -XX:+ZGenerational -Xms512m -Xmx1g"</code></pre>
+
+            <!-- ECS FARGATE -->
+            <h2>Option 3: ECS with Fargate (Containerized)</h2>
+            <p>Deploy containerized Java applications without managing servers. Fargate handles compute provisioning.</p>
+
+            <h3>Step 1: Build and Push Docker Image</h3>
+<pre><code># Dockerfile (multi-stage)
+FROM eclipse-temurin:21-jdk-jammy AS build
+WORKDIR /app
+COPY gradle/ gradle/
+COPY gradlew build.gradle.kts settings.gradle.kts ./
+RUN ./gradlew dependencies --no-daemon
+COPY src/ src/
+RUN ./gradlew bootJar --no-daemon
+
+FROM eclipse-temurin:21-jre-jammy
+RUN groupadd -r appuser &amp;&amp; useradd -r -g appuser appuser
+WORKDIR /app
+COPY --from=build /app/build/libs/*.jar app.jar
+USER appuser
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost:8080/actuator/health || exit 1
+ENTRYPOINT ["java", \
+  "-XX:+UseZGC", "-XX:+ZGenerational", \
+  "-XX:MaxRAMPercentage=75.0", \
+  "-jar", "app.jar"]</code></pre>
+
+<pre><code># Build and push to ECR
+aws ecr get-login-password --region ap-southeast-2 | \
+  docker login --username AWS --password-stdin 123456789012.dkr.ecr.ap-southeast-2.amazonaws.com
+
+docker build -t myapp:latest .
+docker tag myapp:latest 123456789012.dkr.ecr.ap-southeast-2.amazonaws.com/myapp:latest
+docker push 123456789012.dkr.ecr.ap-southeast-2.amazonaws.com/myapp:latest</code></pre>
+
+            <h3>Step 2: ECS Task Definition</h3>
+<pre><code>// task-definition.json
+{
+  "family": "myapp",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "executionRoleArn": "arn:aws:iam::123456789012:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::123456789012:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "myapp",
+      "image": "123456789012.dkr.ecr.ap-southeast-2.amazonaws.com/myapp:latest",
+      "portMappings": [
+        { "containerPort": 8080, "protocol": "tcp" }
+      ],
+      "environment": [
+        { "name": "SPRING_PROFILES_ACTIVE", "value": "production" }
+      ],
+      "secrets": [
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-2:123456789012:secret:myapp/db-password"
+        }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/myapp",
+          "awslogs-region": "ap-southeast-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}</code></pre>
+
+            <h3>Step 3: Create Service with ALB</h3>
+<pre><code># Register task definition
+aws ecs register-task-definition --cli-input-json file://task-definition.json
+
+# Create ECS cluster
+aws ecs create-cluster --cluster-name myapp-cluster
+
+# Create service with load balancer
+aws ecs create-service \
+  --cluster myapp-cluster \
+  --service-name myapp-service \
+  --task-definition myapp \
+  --desired-count 2 \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[subnet-abc123,subnet-def456],securityGroups=[sg-789xyz],assignPublicIp=ENABLED}" \
+  --load-balancers "targetGroupArn=arn:aws:elasticloadbalancing:ap-southeast-2:123456789012:targetgroup/myapp-tg/abc123,containerName=myapp,containerPort=8080"
+
+# Update service (rolling deployment)
+aws ecs update-service \
+  --cluster myapp-cluster \
+  --service myapp-service \
+  --force-new-deployment</code></pre>
+
+            <!-- EKS -->
+            <h2>Option 4: EKS (Kubernetes)</h2>
+            <p>For complex microservice architectures requiring Kubernetes-native features like service mesh, auto-scaling, and multi-cloud portability.</p>
+
+<pre><code># Kubernetes Deployment manifest
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  namespace: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: 123456789012.dkr.ecr.ap-southeast-2.amazonaws.com/myapp:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "production"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:+UseZGC -XX:+ZGenerational -XX:MaxRAMPercentage=75.0"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+  namespace: production
+spec:
+  type: ClusterIP
+  selector:
+    app: myapp
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myapp-ingress
+  namespace: production
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  rules:
+    - host: myapp.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: myapp-service
+                port:
+                  number: 80</code></pre>
+
+<pre><code># Deploy to EKS
+export KUBECONFIG=~/.kube/eks-config
+aws eks update-kubeconfig --name my-cluster --region ap-southeast-2
+
+kubectl apply -f k8s/
+kubectl rollout status deployment/myapp -n production
+kubectl get pods -n production</code></pre>
+
+            <!-- LAMBDA -->
+            <h2>Option 5: AWS Lambda (Serverless)</h2>
+            <p>Deploy Java functions that scale automatically. Java 21 is supported as a managed runtime. Use <strong>SnapStart</strong> to reduce cold start times from ~5s to ~200ms.</p>
+
+            <h3>Lambda Handler</h3>
+<pre><code>// Using AWS Lambda Java Events library
+public class OrderHandler implements RequestHandler&lt;APIGatewayProxyRequestEvent,
+                                                      APIGatewayProxyResponseEvent&gt; {
+
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final OrderService orderService = new OrderService();
+
+    @Override
+    public APIGatewayProxyResponseEvent handleRequest(
+            APIGatewayProxyRequestEvent input, Context context) {
+
+        try {
+            var order = mapper.readValue(input.getBody(), OrderRequest.class);
+            var result = orderService.createOrder(order);
+
+            return new APIGatewayProxyResponseEvent()
+                .withStatusCode(201)
+                .withBody(mapper.writeValueAsString(result));
+
+        } catch (Exception e) {
+            context.getLogger().log("Error: " + e.getMessage());
+            return new APIGatewayProxyResponseEvent()
+                .withStatusCode(500)
+                .withBody("{\"error\": \"Internal server error\"}");
+        }
+    }
+}</code></pre>
+
+            <h3>Gradle Build for Lambda</h3>
+<pre><code>// build.gradle.kts
+plugins {
+    java
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+dependencies {
+    implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
+    implementation("com.amazonaws:aws-lambda-java-events:3.11.4")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")
+}
+
+tasks.register&lt;Zip&gt;("packageLambda") {
+    from(tasks.compileJava)
+    from(tasks.processResources)
+    into("lib") {
+        from(configurations.runtimeClasspath)
+    }
+}</code></pre>
+
+            <h3>Deploy with AWS CLI</h3>
+<pre><code># Build the deployment package
+./gradlew packageLambda
+
+# Create the Lambda function with SnapStart enabled
+aws lambda create-function \
+  --function-name myapp-order-handler \
+  --runtime java21 \
+  --handler com.example.OrderHandler::handleRequest \
+  --zip-file fileb://build/distributions/myapp.zip \
+  --role arn:aws:iam::123456789012:role/lambda-role \
+  --memory-size 512 \
+  --timeout 30 \
+  --snap-start ApplyOn=PublishedVersions \
+  --environment "Variables={SPRING_PROFILES_ACTIVE=production}"
+
+# Publish a version (required for SnapStart)
+aws lambda publish-version --function-name myapp-order-handler
+
+# Create API Gateway integration
+aws apigatewayv2 create-api \
+  --name myapp-api \
+  --protocol-type HTTP \
+  --target arn:aws:lambda:ap-southeast-2:123456789012:function:myapp-order-handler</code></pre>
+
+            <div class="info-box success">
+                <p><strong>SnapStart:</strong> AWS Lambda SnapStart for Java 21 takes a snapshot of the initialized function after the <code>init</code> phase and caches it. Subsequent invocations resume from the snapshot, reducing cold starts from ~5 seconds to ~200 milliseconds. It is free and requires no code changes.</p>
+            </div>
+
+            <h3>Spring Cloud Function on Lambda</h3>
+<pre><code>// Use Spring Cloud Function for a familiar Spring experience on Lambda
+@SpringBootApplication
+public class Application {
+
+    @Bean
+    public Function&lt;OrderRequest, OrderResponse&gt; createOrder(OrderService service) {
+        return request -&gt; service.create(request);
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}</code></pre>
+
+<pre><code>&lt;!-- pom.xml dependency --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-cloud-function-adapter-aws&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+
+            <!-- APP RUNNER -->
+            <h2>Option 6: AWS App Runner</h2>
+            <p>The simplest AWS service for deploying containerized web applications. No infrastructure to manage &mdash; just point to an image or source repo.</p>
+
+<pre><code># Deploy from ECR image
+aws apprunner create-service \
+  --service-name myapp \
+  --source-configuration '{
+    "ImageRepository": {
+      "ImageIdentifier": "123456789012.dkr.ecr.ap-southeast-2.amazonaws.com/myapp:latest",
+      "ImageRepositoryType": "ECR",
+      "ImageConfiguration": {
+        "Port": "8080",
+        "RuntimeEnvironmentVariables": {
+          "SPRING_PROFILES_ACTIVE": "production"
+        }
+      }
+    },
+    "AuthenticationConfiguration": {
+      "AccessRoleArn": "arn:aws:iam::123456789012:role/apprunner-ecr-access"
+    },
+    "AutoDeploymentsEnabled": true
+  }' \
+  --instance-configuration '{
+    "Cpu": "1 vCPU",
+    "Memory": "2 GB"
+  }' \
+  --health-check-configuration '{
+    "Protocol": "HTTP",
+    "Path": "/actuator/health",
+    "Interval": 10,
+    "Timeout": 5
+  }'</code></pre>
+
+            <!-- AWS SUPPORTING SERVICES -->
+            <h2>AWS Supporting Services for Java Applications</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Purpose</th>
+                        <th>Java Integration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>RDS / Aurora</strong></td><td>Managed relational databases (PostgreSQL, MySQL)</td><td>JDBC, Spring Data JPA, HikariCP connection pool</td></tr>
+                    <tr><td><strong>DynamoDB</strong></td><td>NoSQL key-value and document database</td><td>AWS SDK v2, DynamoDB Enhanced Client (annotation-based)</td></tr>
+                    <tr><td><strong>ElastiCache</strong></td><td>Managed Redis or Memcached</td><td>Spring Data Redis, Jedis, Lettuce</td></tr>
+                    <tr><td><strong>SQS</strong></td><td>Message queuing</td><td>AWS SDK v2, Spring Cloud AWS Messaging, JMS bridge</td></tr>
+                    <tr><td><strong>SNS</strong></td><td>Pub/sub messaging and notifications</td><td>AWS SDK v2, Spring Cloud AWS</td></tr>
+                    <tr><td><strong>S3</strong></td><td>Object storage</td><td>AWS SDK v2 (S3Client, TransferManager)</td></tr>
+                    <tr><td><strong>Secrets Manager</strong></td><td>Secrets and credential management</td><td>Spring Cloud AWS, ECS secrets injection</td></tr>
+                    <tr><td><strong>Parameter Store</strong></td><td>Configuration management</td><td>Spring Cloud AWS Config</td></tr>
+                    <tr><td><strong>CloudWatch</strong></td><td>Monitoring, logging, alarms</td><td>Micrometer CloudWatch registry, CloudWatch Logs agent</td></tr>
+                    <tr><td><strong>X-Ray</strong></td><td>Distributed tracing</td><td>AWS X-Ray SDK, OpenTelemetry auto-instrumentation</td></tr>
+                    <tr><td><strong>CodePipeline / CodeBuild</strong></td><td>CI/CD pipeline</td><td>buildspec.yml with Maven/Gradle, deploy to any compute target</td></tr>
+                    <tr><td><strong>ECR</strong></td><td>Container image registry</td><td>Docker push, Jib direct push, CodeBuild integration</td></tr>
+                </tbody>
+            </table>
+
+            <h2>CI/CD Pipeline with AWS CodePipeline</h2>
+<pre><code># buildspec.yml (for AWS CodeBuild)
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto21
+  pre_build:
+    commands:
+      - echo Logging into ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION |
+          docker login --username AWS --password-stdin $ECR_REPO_URI
+  build:
+    commands:
+      - echo Building the application...
+      - ./gradlew clean build
+      - echo Building Docker image...
+      - docker build -t $ECR_REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION .
+      - docker tag $ECR_REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION $ECR_REPO_URI:latest
+  post_build:
+    commands:
+      - echo Pushing Docker image...
+      - docker push $ECR_REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - docker push $ECR_REPO_URI:latest
+      - printf '[{"name":"myapp","imageUri":"%s"}]' $ECR_REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION &gt; imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
+
+cache:
+  paths:
+    - '/root/.gradle/caches/**/*'
+    - '/root/.gradle/wrapper/**/*'</code></pre>
+
+            <h2>Infrastructure as Code (CDK with Java)</h2>
+            <p>AWS CDK lets you define infrastructure using Java &mdash; keeping your application and infrastructure in the same language.</p>
+
+<pre><code>// AWS CDK Stack in Java
+public class MyAppStack extends Stack {
+
+    public MyAppStack(final Construct scope, final String id) {
+        super(scope, id);
+
+        // VPC
+        var vpc = Vpc.Builder.create(this, "MyAppVpc")
+            .maxAzs(2)
+            .build();
+
+        // ECS Cluster
+        var cluster = Cluster.Builder.create(this, "MyAppCluster")
+            .vpc(vpc)
+            .build();
+
+        // Fargate Service with ALB
+        var service = ApplicationLoadBalancedFargateService.Builder
+            .create(this, "MyAppService")
+            .cluster(cluster)
+            .cpu(1024)
+            .memoryLimitMiB(2048)
+            .desiredCount(2)
+            .taskImageOptions(ApplicationLoadBalancedTaskImageOptions.builder()
+                .image(ContainerImage.fromEcrRepository(
+                    Repository.fromRepositoryName(this, "Repo", "myapp")))
+                .containerPort(8080)
+                .environment(Map.of(
+                    "SPRING_PROFILES_ACTIVE", "production",
+                    "JAVA_TOOL_OPTIONS", "-XX:+UseZGC -XX:+ZGenerational"
+                ))
+                .build())
+            .publicLoadBalancer(true)
+            .build();
+
+        // Auto-scaling
+        var scaling = service.getService().autoScaleTaskCount(
+            EnableScalingProps.builder().minCapacity(2).maxCapacity(10).build());
+
+        scaling.scaleOnCpuUtilization("CpuScaling",
+            CpuUtilizationScalingProps.builder()
+                .targetUtilizationPercent(70)
+                .build());
+
+        // RDS Database
+        var db = DatabaseInstance.Builder.create(this, "MyAppDb")
+            .engine(DatabaseInstanceEngine.postgres(
+                PostgresInstanceEngineProps.builder()
+                    .version(PostgresEngineVersion.VER_16).build()))
+            .vpc(vpc)
+            .instanceType(InstanceType.of(InstanceClass.T3, InstanceSize.MEDIUM))
+            .credentials(Credentials.fromGeneratedSecret("dbadmin"))
+            .build();
+
+        db.getConnections().allowDefaultPortFrom(service.getService());
+    }
+}</code></pre>
+
+<pre><code># Deploy with CDK
+cdk bootstrap
+cdk synth
+cdk deploy</code></pre>
+
+            <h2>AWS Deployment Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>EC2</th>
+                        <th>Beanstalk</th>
+                        <th>ECS Fargate</th>
+                        <th>EKS</th>
+                        <th>Lambda</th>
+                        <th>App Runner</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Ops overhead</strong></td><td>High</td><td>Low</td><td>Medium</td><td>High</td><td>Minimal</td><td>Minimal</td></tr>
+                    <tr><td><strong>Scaling</strong></td><td>ASG (manual config)</td><td>Automatic</td><td>Service auto-scaling</td><td>HPA / KEDA</td><td>Automatic</td><td>Automatic</td></tr>
+                    <tr><td><strong>Cold start</strong></td><td>N/A</td><td>N/A</td><td>~10-30s (task start)</td><td>~10-30s (pod start)</td><td>~200ms (SnapStart)</td><td>~10-30s</td></tr>
+                    <tr><td><strong>Cost model</strong></td><td>Per-hour</td><td>Per-hour</td><td>Per-vCPU-hour</td><td>Cluster + per-hour</td><td>Per-invocation</td><td>Per-vCPU-hour</td></tr>
+                    <tr><td><strong>Best JDK</strong></td><td>Corretto 21</td><td>Corretto 21</td><td>Temurin/Corretto 21</td><td>Temurin/Corretto 21</td><td>Corretto 21 (managed)</td><td>Temurin/Corretto 21</td></tr>
+                    <tr><td><strong>Native image</strong></td><td>Supported</td><td>Supported</td><td>Supported</td><td>Supported</td><td>Custom runtime</td><td>Supported</td></tr>
+                </tbody>
+            </table>
+
+            <div class="info-box success">
+                <p><strong>Key Takeaway:</strong> Java 21 as an LTS release brings transformative features &mdash; virtual threads, pattern matching, and record patterns &mdash; that modernize Java development while maintaining backward compatibility. Combined with its mature ecosystem of build tools, testing frameworks, and cloud-native capabilities, Java 21 is an excellent foundation for both new and existing applications. AWS provides a full spectrum of compute options, from full-control EC2 to zero-ops Lambda, all with first-class Java 21 support.</p>
+            </div>
+
+        </div><!-- /.content -->
+    </div><!-- /.container -->
+</body>
+</html>
