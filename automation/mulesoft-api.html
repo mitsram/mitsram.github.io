@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MuleSoft API — What It Is, How It Works & How to Test It (Java)</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4338ca;
+            --accent: #06b6d4;
+            --accent-light: #ecfeff;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --bg: #f9fafb;
+            --bg-card: #ffffff;
+            --bg-code: #1e1e2e;
+            --text: #111827;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgb(0 0 0 / .06), 0 1px 2px rgb(0 0 0 / .04);
+            --shadow-lg: 0 10px 25px rgb(0 0 0 / .08);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        /* ── STICKY NAV ── */
+        .topnav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255,255,255,.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: .75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            overflow-x: auto;
+        }
+        .topnav a {
+            font-size: .82rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-decoration: none;
+            white-space: nowrap;
+            transition: color .2s;
+        }
+        .topnav a:hover, .topnav a.active { color: var(--primary); }
+        .topnav .brand { font-weight: 700; color: var(--primary); font-size: .95rem; }
+
+        /* ── HERO ── */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 60%, #312e81 100%);
+            color: #fff;
+            padding: 5rem 2rem 4rem;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.25rem);
+            font-weight: 800;
+            letter-spacing: -.5px;
+            margin-bottom: .75rem;
+        }
+        .hero p {
+            max-width: 640px;
+            margin: 0 auto;
+            font-size: 1.15rem;
+            opacity: .9;
+        }
+        .hero .badge-row {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: .75rem;
+            flex-wrap: wrap;
+        }
+        .hero .badge {
+            display: inline-block;
+            background: rgba(255,255,255,.15);
+            border: 1px solid rgba(255,255,255,.25);
+            padding: .3rem .85rem;
+            border-radius: 999px;
+            font-size: .8rem;
+            font-weight: 500;
+        }
+
+        /* ── LAYOUT ── */
+        .wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        section { margin-bottom: 3rem; }
+
+        /* ── TYPOGRAPHY ── */
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            padding-bottom: .5rem;
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        h2 .icon { font-size: 1.4rem; }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.75rem 0 .75rem;
+            color: var(--text);
+        }
+
+        h4 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 1.25rem 0 .5rem;
+        }
+
+        p { margin-bottom: 1rem; color: var(--text-muted); }
+
+        a { color: var(--primary); }
+
+        ul, ol { margin: 0 0 1rem 1.75rem; color: var(--text-muted); }
+        li { margin-bottom: .4rem; }
+
+        strong { color: var(--text); }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: var(--shadow);
+        }
+        .card h4 { margin-top: 0; }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0 1.5rem;
+        }
+        .card-grid .card { margin-bottom: 0; }
+
+        .card-accent { border-left: 4px solid var(--primary); }
+        .card-success { border-left: 4px solid var(--success); background: var(--success-light); }
+        .card-warning { border-left: 4px solid var(--warning); background: var(--warning-light); }
+        .card-info { border-left: 4px solid var(--accent); background: var(--accent-light); }
+
+        /* ── CODE BLOCKS ── */
+        pre {
+            background: var(--bg-code);
+            color: #cdd6f4;
+            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius);
+            overflow-x: auto;
+            font-size: .85rem;
+            line-height: 1.65;
+            margin: 1rem 0 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        pre .comment { color: #6c7086; }
+        pre .key { color: #89b4fa; }
+        pre .string { color: #a6e3a1; }
+        pre .number { color: #fab387; }
+        pre .keyword { color: #cba6f7; }
+        pre .method { color: #f38ba8; }
+        pre .annotation { color: #f9e2af; }
+        pre .type { color: #89dceb; }
+        pre .tag { color: #f38ba8; }
+        pre .attr { color: #89b4fa; }
+
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', Consolas, monospace;
+            font-size: .88em;
+        }
+        :not(pre) > code {
+            background: #f3f4f6;
+            padding: .15em .4em;
+            border-radius: 4px;
+            color: var(--primary-dark);
+        }
+
+        /* ── TABLE ── */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1rem 0 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            font-size: .92rem;
+        }
+        thead { background: var(--primary); color: #fff; }
+        th { padding: .85rem 1rem; text-align: left; font-weight: 600; }
+        td { padding: .85rem 1rem; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #f9fafb; }
+
+        /* ── CALLOUT ── */
+        .callout {
+            display: flex;
+            gap: .75rem;
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius);
+            margin: 1rem 0 1.5rem;
+            font-size: .92rem;
+        }
+        .callout-tip { background: var(--success-light); border-left: 4px solid var(--success); }
+        .callout-warn { background: var(--warning-light); border-left: 4px solid var(--warning); }
+        .callout-info { background: var(--accent-light); border-left: 4px solid var(--accent); }
+        .callout .icon { font-size: 1.2rem; flex-shrink: 0; }
+        .callout p { margin: 0; color: var(--text); }
+
+        /* ── FLOW DIAGRAM ── */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+        .flow-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: .6rem 1.1rem;
+            font-size: .85rem;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+        }
+        .flow-arrow { color: var(--primary); font-weight: 700; font-size: 1.1rem; }
+
+        /* ── TIER DIAGRAM ── */
+        .tier-diagram {
+            margin: 1.5rem 0;
+        }
+        .tier-box {
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem 1.5rem;
+            margin-bottom: .5rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: .95rem;
+        }
+        .tier-box.experience { background: #ede9fe; border-color: #a78bfa; color: #5b21b6; }
+        .tier-box.process { background: #dbeafe; border-color: #60a5fa; color: #1e40af; }
+        .tier-box.system { background: #d1fae5; border-color: #34d399; color: #065f46; }
+        .tier-label { font-size: .78rem; font-weight: 400; color: var(--text-muted); display: block; margin-top: .25rem; }
+
+        /* ── BACK TO TOP ── */
+        .back-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: grid;
+            place-items: center;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transition: opacity .3s;
+        }
+        .back-top.visible { opacity: 1; }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            font-size: .82rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .wrapper { padding: 1.5rem 1rem; }
+            pre { padding: 1rem; font-size: .8rem; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- =============== NAVIGATION =============== -->
+<nav class="topnav">
+    <span class="brand">MuleSoft Guide</span>
+    <a href="#what">What Is MuleSoft</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#app-structure">App Structure</a>
+    <a href="#testing">Testing Strategy</a>
+    <a href="#unit-testing">Unit Testing</a>
+    <a href="#integration-testing">Integration Testing</a>
+    <a href="#sit">SIT</a>
+    <a href="#tools">Tools</a>
+    <a href="#cicd">CI/CD</a>
+</nav>
+
+<!-- =============== HERO =============== -->
+<div class="hero">
+    <h1>MuleSoft API</h1>
+    <p>A comprehensive guide to understanding MuleSoft's Anypoint Platform, building API-led integrations, and testing them with Java-based tools.</p>
+    <div class="badge-row">
+        <span class="badge">Mule 4.x</span>
+        <span class="badge">Anypoint Platform</span>
+        <span class="badge">API-Led Connectivity</span>
+        <span class="badge">Java Testing</span>
+        <span class="badge">DataWeave 2.0</span>
+    </div>
+</div>
+
+<div class="wrapper">
+
+    <!-- =============== WHAT IS MULESOFT =============== -->
+    <section id="what">
+        <h2><span class="icon">🔗</span> What Is MuleSoft?</h2>
+
+        <p><strong>MuleSoft</strong> is an integration platform (iPaaS) that enables organisations to connect applications, data, and devices across on-premise and cloud environments. At its core is the <strong>Anypoint Platform</strong>, which provides tools for designing, building, deploying, and managing APIs and integrations.</p>
+
+        <div class="card card-info">
+            <h4>In Plain Terms</h4>
+            <p>MuleSoft acts as the <em>middleware glue</em> between your systems. Instead of point-to-point spaghetti integrations, you build reusable APIs that expose backend capabilities through a standardised, governed layer. The runtime engine is Java-based, and applications are defined via XML flows and DataWeave transformations.</p>
+        </div>
+
+        <h3>Why Does It Matter?</h3>
+        <div class="card-grid">
+            <div class="card card-accent">
+                <h4>🏗️ API-Led Connectivity</h4>
+                <p>A three-tier architecture (System, Process, Experience APIs) that promotes reusability and decouples consumers from backend systems.</p>
+            </div>
+            <div class="card card-accent">
+                <h4>⚡ Rapid Integration</h4>
+                <p>350+ pre-built connectors for Salesforce, SAP, databases, JMS, HTTP, SFTP, and more &mdash; dramatically reducing development time.</p>
+            </div>
+            <div class="card card-accent">
+                <h4>🔄 DataWeave 2.0</h4>
+                <p>A powerful, functional transformation language for mapping data between JSON, XML, CSV, and any other format.</p>
+            </div>
+            <div class="card card-accent">
+                <h4>🛡️ Governance &amp; Security</h4>
+                <p>API Manager enforces policies (OAuth 2.0, rate limiting, IP whitelisting) at the gateway layer without touching application code.</p>
+            </div>
+        </div>
+
+        <h3>Core Platform Components</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Component</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Mule Runtime Engine</strong></td><td>Lightweight, Java-based ESB that processes messages through XML-defined flows</td></tr>
+                    <tr><td><strong>Anypoint Studio</strong></td><td>Eclipse-based IDE with visual drag-and-drop flow design and XML/DataWeave editors</td></tr>
+                    <tr><td><strong>DataWeave 2.0</strong></td><td>Transformation language for mapping and converting data between formats</td></tr>
+                    <tr><td><strong>Connectors</strong></td><td>Pre-built adapters for SaaS, databases, protocols (HTTP, JMS, SFTP, Salesforce, SAP)</td></tr>
+                    <tr><td><strong>API Manager</strong></td><td>Manages API lifecycle &mdash; policies, SLAs, rate limiting, security, analytics</td></tr>
+                    <tr><td><strong>Exchange</strong></td><td>Repository for reusable assets &mdash; APIs, connectors, templates, examples</td></tr>
+                    <tr><td><strong>CloudHub</strong></td><td>MuleSoft's iPaaS for deploying Mule apps to the cloud</td></tr>
+                    <tr><td><strong>Runtime Fabric</strong></td><td>Container-based (Kubernetes) deployment for hybrid and on-prem scenarios</td></tr>
+                    <tr><td><strong>Object Store</strong></td><td>Persistent key-value store for stateful processing</td></tr>
+                    <tr><td><strong>API Gateway</strong></td><td>Enforces policies and manages traffic at the edge</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =============== ARCHITECTURE =============== -->
+    <section id="architecture">
+        <h2><span class="icon">🏛️</span> API-Led Connectivity Architecture</h2>
+
+        <p>MuleSoft advocates a <strong>three-layer API architecture</strong> that separates concerns and maximises reuse. Each layer serves a distinct purpose within the integration ecosystem.</p>
+
+        <div class="tier-diagram">
+            <div class="tier-box experience">Experience APIs <span class="tier-label">Mobile, Web, Partner portals &mdash; channel-specific orchestration</span></div>
+            <div class="tier-box process">Process APIs <span class="tier-label">Business logic, orchestration &mdash; compose data from multiple sources</span></div>
+            <div class="tier-box system">System APIs <span class="tier-label">Direct system connectivity &mdash; wrap backend systems (SAP, DB, CRM)</span></div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Layer</th><th>Purpose</th><th>Example</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>System API</strong></td><td>Unlocks data from core systems with a standardised interface</td><td><code>sys-salesforce-api</code>, <code>sys-oracle-db-api</code></td></tr>
+                    <tr><td><strong>Process API</strong></td><td>Orchestrates calls across multiple System APIs, applies business rules</td><td><code>proc-order-fulfillment-api</code></td></tr>
+                    <tr><td><strong>Experience API</strong></td><td>Shapes data for a specific consumer channel</td><td><code>exp-mobile-orders-api</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="callout callout-tip">
+            <span class="icon">💡</span>
+            <p><strong>Reusability Win:</strong> A System API wrapping Salesforce can be consumed by multiple Process APIs (orders, returns, customer support) without duplicating connectivity logic.</p>
+        </div>
+
+        <h3>High-Level Platform Architecture</h3>
+
+<pre><code><span class="comment">┌─────────────────────────────────────────────────────────────────────┐</span>
+<span class="comment">│</span>                    <span class="type">Anypoint Platform</span>                              <span class="comment">│</span>
+<span class="comment">├──────────────┬──────────────┬──────────────┬───────────────────────┤</span>
+<span class="comment">│</span> <span class="key">API Manager</span>  <span class="comment">│</span> <span class="key">Exchange</span>     <span class="comment">│</span> <span class="key">Runtime Mgr</span>  <span class="comment">│</span> <span class="key">Visualizer / Monitor</span> <span class="comment">│</span>
+<span class="comment">├──────────────┴──────────────┴──────────────┴───────────────────────┤</span>
+<span class="comment">│</span>                     <span class="type">Anypoint Studio (IDE)</span>                         <span class="comment">│</span>
+<span class="comment">├─────────────────────────────────────────────────────────────────────┤</span>
+<span class="comment">│</span>                   <span class="type">Mule Runtime Engine (4.x)</span>                       <span class="comment">│</span>
+<span class="comment">├──────────────┬──────────────┬──────────────┬───────────────────────┤</span>
+<span class="comment">│</span> <span class="string">Connectors</span>   <span class="comment">│</span> <span class="string">DataWeave</span>    <span class="comment">│</span> <span class="string">Policies</span>     <span class="comment">│</span> <span class="string">API Gateway</span>           <span class="comment">│</span>
+<span class="comment">├──────────────┴──────────────┴──────────────┴───────────────────────┤</span>
+<span class="comment">│</span>       <span class="keyword">CloudHub / Runtime Fabric / On-Prem Deployment</span>              <span class="comment">│</span>
+<span class="comment">└─────────────────────────────────────────────────────────────────────┘</span></code></pre>
+    </section>
+
+    <!-- =============== HOW IT WORKS =============== -->
+    <section id="how-it-works">
+        <h2><span class="icon">⚙️</span> How MuleSoft APIs Work</h2>
+
+        <p>A MuleSoft API is built as a <strong>Mule application</strong> &mdash; a deployable artefact containing XML-defined flows, DataWeave transformations, connectors, and optionally custom Java classes. Here's the lifecycle from request to response.</p>
+
+        <h3>Request Processing Flow</h3>
+        <div class="flow">
+            <span class="flow-step">HTTP Listener</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">API Router (RAML/OAS)</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Validation</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">DataWeave Transform</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Business Logic Flow</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Connector (DB / API / Queue)</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Response Transform</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">HTTP Response</span>
+        </div>
+
+        <h3>Key Concepts</h3>
+        <div class="card-grid">
+            <div class="card card-accent">
+                <h4>📋 Flows</h4>
+                <p>The fundamental unit of work. A flow is a sequence of message processors (source → processors → response). Defined in XML.</p>
+            </div>
+            <div class="card card-accent">
+                <h4>📦 Mule Event</h4>
+                <p>The message object carrying <code>payload</code>, <code>attributes</code> (headers, params), and <code>variables</code> through a flow.</p>
+            </div>
+            <div class="card card-accent">
+                <h4>🔀 DataWeave 2.0</h4>
+                <p>A functional language embedded in every transform step. Maps, filters, and reshapes data between any supported format.</p>
+            </div>
+            <div class="card card-accent">
+                <h4>🔌 Connectors</h4>
+                <p>Pre-built adapters that handle protocol-specific communication (HTTP, JMS, SFTP, JDBC, Salesforce, SAP, etc.).</p>
+            </div>
+        </div>
+
+        <h3>Typical Mule Flow (XML)</h3>
+<pre><code><span class="tag">&lt;flow</span> <span class="attr">name</span>=<span class="string">"get-orders-flow"</span><span class="tag">&gt;</span>
+
+    <span class="comment">&lt;!-- Source: HTTP Listener accepts incoming requests --&gt;</span>
+    <span class="tag">&lt;http:listener</span> <span class="attr">config-ref</span>=<span class="string">"HTTP_Listener_Config"</span>
+                   <span class="attr">path</span>=<span class="string">"/api/v1/orders"</span>
+                   <span class="attr">method</span>=<span class="string">"GET"</span><span class="tag">/&gt;</span>
+
+    <span class="comment">&lt;!-- Transform: Build database query parameters --&gt;</span>
+    <span class="tag">&lt;ee:transform&gt;</span>
+        <span class="tag">&lt;ee:set-variable</span> <span class="attr">variableName</span>=<span class="string">"customerId"</span><span class="tag">&gt;</span>
+            <span class="keyword">attributes.queryParams.customerId</span>
+        <span class="tag">&lt;/ee:set-variable&gt;</span>
+    <span class="tag">&lt;/ee:transform&gt;</span>
+
+    <span class="comment">&lt;!-- Connector: Query the database --&gt;</span>
+    <span class="tag">&lt;db:select</span> <span class="attr">config-ref</span>=<span class="string">"Database_Config"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;db:sql&gt;</span><span class="string">SELECT * FROM orders WHERE customer_id = :customerId</span><span class="tag">&lt;/db:sql&gt;</span>
+        <span class="tag">&lt;db:input-parameters&gt;</span>
+            #[{ <span class="key">customerId</span>: <span class="keyword">vars.customerId</span> }]
+        <span class="tag">&lt;/db:input-parameters&gt;</span>
+    <span class="tag">&lt;/db:select&gt;</span>
+
+    <span class="comment">&lt;!-- Transform: Map DB result to API response --&gt;</span>
+    <span class="tag">&lt;ee:transform&gt;</span>
+        <span class="tag">&lt;ee:message&gt;</span>
+            <span class="tag">&lt;ee:set-payload&gt;</span><![CDATA[
+<span class="keyword">%dw 2.0</span>
+<span class="keyword">output</span> <span class="type">application/json</span>
+---
+<span class="key">payload</span> map (order) -> {
+    <span class="key">orderId</span>: order.order_id,
+    <span class="key">customer</span>: order.customer_name,
+    <span class="key">amount</span>: order.total_amount,
+    <span class="key">status</span>: order.status
+}]]&gt;<span class="tag">&lt;/ee:set-payload&gt;</span>
+        <span class="tag">&lt;/ee:message&gt;</span>
+    <span class="tag">&lt;/ee:transform&gt;</span>
+
+<span class="tag">&lt;/flow&gt;</span></code></pre>
+
+        <h3>Error Handling</h3>
+        <p>Mule provides structured error handling via <code>&lt;error-handler&gt;</code> blocks. Each flow can define <code>on-error-propagate</code> (re-throw) or <code>on-error-continue</code> (swallow) strategies for specific error types.</p>
+
+<pre><code><span class="tag">&lt;error-handler&gt;</span>
+    <span class="tag">&lt;on-error-propagate</span> <span class="attr">type</span>=<span class="string">"DB:CONNECTIVITY"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;ee:transform&gt;</span>
+            <span class="tag">&lt;ee:message&gt;</span>
+                <span class="tag">&lt;ee:set-payload&gt;</span><![CDATA[
+<span class="keyword">%dw 2.0</span>
+<span class="keyword">output</span> <span class="type">application/json</span>
+---
+{
+    <span class="key">error</span>: <span class="string">"Service temporarily unavailable"</span>,
+    <span class="key">code</span>: <span class="number">503</span>
+}]]&gt;<span class="tag">&lt;/ee:set-payload&gt;</span>
+            <span class="tag">&lt;/ee:message&gt;</span>
+        <span class="tag">&lt;/ee:transform&gt;</span>
+    <span class="tag">&lt;/on-error-propagate&gt;</span>
+
+    <span class="tag">&lt;on-error-propagate</span> <span class="attr">type</span>=<span class="string">"HTTP:NOT_FOUND"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;ee:transform&gt;</span>
+            <span class="tag">&lt;ee:message&gt;</span>
+                <span class="tag">&lt;ee:set-payload&gt;</span><![CDATA[
+<span class="keyword">%dw 2.0</span>
+<span class="keyword">output</span> <span class="type">application/json</span>
+---
+{
+    <span class="key">error</span>: <span class="string">"Resource not found"</span>,
+    <span class="key">code</span>: <span class="number">404</span>
+}]]&gt;<span class="tag">&lt;/ee:set-payload&gt;</span>
+            <span class="tag">&lt;/ee:message&gt;</span>
+        <span class="tag">&lt;/ee:transform&gt;</span>
+    <span class="tag">&lt;/on-error-propagate&gt;</span>
+<span class="tag">&lt;/error-handler&gt;</span></code></pre>
+    </section>
+
+    <!-- =============== APP STRUCTURE =============== -->
+    <section id="app-structure">
+        <h2><span class="icon">📂</span> Mule Application Structure</h2>
+
+        <p>A standard Mule 4 application follows a Maven project layout. Understanding this structure is essential for writing and organising tests.</p>
+
+<pre><code><span class="type">my-mule-app/</span>
+├── <span class="key">src/</span>
+│   ├── <span class="key">main/</span>
+│   │   ├── <span class="key">mule/</span>                    <span class="comment"># Mule XML configuration files (flows)</span>
+│   │   │   ├── <span class="string">my-app.xml</span>           <span class="comment"># Main flow</span>
+│   │   │   ├── <span class="string">global-config.xml</span>    <span class="comment"># Global connectors, error handling</span>
+│   │   │   └── <span class="string">sub-flows.xml</span>        <span class="comment"># Reusable sub-flows</span>
+│   │   ├── <span class="key">resources/</span>
+│   │   │   ├── <span class="string">application.yaml</span>     <span class="comment"># App properties</span>
+│   │   │   ├── <span class="key">dwl/</span>                 <span class="comment"># DataWeave transformation files</span>
+│   │   │   └── <span class="key">api/</span>                 <span class="comment"># RAML/OAS API specs</span>
+│   │   └── <span class="key">java/</span>                    <span class="comment"># Custom Java classes</span>
+│   └── <span class="key">test/</span>
+│       ├── <span class="key">munit/</span>                   <span class="comment"># MUnit test XML files</span>
+│       ├── <span class="key">resources/</span>               <span class="comment"># Test fixtures, mock payloads</span>
+│       └── <span class="key">java/</span>                    <span class="comment"># Java-based test classes</span>
+├── <span class="string">pom.xml</span>                          <span class="comment"># Maven build descriptor</span>
+└── <span class="string">mule-artifact.json</span>               <span class="comment"># Mule packaging metadata</span></code></pre>
+    </section>
+
+    <!-- =============== TESTING STRATEGY =============== -->
+    <section id="testing">
+        <h2><span class="icon">🧪</span> Testing Strategy</h2>
+
+        <p>MuleSoft APIs benefit from a <strong>test pyramid</strong> approach &mdash; many fast unit tests at the base, fewer integration tests in the middle, and targeted system integration tests at the top.</p>
+
+        <h3>Test Pyramid</h3>
+<pre><code>            <span class="method">╱  SIT  ╲</span>                 <span class="comment">← Fewer, slower, high-confidence</span>
+           <span class="method">╱─────────╲</span>
+          <span class="keyword">╱ Integration╲</span>              <span class="comment">← Moderate count, validate wiring</span>
+         <span class="keyword">╱─────────────╲</span>
+        <span class="string">╱   Unit Tests   ╲</span>           <span class="comment">← Many, fast, isolated</span>
+       <span class="string">╱───────────────────╲</span></code></pre>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Level</th><th>Scope</th><th>Speed</th><th>Dependencies</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Unit</strong></td><td>Single flow, sub-flow, or DataWeave transform</td><td>Fast (seconds)</td><td>All mocked</td></tr>
+                    <tr><td><strong>Integration</strong></td><td>Flow-to-flow, connector-to-system, end-to-end within the app</td><td>Medium (seconds&ndash;minutes)</td><td>Partial mocks, embedded test containers</td></tr>
+                    <tr><td><strong>SIT</strong></td><td>Cross-application, cross-API, end-to-end across environments</td><td>Slow (minutes)</td><td>Real or sandboxed external systems</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Coverage Targets</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Level</th><th>Target Coverage</th><th>Execution Time</th><th>Run Frequency</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Unit (MUnit + JUnit)</strong></td><td>80%+ flow coverage, 90%+ Java line coverage</td><td>&lt; 5 min</td><td>Every commit</td></tr>
+                    <tr><td><strong>Integration</strong></td><td>All critical flows with real connectors tested</td><td>&lt; 15 min</td><td>Every PR merge</td></tr>
+                    <tr><td><strong>SIT</strong></td><td>All API contracts + cross-system happy/error paths</td><td>&lt; 30 min</td><td>Nightly + pre-release</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- =============== UNIT TESTING =============== -->
+    <section id="unit-testing">
+        <h2><span class="icon">🔬</span> Unit Testing (Java-Based)</h2>
+
+        <h3>What to Unit Test</h3>
+        <ul>
+            <li>Individual Mule flows and sub-flows</li>
+            <li>DataWeave transformations (mapping correctness, edge cases, null handling)</li>
+            <li>Custom Java components invoked from Mule flows</li>
+            <li>Choice routers and conditional logic</li>
+            <li>Error handling and exception strategies</li>
+            <li>Validators and input filtering</li>
+        </ul>
+
+        <h3>MUnit 2.x &mdash; Native Mule Flow Testing</h3>
+        <p><strong>MUnit</strong> is MuleSoft's native testing framework, bundled with Anypoint Studio and Maven. It runs on top of the Mule Runtime and is purpose-built for testing Mule flows.</p>
+
+<pre><code><span class="tag">&lt;munit:test</span> <span class="attr">name</span>=<span class="string">"test-transform-order-payload"</span>
+            <span class="attr">description</span>=<span class="string">"Verify DataWeave maps order fields correctly"</span><span class="tag">&gt;</span>
+
+    <span class="comment">&lt;!-- Arrange: Mock external dependency and set test input --&gt;</span>
+    <span class="tag">&lt;munit:behavior&gt;</span>
+        <span class="tag">&lt;munit-tools:mock-when</span> <span class="attr">processor</span>=<span class="string">"http:request"</span>
+                     <span class="attr">doc:name</span>=<span class="string">"Mock External API Call"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;munit-tools:with-attributes&gt;</span>
+                <span class="tag">&lt;munit-tools:with-attribute</span>
+                    <span class="attr">attributeName</span>=<span class="string">"config-ref"</span>
+                    <span class="attr">whereValue</span>=<span class="string">"HTTP_Request_Configuration"</span><span class="tag">/&gt;</span>
+            <span class="tag">&lt;/munit-tools:with-attributes&gt;</span>
+            <span class="tag">&lt;munit-tools:then-return&gt;</span>
+                <span class="tag">&lt;munit-tools:payload</span>
+                    <span class="attr">value</span>=<span class="string">'#[readUrl("classpath://test-data/mock-order-response.json","application/json")]'</span><span class="tag">/&gt;</span>
+            <span class="tag">&lt;/munit-tools:then-return&gt;</span>
+        <span class="tag">&lt;/munit-tools:mock-when&gt;</span>
+
+        <span class="tag">&lt;munit:set-event</span> <span class="attr">doc:name</span>=<span class="string">"Set test payload"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;munit:payload</span>
+                <span class="attr">value</span>=<span class="string">'#[readUrl("classpath://test-data/input-order.json","application/json")]'</span><span class="tag">/&gt;</span>
+        <span class="tag">&lt;/munit:set-event&gt;</span>
+    <span class="tag">&lt;/munit:behavior&gt;</span>
+
+    <span class="comment">&lt;!-- Act: Execute the flow under test --&gt;</span>
+    <span class="tag">&lt;munit:execution&gt;</span>
+        <span class="tag">&lt;flow-ref</span> <span class="attr">name</span>=<span class="string">"process-order-sub-flow"</span> <span class="attr">doc:name</span>=<span class="string">"Run flow"</span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;/munit:execution&gt;</span>
+
+    <span class="comment">&lt;!-- Assert: Validate output --&gt;</span>
+    <span class="tag">&lt;munit:validation&gt;</span>
+        <span class="tag">&lt;munit-tools:assert-that</span>
+            <span class="attr">expression</span>=<span class="string">"#[payload.orderId]"</span>
+            <span class="attr">is</span>=<span class="string">"#[MunitTools::notNullValue()]"</span>
+            <span class="attr">message</span>=<span class="string">"Order ID must not be null"</span><span class="tag">/&gt;</span>
+        <span class="tag">&lt;munit-tools:assert-that</span>
+            <span class="attr">expression</span>=<span class="string">"#[payload.status]"</span>
+            <span class="attr">is</span>=<span class="string">"#[MunitTools::equalTo('CONFIRMED')]"</span>
+            <span class="attr">message</span>=<span class="string">"Status should be CONFIRMED"</span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;/munit:validation&gt;</span>
+<span class="tag">&lt;/munit:test&gt;</span></code></pre>
+
+        <h4>Running MUnit via Maven</h4>
+<pre><code><span class="comment"># Run a specific test</span>
+<span class="keyword">mvn</span> clean test <span class="string">-Dmunit.test=test-transform-order-payload</span>
+
+<span class="comment"># Run all MUnit tests</span>
+<span class="keyword">mvn</span> clean test
+
+<span class="comment"># Enforce minimum coverage</span>
+<span class="keyword">mvn</span> clean test <span class="string">-Dmunit.coverage.failBuild=true -Dmunit.coverage.minCoverage=80</span></code></pre>
+
+        <h3>DataWeave Testing with JUnit 5</h3>
+        <p>For isolated DataWeave testing without spinning up the Mule Runtime, use the <strong>DataWeave Testing Framework</strong>.</p>
+
+        <h4>Maven Dependencies</h4>
+<pre><code><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span><span class="string">org.mule.weave</span><span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span><span class="string">runtime</span><span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span><span class="string">${dataweave.version}</span><span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span><span class="string">org.mule.weave</span><span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span><span class="string">data-weave-testing-framework</span><span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span><span class="string">${dataweave.version}</span><span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+
+        <h4>Java Test Class</h4>
+<pre><code><span class="keyword">package</span> <span class="type">com.example.transforms</span>;
+
+<span class="keyword">import</span> org.junit.jupiter.api.Test;
+<span class="keyword">import static</span> org.junit.jupiter.api.Assertions.*;
+
+<span class="keyword">class</span> <span class="type">OrderTransformTest</span> {
+
+    <span class="annotation">@Test</span>
+    <span class="keyword">void</span> <span class="method">shouldMapOrderFieldsCorrectly</span>() {
+        <span class="type">String</span> input = <span class="string">"""
+            {
+              "order_id": "ORD-001",
+              "customer_name": "Jane Doe",
+              "total_amount": 150.00
+            }
+            """</span>;
+
+        <span class="comment">// Load and run the DataWeave script from src/main/resources/dwl/</span>
+        <span class="type">String</span> result = <span class="type">DataWeaveTestUtils</span>.transform(
+            <span class="string">"dwl/map-order.dwl"</span>, input, <span class="string">"application/json"</span>
+        );
+
+        assertNotNull(result);
+        assertTrue(result.contains(<span class="string">"\"orderId\": \"ORD-001\""</span>));
+        assertTrue(result.contains(<span class="string">"\"currency\": \"AUD\""</span>));
+    }
+}</code></pre>
+
+        <h3>Custom Java Component Testing (JUnit 5 + Mockito)</h3>
+        <p>Custom Java classes invoked via <code>&lt;java:invoke&gt;</code> in Mule flows can be tested with standard JUnit and Mockito.</p>
+
+<pre><code><span class="keyword">package</span> <span class="type">com.example.components</span>;
+
+<span class="keyword">import</span> org.junit.jupiter.api.Test;
+<span class="keyword">import</span> org.junit.jupiter.api.extension.ExtendWith;
+<span class="keyword">import</span> org.mockito.InjectMocks;
+<span class="keyword">import</span> org.mockito.Mock;
+<span class="keyword">import</span> org.mockito.junit.jupiter.MockitoExtension;
+<span class="keyword">import static</span> org.junit.jupiter.api.Assertions.*;
+<span class="keyword">import static</span> org.mockito.Mockito.*;
+
+<span class="annotation">@ExtendWith</span>(<span class="type">MockitoExtension</span>.class)
+<span class="keyword">class</span> <span class="type">OrderValidatorTest</span> {
+
+    <span class="annotation">@Mock</span>
+    <span class="keyword">private</span> <span class="type">ReferenceDataService</span> referenceDataService;
+
+    <span class="annotation">@InjectMocks</span>
+    <span class="keyword">private</span> <span class="type">OrderValidator</span> validator;
+
+    <span class="annotation">@Test</span>
+    <span class="keyword">void</span> <span class="method">shouldRejectOrderWithNegativeAmount</span>() {
+        <span class="type">Order</span> order = <span class="keyword">new</span> <span class="type">Order</span>(<span class="string">"ORD-001"</span>, <span class="string">"Jane Doe"</span>, <span class="number">-50.00</span>);
+
+        <span class="type">ValidationResult</span> result = validator.validate(order);
+
+        assertFalse(result.isValid());
+        assertEquals(<span class="string">"Amount must be positive"</span>, result.getErrorMessage());
+    }
+
+    <span class="annotation">@Test</span>
+    <span class="keyword">void</span> <span class="method">shouldAcceptValidOrder</span>() {
+        <span class="type">Order</span> order = <span class="keyword">new</span> <span class="type">Order</span>(<span class="string">"ORD-002"</span>, <span class="string">"John Smith"</span>, <span class="number">200.00</span>);
+        when(referenceDataService.isValidCustomer(<span class="string">"John Smith"</span>))
+            .thenReturn(<span class="keyword">true</span>);
+
+        <span class="type">ValidationResult</span> result = validator.validate(order);
+
+        assertTrue(result.isValid());
+        verify(referenceDataService).isValidCustomer(<span class="string">"John Smith"</span>);
+    }
+}</code></pre>
+    </section>
+
+    <!-- =============== INTEGRATION TESTING =============== -->
+    <section id="integration-testing">
+        <h2><span class="icon">🔗</span> Integration Testing (Java-Based)</h2>
+
+        <h3>What to Integration Test</h3>
+        <ul>
+            <li>End-to-end flow execution within a single Mule application</li>
+            <li>Connector interactions with real or containerised backends (DB, JMS, SFTP)</li>
+            <li>Error propagation across chained flows</li>
+            <li>API routing and policy enforcement</li>
+            <li>Object Store read/write behaviour</li>
+            <li>Batch job processing</li>
+        </ul>
+
+        <h3>Database Integration (Testcontainers + JUnit 5)</h3>
+        <p>Use <strong>Testcontainers</strong> to spin up real databases in Docker during tests &mdash; no shared test environments needed.</p>
+
+        <h4>Maven Dependencies</h4>
+<pre><code><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span><span class="string">org.testcontainers</span><span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span><span class="string">testcontainers</span><span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span><span class="string">${testcontainers.version}</span><span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span><span class="string">org.testcontainers</span><span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span><span class="string">postgresql</span><span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span><span class="string">${testcontainers.version}</span><span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+
+        <h4>Java Test Class</h4>
+<pre><code><span class="keyword">package</span> <span class="type">com.example.integration</span>;
+
+<span class="keyword">import</span> org.junit.jupiter.api.*;
+<span class="keyword">import</span> org.testcontainers.containers.PostgreSQLContainer;
+<span class="keyword">import</span> org.testcontainers.junit.jupiter.Container;
+<span class="keyword">import</span> org.testcontainers.junit.jupiter.Testcontainers;
+<span class="keyword">import</span> java.sql.*;
+<span class="keyword">import static</span> org.junit.jupiter.api.Assertions.*;
+
+<span class="annotation">@Testcontainers</span>
+<span class="keyword">class</span> <span class="type">OrderDatabaseIntegrationTest</span> {
+
+    <span class="annotation">@Container</span>
+    <span class="keyword">static</span> <span class="type">PostgreSQLContainer&lt;?&gt;</span> postgres =
+        <span class="keyword">new</span> <span class="type">PostgreSQLContainer&lt;&gt;</span>(<span class="string">"postgres:15-alpine"</span>)
+            .withDatabaseName(<span class="string">"orders_db"</span>)
+            .withUsername(<span class="string">"test"</span>)
+            .withPassword(<span class="string">"test"</span>)
+            .withInitScript(<span class="string">"sql/init-orders.sql"</span>);
+
+    <span class="annotation">@Test</span>
+    <span class="keyword">void</span> <span class="method">shouldPersistOrderToDatabase</span>() <span class="keyword">throws</span> Exception {
+        <span class="type">String</span> jdbcUrl = postgres.getJdbcUrl();
+
+        <span class="keyword">try</span> (<span class="type">Connection</span> conn = <span class="type">DriverManager</span>.getConnection(
+                jdbcUrl, postgres.getUsername(), postgres.getPassword())) {
+
+            <span class="comment">// Simulate what the Mule flow does</span>
+            <span class="type">PreparedStatement</span> ps = conn.prepareStatement(
+                <span class="string">"INSERT INTO orders (order_id, customer, amount) VALUES (?, ?, ?)"</span>
+            );
+            ps.setString(<span class="number">1</span>, <span class="string">"ORD-100"</span>);
+            ps.setString(<span class="number">2</span>, <span class="string">"Test Customer"</span>);
+            ps.setBigDecimal(<span class="number">3</span>, <span class="keyword">new</span> java.math.<span class="type">BigDecimal</span>(<span class="string">"250.00"</span>));
+            ps.executeUpdate();
+
+            <span class="comment">// Verify</span>
+            <span class="type">ResultSet</span> rs = conn.createStatement()
+                .executeQuery(<span class="string">"SELECT * FROM orders WHERE order_id = 'ORD-100'"</span>);
+            assertTrue(rs.next());
+            assertEquals(<span class="string">"Test Customer"</span>, rs.getString(<span class="string">"customer"</span>));
+        }
+    }
+}</code></pre>
+
+        <h3>JMS / ActiveMQ Integration (Testcontainers)</h3>
+<pre><code><span class="keyword">package</span> <span class="type">com.example.integration</span>;
+
+<span class="keyword">import</span> org.apache.activemq.ActiveMQConnectionFactory;
+<span class="keyword">import</span> org.junit.jupiter.api.*;
+<span class="keyword">import</span> org.testcontainers.containers.GenericContainer;
+<span class="keyword">import</span> org.testcontainers.junit.jupiter.Container;
+<span class="keyword">import</span> org.testcontainers.junit.jupiter.Testcontainers;
+<span class="keyword">import</span> org.testcontainers.utility.DockerImageName;
+<span class="keyword">import</span> javax.jms.*;
+<span class="keyword">import static</span> org.junit.jupiter.api.Assertions.*;
+
+<span class="annotation">@Testcontainers</span>
+<span class="keyword">class</span> <span class="type">OrderQueueIntegrationTest</span> {
+
+    <span class="annotation">@Container</span>
+    <span class="keyword">static</span> <span class="type">GenericContainer&lt;?&gt;</span> activemq =
+        <span class="keyword">new</span> <span class="type">GenericContainer&lt;&gt;</span>(
+            <span class="type">DockerImageName</span>.parse(<span class="string">"rmohr/activemq:5.16.3"</span>))
+        .withExposedPorts(<span class="number">61616</span>);
+
+    <span class="annotation">@Test</span>
+    <span class="keyword">void</span> <span class="method">shouldPublishOrderEventToQueue</span>() <span class="keyword">throws</span> Exception {
+        <span class="type">String</span> brokerUrl = <span class="string">"tcp://"</span> + activemq.getHost() + <span class="string">":"</span>
+                         + activemq.getMappedPort(<span class="number">61616</span>);
+
+        <span class="type">ActiveMQConnectionFactory</span> factory =
+            <span class="keyword">new</span> <span class="type">ActiveMQConnectionFactory</span>(brokerUrl);
+        <span class="keyword">try</span> (<span class="type">Connection</span> conn = factory.createConnection()) {
+            conn.start();
+            <span class="type">Session</span> session = conn.createSession(
+                <span class="keyword">false</span>, <span class="type">Session</span>.AUTO_ACKNOWLEDGE);
+            <span class="type">Queue</span> queue = session.createQueue(<span class="string">"order.events"</span>);
+
+            <span class="comment">// Produce (simulating what the Mule flow does)</span>
+            <span class="type">MessageProducer</span> producer = session.createProducer(queue);
+            <span class="type">TextMessage</span> msg = session.createTextMessage(
+                <span class="string">"{\"orderId\":\"ORD-200\",\"event\":\"CREATED\"}"</span>
+            );
+            producer.send(msg);
+
+            <span class="comment">// Consume and verify</span>
+            <span class="type">MessageConsumer</span> consumer = session.createConsumer(queue);
+            <span class="type">TextMessage</span> received =
+                (<span class="type">TextMessage</span>) consumer.receive(<span class="number">5000</span>);
+            assertNotNull(received);
+            assertTrue(received.getText().contains(<span class="string">"ORD-200"</span>));
+        }
+    }
+}</code></pre>
+
+        <h3>MUnit Integration Test &mdash; Full Flow with Partial Mocks</h3>
+<pre><code><span class="tag">&lt;munit:test</span> <span class="attr">name</span>=<span class="string">"integration-test-order-creation-flow"</span>
+            <span class="attr">description</span>=<span class="string">"Test full order creation with DB, mocking external API"</span><span class="tag">&gt;</span>
+
+    <span class="tag">&lt;munit:behavior&gt;</span>
+        <span class="comment">&lt;!-- Mock only the external HTTP call; let DB connector run real --&gt;</span>
+        <span class="tag">&lt;munit-tools:mock-when</span> <span class="attr">processor</span>=<span class="string">"http:request"</span>
+                     <span class="attr">doc:name</span>=<span class="string">"Mock inventory check API"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;munit-tools:with-attributes&gt;</span>
+                <span class="tag">&lt;munit-tools:with-attribute</span>
+                    <span class="attr">attributeName</span>=<span class="string">"doc:name"</span>
+                    <span class="attr">whereValue</span>=<span class="string">"Check Inventory"</span><span class="tag">/&gt;</span>
+            <span class="tag">&lt;/munit-tools:with-attributes&gt;</span>
+            <span class="tag">&lt;munit-tools:then-return&gt;</span>
+                <span class="tag">&lt;munit-tools:payload</span>
+                    <span class="attr">value</span>=<span class="string">'#[{"available": true, "quantity": 50}]'</span>
+                    <span class="attr">mediaType</span>=<span class="string">"application/json"</span><span class="tag">/&gt;</span>
+            <span class="tag">&lt;/munit-tools:then-return&gt;</span>
+        <span class="tag">&lt;/munit-tools:mock-when&gt;</span>
+
+        <span class="tag">&lt;munit:set-event</span> <span class="attr">doc:name</span>=<span class="string">"Set order request"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;munit:payload</span>
+                <span class="attr">value</span>=<span class="string">'#[readUrl("classpath://test-data/new-order-request.json","application/json")]'</span><span class="tag">/&gt;</span>
+            <span class="tag">&lt;munit:attributes</span>
+                <span class="attr">value</span>=<span class="string">'#[{method: "POST", requestUri: "/api/v1/orders"}]'</span><span class="tag">/&gt;</span>
+        <span class="tag">&lt;/munit:set-event&gt;</span>
+    <span class="tag">&lt;/munit:behavior&gt;</span>
+
+    <span class="tag">&lt;munit:execution&gt;</span>
+        <span class="tag">&lt;flow-ref</span> <span class="attr">name</span>=<span class="string">"post-order-main-flow"</span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;/munit:execution&gt;</span>
+
+    <span class="tag">&lt;munit:validation&gt;</span>
+        <span class="tag">&lt;munit-tools:assert-that</span>
+            <span class="attr">expression</span>=<span class="string">"#[payload.status]"</span>
+            <span class="attr">is</span>=<span class="string">"#[MunitTools::equalTo('CREATED')]"</span><span class="tag">/&gt;</span>
+        <span class="tag">&lt;munit-tools:assert-that</span>
+            <span class="attr">expression</span>=<span class="string">"#[payload.orderId]"</span>
+            <span class="attr">is</span>=<span class="string">"#[MunitTools::notNullValue()]"</span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;/munit:validation&gt;</span>
+<span class="tag">&lt;/munit:test&gt;</span></code></pre>
+    </section>
+
+    <!-- =============== SIT =============== -->
+    <section id="sit">
+        <h2><span class="icon">🌐</span> System Integration Testing (Java-Based)</h2>
+
+        <h3>What to System Integration Test</h3>
+        <ul>
+            <li>End-to-end API flows across <strong>multiple Mule applications</strong> (Experience &rarr; Process &rarr; System APIs)</li>
+            <li>Cross-system data consistency (e.g., order created in API &rarr; verify in Salesforce + DB)</li>
+            <li>API policy enforcement (OAuth 2.0, rate limiting, IP whitelisting)</li>
+            <li>Error scenarios with real downstream failures (timeouts, 5xx responses)</li>
+            <li>Batch processing with real data volumes</li>
+            <li>Deployment smoke tests on staging / pre-production environments</li>
+        </ul>
+
+        <h3>REST Assured + JUnit 5 &mdash; Full API Chain</h3>
+        <h4>Maven Dependencies</h4>
+<pre><code><span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span><span class="string">io.rest-assured</span><span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span><span class="string">rest-assured</span><span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span><span class="string">${rest-assured.version}</span><span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span><span class="string">io.rest-assured</span><span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span><span class="string">json-schema-validator</span><span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span><span class="string">${rest-assured.version}</span><span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span><span class="string">org.wiremock</span><span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span><span class="string">wiremock-standalone</span><span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span><span class="string">${wiremock.version}</span><span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;dependency&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span><span class="string">org.awaitility</span><span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span><span class="string">awaitility</span><span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span><span class="string">${awaitility.version}</span><span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+<span class="tag">&lt;/dependency&gt;</span></code></pre>
+
+        <h4>API Chain Test</h4>
+<pre><code><span class="keyword">package</span> <span class="type">com.example.sit</span>;
+
+<span class="keyword">import</span> io.restassured.RestAssured;
+<span class="keyword">import</span> io.restassured.http.ContentType;
+<span class="keyword">import</span> org.junit.jupiter.api.*;
+<span class="keyword">import static</span> io.restassured.RestAssured.*;
+<span class="keyword">import static</span> org.hamcrest.Matchers.*;
+
+<span class="annotation">@TestMethodOrder</span>(<span class="type">MethodOrderer.OrderAnnotation</span>.class)
+<span class="keyword">class</span> <span class="type">OrderApiSystemIntegrationTest</span> {
+
+    <span class="keyword">private static</span> <span class="type">String</span> createdOrderId;
+
+    <span class="annotation">@BeforeAll</span>
+    <span class="keyword">static void</span> <span class="method">setup</span>() {
+        RestAssured.baseURI = System.getProperty(<span class="string">"sit.base.url"</span>,
+            <span class="string">"https://staging.example.com/api/v1"</span>);
+        RestAssured.authentication =
+            oauth2(System.getProperty(<span class="string">"sit.access.token"</span>));
+    }
+
+    <span class="annotation">@Test</span> <span class="annotation">@Order(1)</span>
+    <span class="keyword">void</span> <span class="method">shouldCreateOrder</span>() {
+        <span class="type">String</span> requestBody = <span class="string">"""
+            {
+              "customer": "SIT Test Customer",
+              "items": [
+                {"sku": "ITEM-001", "quantity": 2, "unitPrice": 49.99}
+              ],
+              "shippingAddress": {
+                "street": "123 Test St",
+                "city": "Sydney",
+                "postcode": "2000"
+              }
+            }
+            """</span>;
+
+        createdOrderId =
+            given()
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+            .when()
+                .post(<span class="string">"/orders"</span>)
+            .then()
+                .statusCode(<span class="number">201</span>)
+                .body(<span class="string">"status"</span>, equalTo(<span class="string">"CREATED"</span>))
+                .body(<span class="string">"orderId"</span>, notNullValue())
+                .body(<span class="string">"items"</span>, hasSize(<span class="number">1</span>))
+                .body(<span class="string">"totalAmount"</span>, equalTo(<span class="number">99.98f</span>))
+                .extract()
+                .path(<span class="string">"orderId"</span>);
+    }
+
+    <span class="annotation">@Test</span> <span class="annotation">@Order(2)</span>
+    <span class="keyword">void</span> <span class="method">shouldRetrieveCreatedOrder</span>() {
+        given()
+            .pathParam(<span class="string">"orderId"</span>, createdOrderId)
+        .when()
+            .get(<span class="string">"/orders/{orderId}"</span>)
+        .then()
+            .statusCode(<span class="number">200</span>)
+            .body(<span class="string">"orderId"</span>, equalTo(createdOrderId))
+            .body(<span class="string">"status"</span>, equalTo(<span class="string">"CREATED"</span>))
+            .body(<span class="string">"customer"</span>, equalTo(<span class="string">"SIT Test Customer"</span>));
+    }
+
+    <span class="annotation">@Test</span> <span class="annotation">@Order(3)</span>
+    <span class="keyword">void</span> <span class="method">shouldReturn404ForNonExistentOrder</span>() {
+        given()
+        .when()
+            .get(<span class="string">"/orders/NON-EXISTENT-ID"</span>)
+        .then()
+            .statusCode(<span class="number">404</span>)
+            .body(<span class="string">"message"</span>, containsString(<span class="string">"not found"</span>));
+    }
+
+    <span class="annotation">@Test</span> <span class="annotation">@Order(4)</span>
+    <span class="keyword">void</span> <span class="method">shouldReturn400ForInvalidPayload</span>() {
+        given()
+            .contentType(ContentType.JSON)
+            .body(<span class="string">"{}"</span>)
+        .when()
+            .post(<span class="string">"/orders"</span>)
+        .then()
+            .statusCode(<span class="number">400</span>)
+            .body(<span class="string">"errors"</span>, not(empty()));
+    }
+}</code></pre>
+
+        <h3>Async Processing &mdash; Cross-System Verification (Awaitility)</h3>
+<pre><code><span class="keyword">package</span> <span class="type">com.example.sit</span>;
+
+<span class="keyword">import</span> org.awaitility.Awaitility;
+<span class="keyword">import</span> org.junit.jupiter.api.Test;
+<span class="keyword">import</span> java.time.Duration;
+<span class="keyword">import static</span> io.restassured.RestAssured.*;
+<span class="keyword">import static</span> org.hamcrest.Matchers.*;
+
+<span class="keyword">class</span> <span class="type">AsyncOrderProcessingSitTest</span> {
+
+    <span class="annotation">@Test</span>
+    <span class="keyword">void</span> <span class="method">shouldProcessOrderAndUpdateDownstreamSystems</span>() {
+        <span class="comment">// 1. Submit order via Experience API</span>
+        <span class="type">String</span> orderId =
+            given()
+                .contentType(<span class="string">"application/json"</span>)
+                .body(loadTestData(<span class="string">"sit/async-order-request.json"</span>))
+            .when()
+                .post(experienceApiUrl(<span class="string">"/orders"</span>))
+            .then()
+                .statusCode(<span class="number">202</span>)   <span class="comment">// Accepted for async processing</span>
+                .extract().path(<span class="string">"orderId"</span>);
+
+        <span class="comment">// 2. Poll Process API until order is FULFILLED</span>
+        Awaitility.await()
+            .atMost(Duration.ofSeconds(<span class="number">60</span>))
+            .pollInterval(Duration.ofSeconds(<span class="number">5</span>))
+            .untilAsserted(() ->
+                given()
+                .when()
+                    .get(processApiUrl(<span class="string">"/orders/"</span> + orderId + <span class="string">"/status"</span>))
+                .then()
+                    .statusCode(<span class="number">200</span>)
+                    .body(<span class="string">"status"</span>, equalTo(<span class="string">"FULFILLED"</span>))
+            );
+
+        <span class="comment">// 3. Verify data landed in the System API (downstream DB)</span>
+        given()
+        .when()
+            .get(systemApiUrl(<span class="string">"/inventory/adjustments?orderId="</span> + orderId))
+        .then()
+            .statusCode(<span class="number">200</span>)
+            .body(<span class="string">"adjustments"</span>, hasSize(greaterThan(<span class="number">0</span>)))
+            .body(<span class="string">"adjustments[0].type"</span>, equalTo(<span class="string">"DECREMENT"</span>));
+    }
+}</code></pre>
+
+        <h3>Contract Testing &mdash; JSON Schema Validation</h3>
+<pre><code><span class="annotation">@Test</span>
+<span class="keyword">void</span> <span class="method">responseShouldMatchApiContract</span>() {
+    given()
+    .when()
+        .get(<span class="string">"/orders/"</span> + createdOrderId)
+    .then()
+        .statusCode(<span class="number">200</span>)
+        .body(matchesJsonSchemaInClasspath(
+            <span class="string">"schemas/order-response-schema.json"</span>));
+}</code></pre>
+
+        <div class="callout callout-info">
+            <span class="icon">📋</span>
+            <p><strong>Contract Testing Tip:</strong> Derive JSON Schema files from your RAML or OAS API specification. This ensures your tests validate against the same contract your consumers depend on.</p>
+        </div>
+    </section>
+
+    <!-- =============== TOOLS =============== -->
+    <section id="tools">
+        <h2><span class="icon">🛠️</span> Recommended Java Tools &amp; Frameworks</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Tool</th><th>Purpose</th><th>Test Level</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>MUnit 2.x</strong></td><td>Native Mule flow testing (mock processors, assert payloads)</td><td>Unit, Integration</td></tr>
+                    <tr><td><strong>JUnit 5</strong></td><td>Test runner for Java components and orchestrating test suites</td><td>All levels</td></tr>
+                    <tr><td><strong>Mockito</strong></td><td>Mocking Java dependencies</td><td>Unit</td></tr>
+                    <tr><td><strong>DataWeave Testing Framework</strong></td><td>Isolated DataWeave transform testing without Mule Runtime</td><td>Unit</td></tr>
+                    <tr><td><strong>Testcontainers</strong></td><td>Spin up Docker containers for DB, MQ, SFTP in tests</td><td>Integration</td></tr>
+                    <tr><td><strong>REST Assured</strong></td><td>HTTP API testing with fluent assertions</td><td>Integration, SIT</td></tr>
+                    <tr><td><strong>WireMock</strong></td><td>HTTP mock server for simulating external APIs</td><td>Integration, SIT</td></tr>
+                    <tr><td><strong>Awaitility</strong></td><td>Polling and async assertion library</td><td>SIT</td></tr>
+                    <tr><td><strong>AssertJ</strong></td><td>Fluent assertion library for Java</td><td>All levels</td></tr>
+                    <tr><td><strong>Gatling</strong></td><td>Performance and load testing for APIs</td><td>SIT / Performance</td></tr>
+                    <tr><td><strong>JaCoCo</strong></td><td>Code coverage reporting for Java classes</td><td>Unit, Integration</td></tr>
+                    <tr><td><strong>MUnit Coverage</strong></td><td>Flow coverage reporting for Mule XML flows</td><td>Unit, Integration</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Recommended <code>pom.xml</code> Dependencies</h3>
+<pre><code><span class="tag">&lt;properties&gt;</span>
+    <span class="tag">&lt;munit.version&gt;</span><span class="string">3.1.0</span><span class="tag">&lt;/munit.version&gt;</span>
+    <span class="tag">&lt;junit.version&gt;</span><span class="string">5.10.2</span><span class="tag">&lt;/junit.version&gt;</span>
+    <span class="tag">&lt;mockito.version&gt;</span><span class="string">5.11.0</span><span class="tag">&lt;/mockito.version&gt;</span>
+    <span class="tag">&lt;rest-assured.version&gt;</span><span class="string">5.4.0</span><span class="tag">&lt;/rest-assured.version&gt;</span>
+    <span class="tag">&lt;testcontainers.version&gt;</span><span class="string">1.19.7</span><span class="tag">&lt;/testcontainers.version&gt;</span>
+    <span class="tag">&lt;wiremock.version&gt;</span><span class="string">3.5.4</span><span class="tag">&lt;/wiremock.version&gt;</span>
+    <span class="tag">&lt;awaitility.version&gt;</span><span class="string">4.2.1</span><span class="tag">&lt;/awaitility.version&gt;</span>
+    <span class="tag">&lt;jacoco.version&gt;</span><span class="string">0.8.12</span><span class="tag">&lt;/jacoco.version&gt;</span>
+<span class="tag">&lt;/properties&gt;</span>
+
+<span class="tag">&lt;dependencies&gt;</span>
+    <span class="comment">&lt;!-- JUnit 5 --&gt;</span>
+    <span class="tag">&lt;dependency&gt;</span>
+        <span class="tag">&lt;groupId&gt;</span><span class="string">org.junit.jupiter</span><span class="tag">&lt;/groupId&gt;</span>
+        <span class="tag">&lt;artifactId&gt;</span><span class="string">junit-jupiter</span><span class="tag">&lt;/artifactId&gt;</span>
+        <span class="tag">&lt;version&gt;</span><span class="string">${junit.version}</span><span class="tag">&lt;/version&gt;</span>
+        <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+    <span class="tag">&lt;/dependency&gt;</span>
+    <span class="comment">&lt;!-- Mockito --&gt;</span>
+    <span class="tag">&lt;dependency&gt;</span>
+        <span class="tag">&lt;groupId&gt;</span><span class="string">org.mockito</span><span class="tag">&lt;/groupId&gt;</span>
+        <span class="tag">&lt;artifactId&gt;</span><span class="string">mockito-junit-jupiter</span><span class="tag">&lt;/artifactId&gt;</span>
+        <span class="tag">&lt;version&gt;</span><span class="string">${mockito.version}</span><span class="tag">&lt;/version&gt;</span>
+        <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+    <span class="tag">&lt;/dependency&gt;</span>
+    <span class="comment">&lt;!-- REST Assured --&gt;</span>
+    <span class="tag">&lt;dependency&gt;</span>
+        <span class="tag">&lt;groupId&gt;</span><span class="string">io.rest-assured</span><span class="tag">&lt;/groupId&gt;</span>
+        <span class="tag">&lt;artifactId&gt;</span><span class="string">rest-assured</span><span class="tag">&lt;/artifactId&gt;</span>
+        <span class="tag">&lt;version&gt;</span><span class="string">${rest-assured.version}</span><span class="tag">&lt;/version&gt;</span>
+        <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+    <span class="tag">&lt;/dependency&gt;</span>
+    <span class="comment">&lt;!-- Testcontainers --&gt;</span>
+    <span class="tag">&lt;dependency&gt;</span>
+        <span class="tag">&lt;groupId&gt;</span><span class="string">org.testcontainers</span><span class="tag">&lt;/groupId&gt;</span>
+        <span class="tag">&lt;artifactId&gt;</span><span class="string">junit-jupiter</span><span class="tag">&lt;/artifactId&gt;</span>
+        <span class="tag">&lt;version&gt;</span><span class="string">${testcontainers.version}</span><span class="tag">&lt;/version&gt;</span>
+        <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+    <span class="tag">&lt;/dependency&gt;</span>
+    <span class="comment">&lt;!-- WireMock --&gt;</span>
+    <span class="tag">&lt;dependency&gt;</span>
+        <span class="tag">&lt;groupId&gt;</span><span class="string">org.wiremock</span><span class="tag">&lt;/groupId&gt;</span>
+        <span class="tag">&lt;artifactId&gt;</span><span class="string">wiremock-standalone</span><span class="tag">&lt;/artifactId&gt;</span>
+        <span class="tag">&lt;version&gt;</span><span class="string">${wiremock.version}</span><span class="tag">&lt;/version&gt;</span>
+        <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+    <span class="tag">&lt;/dependency&gt;</span>
+    <span class="comment">&lt;!-- Awaitility --&gt;</span>
+    <span class="tag">&lt;dependency&gt;</span>
+        <span class="tag">&lt;groupId&gt;</span><span class="string">org.awaitility</span><span class="tag">&lt;/groupId&gt;</span>
+        <span class="tag">&lt;artifactId&gt;</span><span class="string">awaitility</span><span class="tag">&lt;/artifactId&gt;</span>
+        <span class="tag">&lt;version&gt;</span><span class="string">${awaitility.version}</span><span class="tag">&lt;/version&gt;</span>
+        <span class="tag">&lt;scope&gt;</span><span class="keyword">test</span><span class="tag">&lt;/scope&gt;</span>
+    <span class="tag">&lt;/dependency&gt;</span>
+<span class="tag">&lt;/dependencies&gt;</span></code></pre>
+
+        <h3>Coverage Configuration</h3>
+
+        <h4>MUnit Coverage (pom.xml)</h4>
+<pre><code><span class="tag">&lt;plugin&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span><span class="string">com.mulesoft.munit.tools</span><span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span><span class="string">munit-maven-plugin</span><span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span><span class="string">${munit.version}</span><span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;executions&gt;</span>
+        <span class="tag">&lt;execution&gt;</span>
+            <span class="tag">&lt;id&gt;</span><span class="string">test</span><span class="tag">&lt;/id&gt;</span>
+            <span class="tag">&lt;phase&gt;</span><span class="string">test</span><span class="tag">&lt;/phase&gt;</span>
+            <span class="tag">&lt;goals&gt;</span>
+                <span class="tag">&lt;goal&gt;</span><span class="string">test</span><span class="tag">&lt;/goal&gt;</span>
+                <span class="tag">&lt;goal&gt;</span><span class="string">coverage-report</span><span class="tag">&lt;/goal&gt;</span>
+            <span class="tag">&lt;/goals&gt;</span>
+        <span class="tag">&lt;/execution&gt;</span>
+    <span class="tag">&lt;/executions&gt;</span>
+    <span class="tag">&lt;configuration&gt;</span>
+        <span class="tag">&lt;coverage&gt;</span>
+            <span class="tag">&lt;runCoverage&gt;</span><span class="keyword">true</span><span class="tag">&lt;/runCoverage&gt;</span>
+            <span class="tag">&lt;failBuild&gt;</span><span class="keyword">true</span><span class="tag">&lt;/failBuild&gt;</span>
+            <span class="tag">&lt;requiredApplicationCoverage&gt;</span><span class="number">80</span><span class="tag">&lt;/requiredApplicationCoverage&gt;</span>
+            <span class="tag">&lt;requiredFlowCoverage&gt;</span><span class="number">80</span><span class="tag">&lt;/requiredFlowCoverage&gt;</span>
+            <span class="tag">&lt;formats&gt;</span>
+                <span class="tag">&lt;format&gt;</span><span class="string">html</span><span class="tag">&lt;/format&gt;</span>
+                <span class="tag">&lt;format&gt;</span><span class="string">json</span><span class="tag">&lt;/format&gt;</span>
+            <span class="tag">&lt;/formats&gt;</span>
+        <span class="tag">&lt;/coverage&gt;</span>
+    <span class="tag">&lt;/configuration&gt;</span>
+<span class="tag">&lt;/plugin&gt;</span></code></pre>
+
+        <h4>JaCoCo Coverage (pom.xml)</h4>
+<pre><code><span class="tag">&lt;plugin&gt;</span>
+    <span class="tag">&lt;groupId&gt;</span><span class="string">org.jacoco</span><span class="tag">&lt;/groupId&gt;</span>
+    <span class="tag">&lt;artifactId&gt;</span><span class="string">jacoco-maven-plugin</span><span class="tag">&lt;/artifactId&gt;</span>
+    <span class="tag">&lt;version&gt;</span><span class="string">${jacoco.version}</span><span class="tag">&lt;/version&gt;</span>
+    <span class="tag">&lt;executions&gt;</span>
+        <span class="tag">&lt;execution&gt;</span>
+            <span class="tag">&lt;goals&gt;</span><span class="tag">&lt;goal&gt;</span><span class="string">prepare-agent</span><span class="tag">&lt;/goal&gt;</span><span class="tag">&lt;/goals&gt;</span>
+        <span class="tag">&lt;/execution&gt;</span>
+        <span class="tag">&lt;execution&gt;</span>
+            <span class="tag">&lt;id&gt;</span><span class="string">report</span><span class="tag">&lt;/id&gt;</span>
+            <span class="tag">&lt;phase&gt;</span><span class="string">test</span><span class="tag">&lt;/phase&gt;</span>
+            <span class="tag">&lt;goals&gt;</span><span class="tag">&lt;goal&gt;</span><span class="string">report</span><span class="tag">&lt;/goal&gt;</span><span class="tag">&lt;/goals&gt;</span>
+        <span class="tag">&lt;/execution&gt;</span>
+    <span class="tag">&lt;/executions&gt;</span>
+<span class="tag">&lt;/plugin&gt;</span></code></pre>
+    </section>
+
+    <!-- =============== CI/CD =============== -->
+    <section id="cicd">
+        <h2><span class="icon">🚀</span> CI/CD Integration</h2>
+
+        <h3>Maven Test Profiles</h3>
+<pre><code><span class="tag">&lt;profiles&gt;</span>
+    <span class="comment">&lt;!-- Unit tests only (default) --&gt;</span>
+    <span class="tag">&lt;profile&gt;</span>
+        <span class="tag">&lt;id&gt;</span><span class="string">unit</span><span class="tag">&lt;/id&gt;</span>
+        <span class="tag">&lt;activation&gt;</span><span class="tag">&lt;activeByDefault&gt;</span><span class="keyword">true</span><span class="tag">&lt;/activeByDefault&gt;</span><span class="tag">&lt;/activation&gt;</span>
+        <span class="tag">&lt;build&gt;</span>
+            <span class="tag">&lt;plugins&gt;</span>
+                <span class="tag">&lt;plugin&gt;</span>
+                    <span class="tag">&lt;groupId&gt;</span><span class="string">org.apache.maven.plugins</span><span class="tag">&lt;/groupId&gt;</span>
+                    <span class="tag">&lt;artifactId&gt;</span><span class="string">maven-surefire-plugin</span><span class="tag">&lt;/artifactId&gt;</span>
+                    <span class="tag">&lt;configuration&gt;</span>
+                        <span class="tag">&lt;groups&gt;</span><span class="string">unit</span><span class="tag">&lt;/groups&gt;</span>
+                    <span class="tag">&lt;/configuration&gt;</span>
+                <span class="tag">&lt;/plugin&gt;</span>
+            <span class="tag">&lt;/plugins&gt;</span>
+        <span class="tag">&lt;/build&gt;</span>
+    <span class="tag">&lt;/profile&gt;</span>
+
+    <span class="comment">&lt;!-- Integration tests --&gt;</span>
+    <span class="tag">&lt;profile&gt;</span>
+        <span class="tag">&lt;id&gt;</span><span class="string">integration</span><span class="tag">&lt;/id&gt;</span>
+        <span class="tag">&lt;build&gt;</span>
+            <span class="tag">&lt;plugins&gt;</span>
+                <span class="tag">&lt;plugin&gt;</span>
+                    <span class="tag">&lt;groupId&gt;</span><span class="string">org.apache.maven.plugins</span><span class="tag">&lt;/groupId&gt;</span>
+                    <span class="tag">&lt;artifactId&gt;</span><span class="string">maven-failsafe-plugin</span><span class="tag">&lt;/artifactId&gt;</span>
+                    <span class="tag">&lt;configuration&gt;</span>
+                        <span class="tag">&lt;groups&gt;</span><span class="string">integration</span><span class="tag">&lt;/groups&gt;</span>
+                    <span class="tag">&lt;/configuration&gt;</span>
+                    <span class="tag">&lt;executions&gt;</span>
+                        <span class="tag">&lt;execution&gt;</span>
+                            <span class="tag">&lt;goals&gt;</span>
+                                <span class="tag">&lt;goal&gt;</span><span class="string">integration-test</span><span class="tag">&lt;/goal&gt;</span>
+                                <span class="tag">&lt;goal&gt;</span><span class="string">verify</span><span class="tag">&lt;/goal&gt;</span>
+                            <span class="tag">&lt;/goals&gt;</span>
+                        <span class="tag">&lt;/execution&gt;</span>
+                    <span class="tag">&lt;/executions&gt;</span>
+                <span class="tag">&lt;/plugin&gt;</span>
+            <span class="tag">&lt;/plugins&gt;</span>
+        <span class="tag">&lt;/build&gt;</span>
+    <span class="tag">&lt;/profile&gt;</span>
+
+    <span class="comment">&lt;!-- SIT (requires environment properties) --&gt;</span>
+    <span class="tag">&lt;profile&gt;</span>
+        <span class="tag">&lt;id&gt;</span><span class="string">sit</span><span class="tag">&lt;/id&gt;</span>
+        <span class="tag">&lt;build&gt;</span>
+            <span class="tag">&lt;plugins&gt;</span>
+                <span class="tag">&lt;plugin&gt;</span>
+                    <span class="tag">&lt;groupId&gt;</span><span class="string">org.apache.maven.plugins</span><span class="tag">&lt;/groupId&gt;</span>
+                    <span class="tag">&lt;artifactId&gt;</span><span class="string">maven-failsafe-plugin</span><span class="tag">&lt;/artifactId&gt;</span>
+                    <span class="tag">&lt;configuration&gt;</span>
+                        <span class="tag">&lt;groups&gt;</span><span class="string">sit</span><span class="tag">&lt;/groups&gt;</span>
+                        <span class="tag">&lt;systemPropertyVariables&gt;</span>
+                            <span class="tag">&lt;sit.base.url&gt;</span><span class="string">${sit.base.url}</span><span class="tag">&lt;/sit.base.url&gt;</span>
+                            <span class="tag">&lt;sit.access.token&gt;</span><span class="string">${sit.access.token}</span><span class="tag">&lt;/sit.access.token&gt;</span>
+                        <span class="tag">&lt;/systemPropertyVariables&gt;</span>
+                    <span class="tag">&lt;/configuration&gt;</span>
+                <span class="tag">&lt;/plugin&gt;</span>
+            <span class="tag">&lt;/plugins&gt;</span>
+        <span class="tag">&lt;/build&gt;</span>
+    <span class="tag">&lt;/profile&gt;</span>
+<span class="tag">&lt;/profiles&gt;</span></code></pre>
+
+        <h3>CI Pipeline Commands</h3>
+<pre><code><span class="comment"># Stage 1: Unit Tests</span>
+<span class="keyword">mvn</span> clean test <span class="string">-Punit</span>
+
+<span class="comment"># Stage 2: Integration Tests (requires Docker for Testcontainers)</span>
+<span class="keyword">mvn</span> clean verify <span class="string">-Pintegration</span>
+
+<span class="comment"># Stage 3: Deploy to staging</span>
+<span class="keyword">mvn</span> deploy <span class="string">-DmuleDeploy -Danypoint.env=staging</span>
+
+<span class="comment"># Stage 4: SIT against staging</span>
+<span class="keyword">mvn</span> verify <span class="string">-Psit</span> \
+    <span class="string">-Dsit.base.url=https://staging.example.com/api/v1</span> \
+    <span class="string">-Dsit.access.token=$STAGING_TOKEN</span>
+
+<span class="comment"># Stage 5: Deploy to production (on SIT pass)</span>
+<span class="keyword">mvn</span> deploy <span class="string">-DmuleDeploy -Danypoint.env=production</span></code></pre>
+
+        <h3>Jenkins Pipeline Example</h3>
+<pre><code><span class="keyword">pipeline</span> {
+    <span class="key">agent</span> <span class="string">any</span>
+    <span class="key">stages</span> {
+        <span class="keyword">stage</span>(<span class="string">'Unit Test'</span>) {
+            <span class="key">steps</span> {
+                sh <span class="string">'mvn clean test -Punit'</span>
+            }
+            <span class="key">post</span> {
+                <span class="key">always</span> {
+                    junit <span class="string">'target/surefire-reports/*.xml'</span>
+                    publishHTML([
+                        <span class="key">reportDir</span>: <span class="string">'target/site/munit/coverage'</span>,
+                        <span class="key">reportFiles</span>: <span class="string">'summary.html'</span>
+                    ])
+                }
+            }
+        }
+        <span class="keyword">stage</span>(<span class="string">'Integration Test'</span>) {
+            <span class="key">steps</span> {
+                sh <span class="string">'mvn clean verify -Pintegration'</span>
+            }
+        }
+        <span class="keyword">stage</span>(<span class="string">'Deploy Staging'</span>) {
+            <span class="key">steps</span> {
+                sh <span class="string">'mvn deploy -DmuleDeploy -Danypoint.env=staging'</span>
+            }
+        }
+        <span class="keyword">stage</span>(<span class="string">'SIT'</span>) {
+            <span class="key">steps</span> {
+                sh <span class="string">"""mvn verify -Psit \
+                    -Dsit.base.url=\${STAGING_API_URL} \
+                    -Dsit.access.token=\${STAGING_TOKEN}"""</span>
+            }
+        }
+        <span class="keyword">stage</span>(<span class="string">'Deploy Production'</span>) {
+            <span class="key">when</span> { <span class="key">branch</span> <span class="string">'main'</span> }
+            <span class="key">steps</span> {
+                sh <span class="string">'mvn deploy -DmuleDeploy -Danypoint.env=production'</span>
+            }
+        }
+    }
+}</code></pre>
+    </section>
+
+    <!-- =============== QUICK REFERENCE =============== -->
+    <section id="quick-ref">
+        <h2><span class="icon">📖</span> Quick Reference</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Question</th><th>Answer</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>How do I unit test a Mule flow?</strong></td><td>Use MUnit XML tests with <code>mock-when</code> and <code>assert-that</code></td></tr>
+                    <tr><td><strong>How do I unit test DataWeave?</strong></td><td>Use the DataWeave Testing Framework with JUnit 5</td></tr>
+                    <tr><td><strong>How do I unit test custom Java?</strong></td><td>Standard JUnit 5 + Mockito</td></tr>
+                    <tr><td><strong>How do I integration test connectors?</strong></td><td>MUnit with Testcontainers (PostgreSQL, ActiveMQ, etc.)</td></tr>
+                    <tr><td><strong>How do I SIT across multiple APIs?</strong></td><td>REST Assured + JUnit 5, pointing at a staging environment</td></tr>
+                    <tr><td><strong>How do I test async flows?</strong></td><td>Awaitility for polling assertions</td></tr>
+                    <tr><td><strong>How do I validate API contracts?</strong></td><td>REST Assured JSON Schema Validator against RAML/OAS-derived schemas</td></tr>
+                    <tr><td><strong>How do I measure coverage?</strong></td><td>MUnit Coverage for flows, JaCoCo for Java classes</td></tr>
+                    <tr><td><strong>How do I run tests in CI?</strong></td><td>Maven profiles: <code>-Punit</code>, <code>-Pintegration</code>, <code>-Psit</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+<!-- =============== FOOTER =============== -->
+<footer>
+    <p>MuleSoft API Guide &mdash; Last updated April 2026</p>
+</footer>
+
+<!-- =============== BACK TO TOP BUTTON =============== -->
+<button class="back-top" onclick="window.scrollTo({top:0})" aria-label="Back to top">↑</button>
+
+<script>
+    const btn = document.querySelector('.back-top');
+    window.addEventListener('scroll', () => {
+        btn.classList.toggle('visible', window.scrollY > 400);
+    });
+</script>
+
+</body>
+</html>
