@@ -1,0 +1,2729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automating GE ADMS with FlaUI - Comprehensive Guide</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        header .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            margin-bottom: 0.5rem;
+        }
+
+        header .meta {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 2.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--primary-dark);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin: 1.25rem 0 0.5rem;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        li p {
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: var(--bg-secondary);
+            transition: background 0.2s;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        code {
+            background: var(--bg-tertiary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: var(--primary-dark);
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            line-height: 1.5;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .first-section {
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin: 0 0 2rem 0;
+            border-radius: 8px;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: var(--primary-dark);
+        }
+
+        .success-box {
+            background: #ecfdf5;
+            border-left: 4px solid var(--success);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success-box p, .success-box li {
+            color: #065f46;
+        }
+
+        .warning-box {
+            background: #fffbeb;
+            border-left: 4px solid var(--warning);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box p, .warning-box li {
+            color: #92400e;
+        }
+
+        .danger-box {
+            background: #fef2f2;
+            border-left: 4px solid var(--danger);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .danger-box p {
+            color: #991b1b;
+        }
+
+        .diagram {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            text-align: center;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            white-space: pre;
+            color: var(--text-primary);
+        }
+
+        .toc {
+            background: var(--bg-tertiary);
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .toc a {
+            color: var(--primary);
+            text-decoration: none;
+            display: block;
+            padding: 0.25rem 0;
+        }
+
+        .toc a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .toc .indent-1 { margin-left: 1.5rem; }
+        .toc .indent-2 { margin-left: 3rem; }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-blue { background: #dbeafe; color: #1e40af; }
+        .badge-green { background: #d1fae5; color: #065f46; }
+        .badge-yellow { background: #fef3c7; color: #92400e; }
+        .badge-red { background: #fee2e2; color: #991b1b; }
+
+        .file-tree {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .file-tree .folder { color: #60a5fa; }
+        .file-tree .file { color: #a7f3d0; }
+        .file-tree .comment { color: #64748b; }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AUTOMATING GE ADMS WITH FlaUI</h1>
+            <div class="subtitle">Comprehensive Guide to Desktop UI Automation for Advanced Distribution Management Systems</div>
+            <div class="meta">Version 1.0 | April 2026</div>
+        </header>
+
+        <div class="content">
+            <!-- Executive Summary -->
+            <div class="first-section">
+                <h3>Executive Summary</h3>
+                <p>GE ADMS (Advanced Distribution Management System) is a mission-critical utility application built on Windows Presentation Foundation (WPF) and legacy Win32 technologies. This guide provides a comprehensive approach to automating GE ADMS using <strong>FlaUI</strong>, a .NET-based UI automation library that leverages Microsoft UI Automation (UIA) and the MSAA (Microsoft Active Accessibility) frameworks. It covers project setup, element inspection, Page Object Model design, handling complex ADMS UI patterns, and CI/CD integration.</p>
+            </div>
+
+            <!-- Table of Contents -->
+            <div class="toc">
+                <strong>Table of Contents</strong>
+                <a href="#overview">1. Overview &amp; Context</a>
+                <a class="indent-1" href="#what-is-adms">1.1 What is GE ADMS?</a>
+                <a class="indent-1" href="#why-flaui">1.2 Why FlaUI for ADMS Automation?</a>
+                <a class="indent-1" href="#automation-challenges">1.3 Key Automation Challenges</a>
+                <a href="#architecture">2. Architecture &amp; Technology Stack</a>
+                <a class="indent-1" href="#adms-ui-tech">2.1 ADMS UI Technologies</a>
+                <a class="indent-1" href="#flaui-architecture">2.2 FlaUI Architecture</a>
+                <a class="indent-1" href="#uia-vs-msaa">2.3 UIA2 vs UIA3 vs MSAA</a>
+                <a href="#setup">3. Environment &amp; Project Setup</a>
+                <a class="indent-1" href="#prerequisites">3.1 Prerequisites</a>
+                <a class="indent-1" href="#project-creation">3.2 Project Creation</a>
+                <a class="indent-1" href="#nuget-packages">3.3 NuGet Packages</a>
+                <a href="#inspection">4. Inspecting ADMS UI Elements</a>
+                <a class="indent-1" href="#inspect-tools">4.1 Inspection Tools</a>
+                <a class="indent-1" href="#element-identification">4.2 Element Identification Strategies</a>
+                <a class="indent-1" href="#adms-element-patterns">4.3 Common ADMS Element Patterns</a>
+                <a href="#framework-design">5. Framework Design &amp; Page Object Model</a>
+                <a class="indent-1" href="#project-structure">5.1 Project Structure</a>
+                <a class="indent-1" href="#base-classes">5.2 Base Classes</a>
+                <a class="indent-1" href="#page-objects">5.3 Page Object Implementation</a>
+                <a href="#core-operations">6. Core ADMS Automation Operations</a>
+                <a class="indent-1" href="#app-launch">6.1 Launching &amp; Attaching to ADMS</a>
+                <a class="indent-1" href="#login-automation">6.2 Login Automation</a>
+                <a class="indent-1" href="#navigation">6.3 Navigation &amp; Menu Interaction</a>
+                <a class="indent-1" href="#scada-views">6.4 SCADA/Network Views</a>
+                <a class="indent-1" href="#data-grids">6.5 Data Grids &amp; Tables</a>
+                <a class="indent-1" href="#map-interaction">6.6 Map &amp; Schematic Interaction</a>
+                <a class="indent-1" href="#dialogs-popups">6.7 Dialogs &amp; Pop-ups</a>
+                <a class="indent-1" href="#switching-operations">6.8 Switching Operations</a>
+                <a href="#advanced-techniques">7. Advanced Techniques</a>
+                <a class="indent-1" href="#wait-strategies">7.1 Wait &amp; Synchronization Strategies</a>
+                <a class="indent-1" href="#custom-controls">7.2 Handling Custom &amp; Third-Party Controls</a>
+                <a class="indent-1" href="#multi-window">7.3 Multi-Window &amp; Multi-Monitor</a>
+                <a class="indent-1" href="#keyboard-mouse">7.4 Keyboard &amp; Mouse Simulation</a>
+                <a class="indent-1" href="#screenshots">7.5 Screenshots &amp; Visual Verification</a>
+                <a href="#test-patterns">8. Test Patterns &amp; Best Practices</a>
+                <a class="indent-1" href="#test-structure">8.1 Test Structure</a>
+                <a class="indent-1" href="#data-driven">8.2 Data-Driven Testing</a>
+                <a class="indent-1" href="#retry-resilience">8.3 Retry &amp; Resilience Patterns</a>
+                <a class="indent-1" href="#logging-reporting">8.4 Logging &amp; Reporting</a>
+                <a href="#cicd">9. CI/CD Integration</a>
+                <a class="indent-1" href="#agent-config">9.1 Agent Configuration</a>
+                <a class="indent-1" href="#pipeline-setup">9.2 Pipeline Setup</a>
+                <a class="indent-1" href="#parallel-execution">9.3 Parallel Execution Considerations</a>
+                <a href="#troubleshooting">10. Troubleshooting &amp; Common Pitfalls</a>
+                <a href="#reference">11. Quick Reference &amp; Cheat Sheet</a>
+            </div>
+
+            <!-- Section 1: Overview -->
+            <h1 id="overview">1. Overview &amp; Context</h1>
+
+            <h2 id="what-is-adms">1.1 What is GE ADMS?</h2>
+            <p>GE ADMS (Advanced Distribution Management System) is a comprehensive real-time utility management platform used by electrical distribution operators. It integrates multiple operational capabilities:</p>
+            <ul>
+                <li><strong>SCADA (Supervisory Control and Data Acquisition)</strong> &mdash; Real-time monitoring and control of field devices</li>
+                <li><strong>DMS (Distribution Management System)</strong> &mdash; Power flow analysis, fault management, network reconfiguration</li>
+                <li><strong>OMS (Outage Management System)</strong> &mdash; Outage detection, crew dispatch, and restoration tracking</li>
+                <li><strong>Network Modelling</strong> &mdash; Electrical connectivity models, schematic and geographic views</li>
+                <li><strong>Switching Management</strong> &mdash; Safety-critical switching order creation and execution</li>
+            </ul>
+            <p>The application presents a rich Windows desktop client with map views, one-line diagrams, tabular data grids, and complex modal workflows. This makes it an ideal (and challenging) candidate for desktop UI automation.</p>
+
+            <h2 id="why-flaui">1.2 Why FlaUI for ADMS Automation?</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Criteria</th>
+                        <th>FlaUI</th>
+                        <th>WinAppDriver</th>
+                        <th>White Framework</th>
+                        <th>Coded UI (Deprecated)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Active Maintenance</strong></td>
+                        <td><span class="badge badge-green">Active</span></td>
+                        <td><span class="badge badge-yellow">Stalled</span></td>
+                        <td><span class="badge badge-red">Archived</span></td>
+                        <td><span class="badge badge-red">Deprecated</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>WPF Support</strong></td>
+                        <td>Excellent (UIA3)</td>
+                        <td>Good</td>
+                        <td>Good</td>
+                        <td>Good</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Win32/Legacy Support</strong></td>
+                        <td>Excellent (UIA2 + MSAA)</td>
+                        <td>Moderate</td>
+                        <td>Moderate</td>
+                        <td>Good</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Custom Control Handling</strong></td>
+                        <td>Raw element access, pattern-based</td>
+                        <td>Limited</td>
+                        <td>Limited</td>
+                        <td>Extension model</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No External Server</strong></td>
+                        <td><span class="badge badge-green">Direct API</span></td>
+                        <td>Requires WinAppDriver server</td>
+                        <td>Direct API</td>
+                        <td>VS Test Agent</td>
+                    </tr>
+                    <tr>
+                        <td><strong>.NET Compatibility</strong></td>
+                        <td>.NET Framework &amp; .NET 6+</td>
+                        <td>WebDriver protocol</td>
+                        <td>.NET Framework only</td>
+                        <td>.NET Framework only</td>
+                    </tr>
+                    <tr>
+                        <td><strong>License</strong></td>
+                        <td>MIT (Open Source)</td>
+                        <td>MIT</td>
+                        <td>MIT (Archived)</td>
+                        <td>Visual Studio Enterprise</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="success-box">
+                <p><strong>Key Advantage:</strong> FlaUI provides direct, in-process access to UIA without the overhead of a WebDriver server, making it faster and more reliable for complex desktop applications like GE ADMS.</p>
+            </div>
+
+            <h2 id="automation-challenges">1.3 Key Automation Challenges in GE ADMS</h2>
+            <ul>
+                <li><strong>Mixed UI Technologies:</strong> WPF panels mixed with legacy Win32 controls, DevExpress grids, and custom-rendered map views</li>
+                <li><strong>Dynamic Element Trees:</strong> SCADA views load elements dynamically based on network model state</li>
+                <li><strong>Custom-Rendered Controls:</strong> Map and schematic views use GDI+/DirectX rendering with no native UIA tree</li>
+                <li><strong>Modal Workflow Chains:</strong> Switching operations involve multi-step modal dialogs with validation</li>
+                <li><strong>Session State Dependencies:</strong> Tests depend on SCADA simulation state, database configurations, and user permissions</li>
+                <li><strong>Long Load Times:</strong> Network model loading can take 30&ndash;120 seconds depending on model size</li>
+                <li><strong>Third-Party Controls:</strong> DevExpress, Telerik, and Infragistics controls may require pattern-level interaction</li>
+            </ul>
+
+
+            <!-- Section 2: Architecture -->
+            <h1 id="architecture">2. Architecture &amp; Technology Stack</h1>
+
+            <h2 id="adms-ui-tech">2.1 ADMS UI Technologies</h2>
+            <div class="diagram">
+┌─────────────────────────────────────────────────────────────┐
+│                     GE ADMS Desktop Client                  │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
+│  │  WPF Panels  │  │  Win32/MFC   │  │  Custom Rendered │  │
+│  │  • Menus     │  │  • Dialogs   │  │  • Map View      │  │
+│  │  • Ribbons   │  │  • Alerts    │  │  • One-Line Diag │  │
+│  │  • Tabs      │  │  • Legacy    │  │  • SCADA Symbols │  │
+│  │  • Trees     │  │    Forms     │  │  • GDI+/DirectX  │  │
+│  └──────────────┘  └──────────────┘  └──────────────────┘  │
+│                                                             │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │            Third-Party Control Libraries              │   │
+│  │   DevExpress Grids │ Telerik │ Infragistics          │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│         Communication Layer (WCF / gRPC / REST)             │
+├─────────────────────────────────────────────────────────────┤
+│                  ADMS Server / SCADA Backend                 │
+└─────────────────────────────────────────────────────────────┘</div>
+
+            <h2 id="flaui-architecture">2.2 FlaUI Architecture</h2>
+            <div class="diagram">
+┌──────────────────────────────────────────────────────┐
+│                  Test Framework                       │
+│  ┌────────────┐  ┌────────────┐  ┌───────────────┐  │
+│  │ Test Cases  │  │ Page Objects│  │ Utilities     │  │
+│  │ (NUnit/     │  │ (ADMS      │  │ (Waits,       │  │
+│  │  xUnit)     │  │  Screens)  │  │  Screenshots) │  │
+│  └──────┬─────┘  └──────┬─────┘  └───────┬───────┘  │
+│         │               │                 │          │
+│         └───────────────┼─────────────────┘          │
+│                         ▼                            │
+│              ┌──────────────────┐                    │
+│              │    FlaUI Core    │                    │
+│              │  AutomationBase  │                    │
+│              └────────┬─────────┘                    │
+│         ┌─────────────┼─────────────┐                │
+│         ▼             ▼             ▼                │
+│  ┌────────────┐ ┌──────────┐ ┌───────────┐          │
+│  │  FlaUI.UIA3│ │FlaUI.UIA2│ │ FlaUI.Core│          │
+│  │  (COM      │ │(Managed  │ │ (Input,   │          │
+│  │   Interop) │ │  API)    │ │  Capture) │          │
+│  └─────┬──────┘ └────┬─────┘ └───────────┘          │
+│        │              │                              │
+└────────┼──────────────┼──────────────────────────────┘
+         ▼              ▼
+┌──────────────────────────────────┐
+│   Windows UI Automation (UIA)    │
+│   UIAutomationCore.dll           │
+├──────────────────────────────────┤
+│     GE ADMS Application (SUT)    │
+└──────────────────────────────────┘</div>
+
+            <h2 id="uia-vs-msaa">2.3 UIA2 vs UIA3: Choosing the Right Provider</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>UIA2 (Managed)</th>
+                        <th>UIA3 (COM-based)</th>
+                        <th>Recommendation for ADMS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>WPF Controls</strong></td>
+                        <td>Good</td>
+                        <td>Excellent</td>
+                        <td>Use UIA3 for WPF panels</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Win32 / MFC</strong></td>
+                        <td>Good</td>
+                        <td>Good</td>
+                        <td>Both work; UIA2 can be more stable for legacy</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Custom Controls</strong></td>
+                        <td>Pattern-based fallback</td>
+                        <td>Better pattern support</td>
+                        <td>UIA3 preferred</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Performance</strong></td>
+                        <td>Slightly faster (no COM marshalling)</td>
+                        <td>Slightly slower but more complete</td>
+                        <td>UIA3 in most cases</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DevExpress Grids</strong></td>
+                        <td>Partial</td>
+                        <td>Better support</td>
+                        <td>UIA3</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <p><strong>Recommendation:</strong> Start with <code>UIA3</code> for GE ADMS automation. Fall back to <code>UIA2</code> only for specific legacy dialogs where UIA3 has issues with element discovery.</p>
+            </div>
+
+
+            <!-- Section 3: Setup -->
+            <h1 id="setup">3. Environment &amp; Project Setup</h1>
+
+            <h2 id="prerequisites">3.1 Prerequisites</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Minimum Version</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Windows</strong></td>
+                        <td>Windows 10 / Server 2016+</td>
+                        <td>UI Automation requires an interactive desktop session</td>
+                    </tr>
+                    <tr>
+                        <td><strong>.NET SDK</strong></td>
+                        <td>.NET 6.0+ or .NET Framework 4.7.2+</td>
+                        <td>.NET 8 recommended for new projects</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Visual Studio</strong></td>
+                        <td>2022 17.0+</td>
+                        <td>Community edition is sufficient</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GE ADMS Client</strong></td>
+                        <td>Per project version</td>
+                        <td>Must be installed and licensed on the test machine</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Inspect.exe / FlaUInspect</strong></td>
+                        <td>Latest</td>
+                        <td>For element tree inspection</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="project-creation">3.2 Project Creation</h2>
+            <pre><code># Create the solution and project
+dotnet new sln -n AdmsAutomation
+dotnet new nunit -n AdmsAutomation.Tests --framework net8.0
+dotnet sln add AdmsAutomation.Tests/AdmsAutomation.Tests.csproj
+
+# Create the framework library
+dotnet new classlib -n AdmsAutomation.Framework --framework net8.0
+dotnet sln add AdmsAutomation.Framework/AdmsAutomation.Framework.csproj
+
+# Add project reference
+dotnet add AdmsAutomation.Tests/AdmsAutomation.Tests.csproj \
+    reference AdmsAutomation.Framework/AdmsAutomation.Framework.csproj</code></pre>
+
+            <h2 id="nuget-packages">3.3 NuGet Packages</h2>
+            <pre><code># Core FlaUI packages
+dotnet add AdmsAutomation.Framework package FlaUI.Core
+dotnet add AdmsAutomation.Framework package FlaUI.UIA3
+dotnet add AdmsAutomation.Framework package FlaUI.UIA2  # Optional fallback
+
+# Test framework &amp; utilities
+dotnet add AdmsAutomation.Tests package NUnit
+dotnet add AdmsAutomation.Tests package NUnit3TestAdapter
+dotnet add AdmsAutomation.Tests package Microsoft.NET.Test.Sdk
+dotnet add AdmsAutomation.Tests package FluentAssertions
+dotnet add AdmsAutomation.Tests package Serilog
+dotnet add AdmsAutomation.Tests package Serilog.Sinks.File
+dotnet add AdmsAutomation.Tests package Allure.NUnit  # Optional reporting</code></pre>
+
+            <h3>Project File Configuration (csproj)</h3>
+            <pre><code>&lt;Project Sdk="Microsoft.NET.Sdk"&gt;
+  &lt;PropertyGroup&gt;
+    &lt;TargetFramework&gt;net8.0-windows&lt;/TargetFramework&gt;
+    &lt;UseWPF&gt;false&lt;/UseWPF&gt;
+    &lt;UseWindowsForms&gt;false&lt;/UseWindowsForms&gt;
+    &lt;PlatformTarget&gt;x64&lt;/PlatformTarget&gt;
+    &lt;Nullable&gt;enable&lt;/Nullable&gt;
+  &lt;/PropertyGroup&gt;
+
+  &lt;ItemGroup&gt;
+    &lt;PackageReference Include="FlaUI.Core" Version="4.*" /&gt;
+    &lt;PackageReference Include="FlaUI.UIA3" Version="4.*" /&gt;
+  &lt;/ItemGroup&gt;
+&lt;/Project&gt;</code></pre>
+
+            <div class="warning-box">
+                <p><strong>Important:</strong> Use <code>net8.0-windows</code> as the target framework (not <code>net8.0</code>) to ensure Windows-specific APIs are available. Set <code>PlatformTarget</code> to match the ADMS client architecture (usually <code>x64</code>).</p>
+            </div>
+
+
+            <!-- Section 4: Inspection -->
+            <h1 id="inspection">4. Inspecting ADMS UI Elements</h1>
+
+            <h2 id="inspect-tools">4.1 Inspection Tools</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Source</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>FlaUInspect</strong></td>
+                        <td>FlaUI GitHub Releases</td>
+                        <td>Best overall tool; shows UIA2 &amp; UIA3 trees side by side, supports highlighting</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Inspect.exe</strong></td>
+                        <td>Windows SDK</td>
+                        <td>Official Microsoft tool; detailed property inspection</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Accessibility Insights</strong></td>
+                        <td>Microsoft Store</td>
+                        <td>Modern UI, FastPass accessibility checks, tree navigation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>UI Spy</strong></td>
+                        <td>Legacy Windows SDK</td>
+                        <td>Legacy tool; useful for Win32 controls</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="element-identification">4.2 Element Identification Strategies</h2>
+            <p>Prioritize element identification in this order for maximum reliability:</p>
+            <ol>
+                <li><strong>AutomationId</strong> &mdash; Most reliable, developer-assigned, rarely changes</li>
+                <li><strong>Name + ControlType</strong> &mdash; Good for labeled controls (buttons, menu items)</li>
+                <li><strong>ClassName + index</strong> &mdash; Use when AutomationId is absent</li>
+                <li><strong>XPath-like tree navigation</strong> &mdash; Fragile; use as last resort</li>
+                <li><strong>Coordinate-based</strong> &mdash; For custom-rendered elements only</li>
+            </ol>
+
+            <pre><code>// Strategy 1: AutomationId (Preferred)
+var btnSwitch = window.FindFirstDescendant(cf =&gt;
+    cf.ByAutomationId("btnExecuteSwitch"));
+
+// Strategy 2: Name + ControlType
+var menuItem = window.FindFirstDescendant(cf =&gt;
+    cf.ByName("Network Operations").And(cf.ByControlType(ControlType.MenuItem)));
+
+// Strategy 3: ClassName + Additional Condition
+var grid = window.FindFirstDescendant(cf =&gt;
+    cf.ByClassName("DXGridControl").And(cf.ByName("Outage List")));
+
+// Strategy 4: Chained navigation
+var panel = window.FindFirstDescendant(cf =&gt; cf.ByAutomationId("MainPanel"));
+var tab = panel.FindFirstChild(cf =&gt; cf.ByControlType(ControlType.Tab));
+var tabItem = tab.FindAllChildren()
+    .FirstOrDefault(c =&gt; c.Name == "Alarms");</code></pre>
+
+            <h2 id="adms-element-patterns">4.3 Common ADMS Element Patterns</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ADMS Component</th>
+                        <th>UIA Control Type</th>
+                        <th>Typical AutomationId Pattern</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Main Menu Bar</td>
+                        <td>MenuBar / MenuItem</td>
+                        <td><code>MainMenu</code>, <code>mnuFile</code></td>
+                        <td>Standard WPF menu</td>
+                    </tr>
+                    <tr>
+                        <td>Ribbon Toolbar</td>
+                        <td>ToolBar / Button</td>
+                        <td><code>ribbon_*</code></td>
+                        <td>DevExpress ribbon control</td>
+                    </tr>
+                    <tr>
+                        <td>Network Tree</td>
+                        <td>Tree / TreeItem</td>
+                        <td><code>tvwNetwork</code></td>
+                        <td>Hierarchical equipment browser</td>
+                    </tr>
+                    <tr>
+                        <td>Alarm Grid</td>
+                        <td>DataGrid / DataItem</td>
+                        <td><code>grdAlarms</code></td>
+                        <td>DevExpress grid control</td>
+                    </tr>
+                    <tr>
+                        <td>Map Canvas</td>
+                        <td>Custom / Pane</td>
+                        <td><code>mapControl</code></td>
+                        <td>Custom rendered; limited UIA tree</td>
+                    </tr>
+                    <tr>
+                        <td>One-Line Diagram</td>
+                        <td>Custom / Pane</td>
+                        <td><code>oldPane</code></td>
+                        <td>Uses coordinates for interaction</td>
+                    </tr>
+                    <tr>
+                        <td>Switching Dialog</td>
+                        <td>Window / Dialog</td>
+                        <td><code>dlgSwitchOrder</code></td>
+                        <td>Modal dialog chain</td>
+                    </tr>
+                    <tr>
+                        <td>Status Bar</td>
+                        <td>StatusBar / Text</td>
+                        <td><code>statusBar</code></td>
+                        <td>Connection status, user info</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <!-- Section 5: Framework Design -->
+            <h1 id="framework-design">5. Framework Design &amp; Page Object Model</h1>
+
+            <h2 id="project-structure">5.1 Project Structure</h2>
+            <div class="file-tree">
+<span class="folder">AdmsAutomation/</span>
+├── <span class="folder">AdmsAutomation.Framework/</span>
+│   ├── <span class="folder">Core/</span>
+│   │   ├── <span class="file">AdmsApplication.cs</span>          <span class="comment"># App lifecycle management</span>
+│   │   ├── <span class="file">AdmsSession.cs</span>              <span class="comment"># Session state &amp; config</span>
+│   │   ├── <span class="file">ElementExtensions.cs</span>        <span class="comment"># Custom extension methods</span>
+│   │   └── <span class="file">WaitHelper.cs</span>               <span class="comment"># Wait &amp; retry utilities</span>
+│   ├── <span class="folder">Pages/</span>
+│   │   ├── <span class="file">BasePage.cs</span>                 <span class="comment"># Abstract page object base</span>
+│   │   ├── <span class="file">LoginPage.cs</span>                <span class="comment"># Login screen</span>
+│   │   ├── <span class="file">MainDashboard.cs</span>            <span class="comment"># Main workspace</span>
+│   │   ├── <span class="file">NetworkTreePanel.cs</span>         <span class="comment"># Equipment browser tree</span>
+│   │   ├── <span class="file">AlarmGridPage.cs</span>            <span class="comment"># Alarm management grid</span>
+│   │   ├── <span class="file">SwitchingOrderPage.cs</span>       <span class="comment"># Switching operations</span>
+│   │   ├── <span class="file">OutageManagementPage.cs</span>     <span class="comment"># OMS views</span>
+│   │   └── <span class="file">MapViewPage.cs</span>              <span class="comment"># Geographic/schematic view</span>
+│   ├── <span class="folder">Components/</span>
+│   │   ├── <span class="file">DevExpressGrid.cs</span>           <span class="comment"># Grid helper wrapper</span>
+│   │   ├── <span class="file">RibbonToolbar.cs</span>            <span class="comment"># Ribbon interaction helper</span>
+│   │   ├── <span class="file">ContextMenuHelper.cs</span>        <span class="comment"># Right-click menu helper</span>
+│   │   └── <span class="file">DialogHandler.cs</span>            <span class="comment"># Modal dialog management</span>
+│   └── <span class="folder">Config/</span>
+│       ├── <span class="file">TestSettings.cs</span>             <span class="comment"># Configuration model</span>
+│       └── <span class="file">appsettings.json</span>            <span class="comment"># Environment config</span>
+├── <span class="folder">AdmsAutomation.Tests/</span>
+│   ├── <span class="folder">Fixtures/</span>
+│   │   └── <span class="file">AdmsTestFixture.cs</span>          <span class="comment"># Test setup/teardown</span>
+│   ├── <span class="folder">Tests/</span>
+│   │   ├── <span class="file">LoginTests.cs</span>
+│   │   ├── <span class="file">AlarmManagementTests.cs</span>
+│   │   ├── <span class="file">SwitchingOrderTests.cs</span>
+│   │   ├── <span class="file">OutageManagementTests.cs</span>
+│   │   └── <span class="file">NetworkNavigationTests.cs</span>
+│   └── <span class="folder">TestData/</span>
+│       ├── <span class="file">switching-orders.json</span>
+│       └── <span class="file">test-credentials.json</span>
+└── <span class="file">AdmsAutomation.sln</span></div>
+
+            <h2 id="base-classes">5.2 Base Classes</h2>
+
+            <h3>AdmsApplication.cs &mdash; Application Lifecycle Manager</h3>
+            <pre><code>using FlaUI.Core;
+using FlaUI.Core.AutomationElements;
+using FlaUI.UIA3;
+using System.Diagnostics;
+
+namespace AdmsAutomation.Framework.Core;
+
+public class AdmsApplication : IDisposable
+{
+    private Application? _application;
+    private UIA3Automation? _automation;
+    private Window? _mainWindow;
+
+    public Window MainWindow =&gt; _mainWindow
+        ?? throw new InvalidOperationException("ADMS not launched.");
+
+    public UIA3Automation Automation =&gt; _automation
+        ?? throw new InvalidOperationException("Automation not initialized.");
+
+    /// &lt;summary&gt;
+    /// Launch ADMS from the executable path.
+    /// &lt;/summary&gt;
+    public void Launch(string executablePath, string arguments = "")
+    {
+        _automation = new UIA3Automation();
+
+        var processStartInfo = new ProcessStartInfo(executablePath)
+        {
+            Arguments = arguments,
+            WorkingDirectory = Path.GetDirectoryName(executablePath)
+        };
+
+        _application = Application.Launch(processStartInfo);
+
+        // ADMS has a long startup; wait for the main window
+        _mainWindow = WaitHelper.WaitUntil(() =&gt;
+        {
+            try
+            {
+                return _application.GetMainWindow(_automation);
+            }
+            catch { return null; }
+        },
+        timeout: TimeSpan.FromMinutes(3),
+        retryInterval: TimeSpan.FromSeconds(2));
+
+        if (_mainWindow == null)
+            throw new TimeoutException("ADMS main window did not appear within timeout.");
+    }
+
+    /// &lt;summary&gt;
+    /// Attach to an already-running ADMS process.
+    /// &lt;/summary&gt;
+    public void Attach(string processName = "ADMS.Client")
+    {
+        _automation = new UIA3Automation();
+        var process = Process.GetProcessesByName(processName).FirstOrDefault()
+            ?? throw new InvalidOperationException(
+                $"No running process found with name '{processName}'.");
+
+        _application = Application.Attach(process);
+        _mainWindow = _application.GetMainWindow(_automation);
+    }
+
+    /// &lt;summary&gt;
+    /// Attach by window title pattern (useful for multi-instance).
+    /// &lt;/summary&gt;
+    public void AttachByTitle(string titleContains)
+    {
+        _automation = new UIA3Automation();
+        var process = Process.GetProcesses()
+            .FirstOrDefault(p =&gt; p.MainWindowTitle.Contains(
+                titleContains, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException(
+                $"No window found containing '{titleContains}'.");
+
+        _application = Application.Attach(process);
+        _mainWindow = _application.GetMainWindow(_automation);
+    }
+
+    public void Dispose()
+    {
+        _automation?.Dispose();
+        // Do NOT close ADMS by default; let teardown decide
+    }
+
+    public void CloseGracefully()
+    {
+        _mainWindow?.Close();
+        _application?.WaitWhileMainHandleIsMissing(TimeSpan.FromSeconds(10));
+        _application?.Close();
+    }
+}</code></pre>
+
+            <h3>WaitHelper.cs &mdash; Synchronization Utility</h3>
+            <pre><code>using FlaUI.Core.AutomationElements;
+using FlaUI.Core.Conditions;
+
+namespace AdmsAutomation.Framework.Core;
+
+public static class WaitHelper
+{
+    /// &lt;summary&gt;
+    /// Generic poll-based wait that returns a value.
+    /// &lt;/summary&gt;
+    public static T? WaitUntil&lt;T&gt;(
+        Func&lt;T?&gt; condition,
+        TimeSpan timeout,
+        TimeSpan? retryInterval = null) where T : class
+    {
+        var interval = retryInterval ?? TimeSpan.FromMilliseconds(500);
+        var deadline = DateTime.UtcNow + timeout;
+
+        while (DateTime.UtcNow &lt; deadline)
+        {
+            var result = condition();
+            if (result != null)
+                return result;
+
+            Thread.Sleep(interval);
+        }
+
+        return null;
+    }
+
+    /// &lt;summary&gt;
+    /// Wait for a boolean condition to be true.
+    /// &lt;/summary&gt;
+    public static bool WaitFor(
+        Func&lt;bool&gt; condition,
+        TimeSpan timeout,
+        TimeSpan? retryInterval = null)
+    {
+        var interval = retryInterval ?? TimeSpan.FromMilliseconds(500);
+        var deadline = DateTime.UtcNow + timeout;
+
+        while (DateTime.UtcNow &lt; deadline)
+        {
+            if (condition())
+                return true;
+
+            Thread.Sleep(interval);
+        }
+
+        return false;
+    }
+
+    /// &lt;summary&gt;
+    /// Wait for a descendant element with retry.
+    /// &lt;/summary&gt;
+    public static AutomationElement? WaitForElement(
+        AutomationElement parent,
+        Func&lt;ConditionFactory, ConditionBase&gt; conditionFunc,
+        TimeSpan? timeout = null)
+    {
+        var maxWait = timeout ?? TimeSpan.FromSeconds(30);
+
+        return WaitUntil(() =&gt;
+        {
+            try
+            {
+                return parent.FindFirstDescendant(conditionFunc);
+            }
+            catch
+            {
+                return null;
+            }
+        }, maxWait);
+    }
+
+    /// &lt;summary&gt;
+    /// Wait for an element to become enabled.
+    /// &lt;/summary&gt;
+    public static bool WaitForEnabled(
+        AutomationElement element,
+        TimeSpan? timeout = null)
+    {
+        var maxWait = timeout ?? TimeSpan.FromSeconds(15);
+        return WaitFor(() =&gt; element.IsEnabled, maxWait);
+    }
+}</code></pre>
+
+            <h3>BasePage.cs &mdash; Page Object Base</h3>
+            <pre><code>using FlaUI.Core;
+using FlaUI.Core.AutomationElements;
+using FlaUI.Core.Conditions;
+
+namespace AdmsAutomation.Framework.Pages;
+
+public abstract class BasePage
+{
+    protected readonly Window Window;
+    protected readonly AutomationBase Automation;
+
+    protected BasePage(Window window, AutomationBase automation)
+    {
+        Window = window;
+        Automation = automation;
+    }
+
+    protected ConditionFactory CF =&gt; new ConditionFactory(
+        new UIA3PropertyLibrary());
+
+    /// &lt;summary&gt;
+    /// Find a descendant element with built-in wait.
+    /// &lt;/summary&gt;
+    protected AutomationElement FindElement(
+        Func&lt;ConditionFactory, ConditionBase&gt; condition,
+        TimeSpan? timeout = null)
+    {
+        var element = WaitHelper.WaitForElement(Window, condition, timeout);
+        return element
+            ?? throw new ElementNotFoundException(
+                "Element not found within timeout.");
+    }
+
+    /// &lt;summary&gt;
+    /// Safely check if an element exists without throwing.
+    /// &lt;/summary&gt;
+    protected bool ElementExists(
+        Func&lt;ConditionFactory, ConditionBase&gt; condition)
+    {
+        try
+        {
+            return Window.FindFirstDescendant(condition) != null;
+        }
+        catch { return false; }
+    }
+
+    /// &lt;summary&gt;
+    /// Abstract validation that the page is loaded and ready.
+    /// &lt;/summary&gt;
+    public abstract bool IsLoaded();
+}
+
+public class ElementNotFoundException : Exception
+{
+    public ElementNotFoundException(string message) : base(message) { }
+}</code></pre>
+
+            <h2 id="page-objects">5.3 Page Object Implementations</h2>
+
+            <h3>LoginPage.cs</h3>
+            <pre><code>using FlaUI.Core;
+using FlaUI.Core.AutomationElements;
+
+namespace AdmsAutomation.Framework.Pages;
+
+public class LoginPage : BasePage
+{
+    public LoginPage(Window window, AutomationBase automation)
+        : base(window, automation) { }
+
+    // --- Element Properties ---
+
+    private AutomationElement UsernameField =&gt;
+        FindElement(cf =&gt; cf.ByAutomationId("txtUsername"));
+
+    private AutomationElement PasswordField =&gt;
+        FindElement(cf =&gt; cf.ByAutomationId("txtPassword"));
+
+    private AutomationElement ServerDropdown =&gt;
+        FindElement(cf =&gt; cf.ByAutomationId("cmbServer"));
+
+    private AutomationElement LoginButton =&gt;
+        FindElement(cf =&gt; cf.ByAutomationId("btnLogin"));
+
+    private AutomationElement ErrorLabel =&gt;
+        FindElement(cf =&gt; cf.ByAutomationId("lblError"));
+
+    // --- Actions ---
+
+    public MainDashboard LoginAs(string username, string password,
+                                  string? server = null)
+    {
+        EnterText(UsernameField, username);
+        EnterText(PasswordField, password);
+
+        if (server != null)
+            SelectServer(server);
+
+        LoginButton.Click();
+
+        // Wait for main dashboard to appear
+        WaitHelper.WaitFor(
+            () =&gt; !Window.FindFirstDescendant(
+                cf =&gt; cf.ByAutomationId("txtUsername"))?.IsOffscreen != true,
+            TimeSpan.FromSeconds(60));
+
+        return new MainDashboard(Window, Automation);
+    }
+
+    public string GetErrorMessage()
+    {
+        return ErrorLabel.AsLabel().Text;
+    }
+
+    public override bool IsLoaded()
+    {
+        return ElementExists(cf =&gt; cf.ByAutomationId("txtUsername")) &amp;&amp;
+               ElementExists(cf =&gt; cf.ByAutomationId("btnLogin"));
+    }
+
+    // --- Private Helpers ---
+
+    private void EnterText(AutomationElement element, string text)
+    {
+        var textBox = element.AsTextBox();
+        textBox.Text = string.Empty;  // Clear existing
+        textBox.Enter(text);
+    }
+
+    private void SelectServer(string serverName)
+    {
+        var combo = ServerDropdown.AsComboBox();
+        combo.Expand();
+        var item = combo.Items.FirstOrDefault(
+            i =&gt; i.Text.Contains(serverName, StringComparison.OrdinalIgnoreCase));
+        item?.Select();
+    }
+}</code></pre>
+
+            <h3>MainDashboard.cs</h3>
+            <pre><code>using FlaUI.Core;
+using FlaUI.Core.AutomationElements;
+using FlaUI.Core.Definitions;
+
+namespace AdmsAutomation.Framework.Pages;
+
+public class MainDashboard : BasePage
+{
+    public MainDashboard(Window window, AutomationBase automation)
+        : base(window, automation) { }
+
+    // --- Element Properties ---
+
+    private AutomationElement MenuBar =&gt;
+        FindElement(cf =&gt; cf.ByControlType(ControlType.MenuBar));
+
+    private AutomationElement StatusBar =&gt;
+        FindElement(cf =&gt; cf.ByAutomationId("statusBar"));
+
+    private AutomationElement TabControl =&gt;
+        FindElement(cf =&gt; cf.ByAutomationId("mainTabControl"));
+
+    // --- Navigation Actions ---
+
+    public void NavigateToMenu(params string[] menuPath)
+    {
+        var currentElement = MenuBar;
+
+        foreach (var menuName in menuPath)
+        {
+            var menuItem = currentElement.FindFirstDescendant(
+                cf =&gt; cf.ByName(menuName)
+                        .And(cf.ByControlType(ControlType.MenuItem)));
+
+            if (menuItem == null)
+                throw new ElementNotFoundException(
+                    $"Menu item '{menuName}' not found.");
+
+            menuItem.Click();
+            Thread.Sleep(300); // Brief pause for submenu rendering
+            currentElement = menuItem;
+        }
+    }
+
+    public AlarmGridPage OpenAlarms()
+    {
+        NavigateToMenu("View", "Alarms");
+        return new AlarmGridPage(Window, Automation);
+    }
+
+    public SwitchingOrderPage OpenSwitchingOrders()
+    {
+        NavigateToMenu("Operations", "Switching Orders");
+        return new SwitchingOrderPage(Window, Automation);
+    }
+
+    public OutageManagementPage OpenOutageManagement()
+    {
+        NavigateToMenu("Operations", "Outage Management");
+        return new OutageManagementPage(Window, Automation);
+    }
+
+    public NetworkTreePanel GetNetworkTree()
+    {
+        return new NetworkTreePanel(Window, Automation);
+    }
+
+    public MapViewPage GetMapView()
+    {
+        return new MapViewPage(Window, Automation);
+    }
+
+    /// &lt;summary&gt;
+    /// Switch to a specific tab in the main workspace.
+    /// &lt;/summary&gt;
+    public void SwitchToTab(string tabName)
+    {
+        var tab = TabControl.FindFirstDescendant(
+            cf =&gt; cf.ByName(tabName).And(cf.ByControlType(ControlType.TabItem)));
+
+        if (tab == null)
+            throw new ElementNotFoundException($"Tab '{tabName}' not found.");
+
+        tab.Click();
+    }
+
+    public string GetStatusBarText()
+    {
+        return StatusBar.FindAllChildren()
+            .Select(c =&gt; c.Name)
+            .Aggregate((a, b) =&gt; $"{a} | {b}");
+    }
+
+    public string GetConnectedServer()
+    {
+        var serverLabel = StatusBar.FindFirstDescendant(
+            cf =&gt; cf.ByAutomationId("lblConnectedServer"));
+        return serverLabel?.Name ?? "Unknown";
+    }
+
+    public override bool IsLoaded()
+    {
+        return ElementExists(cf =&gt; cf.ByControlType(ControlType.MenuBar)) &amp;&amp;
+               ElementExists(cf =&gt; cf.ByAutomationId("statusBar"));
+    }
+}</code></pre>
+
+
+            <!-- Section 6: Core Operations -->
+            <h1 id="core-operations">6. Core ADMS Automation Operations</h1>
+
+            <h2 id="app-launch">6.1 Launching &amp; Attaching to ADMS</h2>
+            <pre><code>// Option A: Launch a fresh instance
+var adms = new AdmsApplication();
+adms.Launch(@"C:\Program Files\GE\ADMS\Client\ADMS.Client.exe",
+            "--environment=TEST --region=NORTH");
+
+// Option B: Attach to an existing instance
+var adms = new AdmsApplication();
+adms.Attach("ADMS.Client");
+
+// Option C: Attach by window title (useful for multi-region)
+var adms = new AdmsApplication();
+adms.AttachByTitle("ADMS - NORTH REGION");</code></pre>
+
+            <div class="info-box">
+                <p><strong>Best Practice:</strong> For test suites, attach to a pre-launched ADMS instance to avoid long startup delays. Reserve fresh launch for smoke tests or deployment verification.</p>
+            </div>
+
+            <h2 id="login-automation">6.2 Login Automation</h2>
+            <pre><code>// Full login flow
+var loginPage = new LoginPage(adms.MainWindow, adms.Automation);
+Assert.That(loginPage.IsLoaded(), "Login page should be displayed.");
+
+var dashboard = loginPage.LoginAs(
+    username: "operator01",
+    password: "SecurePass123",
+    server: "SCADA-TEST-01"
+);
+
+Assert.That(dashboard.IsLoaded(), "Dashboard should be displayed after login.");</code></pre>
+
+            <h2 id="navigation">6.3 Navigation &amp; Menu Interaction</h2>
+            <pre><code>// Direct menu navigation
+dashboard.NavigateToMenu("Operations", "Switching Orders", "Create New");
+
+// Ribbon toolbar interaction
+var ribbon = new RibbonToolbar(adms.MainWindow, adms.Automation);
+ribbon.ClickButton("Home", "Refresh");           // Tab &gt; Button
+ribbon.ClickButton("Analysis", "Power Flow");
+
+// Context menu (right-click)
+var treeNode = networkTree.SelectEquipment("Substation-A", "Feeder-01");
+treeNode.RightClick();
+var contextMenu = ContextMenuHelper.GetActiveContextMenu(adms.MainWindow);
+contextMenu.ClickItem("Properties");
+contextMenu.ClickItem("Show on Map");</code></pre>
+
+            <h2 id="scada-views">6.4 SCADA / Network Views</h2>
+            <pre><code>public class NetworkTreePanel : BasePage
+{
+    public NetworkTreePanel(Window window, AutomationBase automation)
+        : base(window, automation) { }
+
+    private AutomationElement TreeView =&gt;
+        FindElement(cf =&gt; cf.ByAutomationId("tvwNetwork"));
+
+    /// &lt;summary&gt;
+    /// Navigate a hierarchical path in the network tree.
+    /// E.g., "Region-A" > "Substation-01" > "Feeder-03"
+    /// &lt;/summary&gt;
+    public AutomationElement SelectEquipment(params string[] path)
+    {
+        var tree = TreeView.AsTree();
+        AutomationElement current = tree;
+
+        foreach (var nodeName in path)
+        {
+            // Expand current node
+            var treeItem = current.FindFirstDescendant(
+                cf =&gt; cf.ByName(nodeName)
+                        .And(cf.ByControlType(ControlType.TreeItem)));
+
+            if (treeItem == null)
+                throw new ElementNotFoundException(
+                    $"Tree node '{nodeName}' not found.");
+
+            var expandCollapse = treeItem.Patterns.ExpandCollapse.Pattern;
+            if (expandCollapse != null)
+                expandCollapse.Expand();
+
+            Thread.Sleep(500); // Wait for children to load
+            current = treeItem;
+        }
+
+        current.Click();  // Select the final node
+        return current;
+    }
+
+    /// &lt;summary&gt;
+    /// Search for equipment by name using the filter box.
+    /// &lt;/summary&gt;
+    public void SearchEquipment(string searchText)
+    {
+        var searchBox = FindElement(
+            cf =&gt; cf.ByAutomationId("txtTreeSearch"));
+        searchBox.AsTextBox().Enter(searchText);
+
+        // Wait for filter to apply
+        Thread.Sleep(1000);
+    }
+
+    public override bool IsLoaded()
+    {
+        return ElementExists(cf =&gt; cf.ByAutomationId("tvwNetwork"));
+    }
+}</code></pre>
+
+            <h2 id="data-grids">6.5 Data Grids &amp; Tables</h2>
+            <pre><code>public class DevExpressGrid
+{
+    private readonly AutomationElement _gridElement;
+
+    public DevExpressGrid(AutomationElement gridElement)
+    {
+        _gridElement = gridElement;
+    }
+
+    /// &lt;summary&gt;
+    /// Get all rows from the grid.
+    /// &lt;/summary&gt;
+    public AutomationElement[] GetRows()
+    {
+        return _gridElement.FindAllDescendants(
+            cf =&gt; cf.ByControlType(ControlType.DataItem));
+    }
+
+    /// &lt;summary&gt;
+    /// Get cell value by row index and column name.
+    /// &lt;/summary&gt;
+    public string GetCellValue(int rowIndex, string columnName)
+    {
+        var rows = GetRows();
+        if (rowIndex &gt;= rows.Length)
+            throw new IndexOutOfRangeException(
+                $"Row index {rowIndex} exceeds row count {rows.Length}.");
+
+        var row = rows[rowIndex];
+        var gridItemPattern = row.Patterns.GridItem.PatternOrDefault;
+
+        // Try using the Grid pattern
+        var gridPattern = _gridElement.Patterns.Grid.PatternOrDefault;
+        if (gridPattern != null)
+        {
+            // Find column index by header name
+            var headers = _gridElement.FindAllDescendants(
+                cf =&gt; cf.ByControlType(ControlType.HeaderItem));
+            var colIndex = headers
+                .Select((h, i) =&gt; new { h.Name, Index = i })
+                .FirstOrDefault(x =&gt; x.Name == columnName)?.Index ?? -1;
+
+            if (colIndex &gt;= 0)
+            {
+                var cell = gridPattern.GetItem(rowIndex, colIndex);
+                return cell.Name ?? cell.Patterns.Value.PatternOrDefault?.Value
+                       ?? string.Empty;
+            }
+        }
+
+        // Fallback: search within row for named element
+        var cellElement = row.FindFirstDescendant(
+            cf =&gt; cf.ByName(columnName));
+        return cellElement?.Name ?? string.Empty;
+    }
+
+    /// &lt;summary&gt;
+    /// Find a row by matching a column value.
+    /// &lt;/summary&gt;
+    public AutomationElement? FindRow(string columnName, string value)
+    {
+        var rows = GetRows();
+        for (int i = 0; i &lt; rows.Length; i++)
+        {
+            var cellValue = GetCellValue(i, columnName);
+            if (cellValue.Contains(value, StringComparison.OrdinalIgnoreCase))
+                return rows[i];
+        }
+        return null;
+    }
+
+    /// &lt;summary&gt;
+    /// Click a row to select it.
+    /// &lt;/summary&gt;
+    public void SelectRow(int rowIndex)
+    {
+        var rows = GetRows();
+        rows[rowIndex].Click();
+    }
+
+    /// &lt;summary&gt;
+    /// Double-click a row (often opens a detail dialog in ADMS).
+    /// &lt;/summary&gt;
+    public void DoubleClickRow(int rowIndex)
+    {
+        var rows = GetRows();
+        rows[rowIndex].DoubleClick();
+    }
+
+    /// &lt;summary&gt;
+    /// Get total row count.
+    /// &lt;/summary&gt;
+    public int RowCount =&gt; GetRows().Length;
+
+    /// &lt;summary&gt;
+    /// Sort by clicking a column header.
+    /// &lt;/summary&gt;
+    public void SortByColumn(string columnName)
+    {
+        var header = _gridElement.FindFirstDescendant(
+            cf =&gt; cf.ByName(columnName)
+                    .And(cf.ByControlType(ControlType.HeaderItem)));
+        header?.Click();
+    }
+
+    /// &lt;summary&gt;
+    /// Scroll the grid to load virtualized rows.
+    /// &lt;/summary&gt;
+    public void ScrollToBottom()
+    {
+        var scrollPattern = _gridElement.Patterns.Scroll.PatternOrDefault;
+        if (scrollPattern != null &amp;&amp; scrollPattern.VerticallyScrollable)
+        {
+            while (scrollPattern.VerticalScrollPercent &lt; 100)
+            {
+                scrollPattern.Scroll(ScrollAmount.NoAmount,
+                                      ScrollAmount.LargeIncrement);
+                Thread.Sleep(200);
+            }
+        }
+    }
+}</code></pre>
+
+            <h3>AlarmGridPage.cs</h3>
+            <pre><code>public class AlarmGridPage : BasePage
+{
+    public AlarmGridPage(Window window, AutomationBase automation)
+        : base(window, automation) { }
+
+    private DevExpressGrid AlarmGrid =&gt;
+        new DevExpressGrid(FindElement(
+            cf =&gt; cf.ByAutomationId("grdAlarms")));
+
+    public int GetAlarmCount() =&gt; AlarmGrid.RowCount;
+
+    public void AcknowledgeAlarm(string alarmId)
+    {
+        var row = AlarmGrid.FindRow("Alarm ID", alarmId)
+            ?? throw new ElementNotFoundException(
+                $"Alarm '{alarmId}' not found.");
+
+        row.Click();
+
+        // Click Acknowledge button
+        var ackButton = FindElement(
+            cf =&gt; cf.ByAutomationId("btnAcknowledge"));
+        ackButton.Click();
+
+        // Confirm in dialog if prompted
+        HandleConfirmationDialog();
+    }
+
+    public List&lt;string&gt; GetActiveAlarmIds()
+    {
+        var rows = AlarmGrid.GetRows();
+        return rows.Select((_, i) =&gt; AlarmGrid.GetCellValue(i, "Alarm ID"))
+                    .ToList();
+    }
+
+    private void HandleConfirmationDialog()
+    {
+        var dialog = WaitHelper.WaitUntil(() =&gt;
+            Window.ModalWindows.FirstOrDefault(),
+            TimeSpan.FromSeconds(5));
+
+        if (dialog != null)
+        {
+            var yesBtn = dialog.FindFirstDescendant(
+                cf =&gt; cf.ByName("Yes"));
+            yesBtn?.Click();
+        }
+    }
+
+    public override bool IsLoaded()
+    {
+        return ElementExists(cf =&gt; cf.ByAutomationId("grdAlarms"));
+    }
+}</code></pre>
+
+            <h2 id="map-interaction">6.6 Map &amp; Schematic Interaction</h2>
+            <div class="warning-box">
+                <p><strong>Challenge:</strong> ADMS map views and one-line diagrams are custom-rendered controls (GDI+/DirectX). These controls expose minimal or no UIA element tree. Interaction requires coordinate-based strategies or API-level shortcuts.</p>
+            </div>
+
+            <pre><code>using FlaUI.Core.Input;
+using FlaUI.Core.WindowsAPI;
+
+public class MapViewPage : BasePage
+{
+    public MapViewPage(Window window, AutomationBase automation)
+        : base(window, automation) { }
+
+    private AutomationElement MapCanvas =&gt;
+        FindElement(cf =&gt; cf.ByAutomationId("mapControl"));
+
+    /// &lt;summary&gt;
+    /// Click at a specific coordinate within the map control.
+    /// Coordinates are relative to the map canvas.
+    /// &lt;/summary&gt;
+    public void ClickAtMapPosition(int relativeX, int relativeY)
+    {
+        var bounds = MapCanvas.BoundingRectangle;
+        var absoluteX = (int)bounds.X + relativeX;
+        var absoluteY = (int)bounds.Y + relativeY;
+
+        Mouse.MoveTo(absoluteX, absoluteY);
+        Thread.Sleep(200);
+        Mouse.Click(MouseButton.Left);
+    }
+
+    /// &lt;summary&gt;
+    /// Right-click at a position to open equipment context menu.
+    /// &lt;/summary&gt;
+    public void RightClickAtMapPosition(int relativeX, int relativeY)
+    {
+        var bounds = MapCanvas.BoundingRectangle;
+        Mouse.MoveTo((int)bounds.X + relativeX,
+                      (int)bounds.Y + relativeY);
+        Thread.Sleep(200);
+        Mouse.Click(MouseButton.Right);
+    }
+
+    /// &lt;summary&gt;
+    /// Zoom in/out using mouse scroll.
+    /// &lt;/summary&gt;
+    public void Zoom(int scrollClicks)
+    {
+        var center = MapCanvas.GetClickablePoint();
+        Mouse.MoveTo(center);
+        Mouse.Scroll(scrollClicks);  // Positive = zoom in, Negative = zoom out
+    }
+
+    /// &lt;summary&gt;
+    /// Pan the map by dragging.
+    /// &lt;/summary&gt;
+    public void Pan(int deltaX, int deltaY)
+    {
+        var center = MapCanvas.GetClickablePoint();
+        var startX = (int)center.X;
+        var startY = (int)center.Y;
+
+        Mouse.MoveTo(startX, startY);
+        Mouse.Down(MouseButton.Middle);
+        Thread.Sleep(100);
+        Mouse.MoveTo(startX + deltaX, startY + deltaY);
+        Thread.Sleep(100);
+        Mouse.Up(MouseButton.Middle);
+    }
+
+    /// &lt;summary&gt;
+    /// Use the map search/locate function to center on equipment.
+    /// &lt;/summary&gt;
+    public void LocateEquipment(string equipmentId)
+    {
+        // Use ADMS menu or toolbar search rather than visual lookup
+        Keyboard.TypeSimultaneously(VirtualKeyShort.CONTROL,
+                                     VirtualKeyShort.KEY_L);
+        Thread.Sleep(500);
+
+        var searchDialog = Window.ModalWindows.FirstOrDefault()
+            ?? throw new ElementNotFoundException("Locate dialog not found.");
+
+        var searchBox = searchDialog.FindFirstDescendant(
+            cf =&gt; cf.ByAutomationId("txtLocateSearch"));
+        searchBox.AsTextBox().Enter(equipmentId);
+
+        var locateBtn = searchDialog.FindFirstDescendant(
+            cf =&gt; cf.ByAutomationId("btnLocate"));
+        locateBtn.Click();
+
+        Thread.Sleep(2000);  // Wait for map to pan and zoom
+    }
+
+    public override bool IsLoaded()
+    {
+        return ElementExists(cf =&gt; cf.ByAutomationId("mapControl"));
+    }
+}</code></pre>
+
+            <h2 id="dialogs-popups">6.7 Dialogs &amp; Pop-ups</h2>
+            <pre><code>public class DialogHandler
+{
+    private readonly Window _mainWindow;
+
+    public DialogHandler(Window mainWindow)
+    {
+        _mainWindow = mainWindow;
+    }
+
+    /// &lt;summary&gt;
+    /// Wait for and return the active modal dialog.
+    /// &lt;/summary&gt;
+    public Window? WaitForModal(TimeSpan? timeout = null)
+    {
+        var maxWait = timeout ?? TimeSpan.FromSeconds(10);
+        return WaitHelper.WaitUntil(
+            () =&gt; _mainWindow.ModalWindows.FirstOrDefault(),
+            maxWait);
+    }
+
+    /// &lt;summary&gt;
+    /// Dismiss a dialog by clicking a button.
+    /// &lt;/summary&gt;
+    public void DismissDialog(string buttonName)
+    {
+        var dialog = WaitForModal();
+        if (dialog == null) return;
+
+        var button = dialog.FindFirstDescendant(
+            cf =&gt; cf.ByName(buttonName)
+                    .And(cf.ByControlType(ControlType.Button)));
+        button?.Click();
+    }
+
+    /// &lt;summary&gt;
+    /// Handle unexpected pop-up dialogs (errors, warnings).
+    /// &lt;/summary&gt;
+    public bool HandleUnexpectedDialogs()
+    {
+        var modals = _mainWindow.ModalWindows;
+        foreach (var modal in modals)
+        {
+            var title = modal.Title;
+            if (title.Contains("Error") || title.Contains("Warning"))
+            {
+                // Log the unexpected dialog
+                var message = modal.FindFirstDescendant(
+                    cf =&gt; cf.ByControlType(ControlType.Text))?.Name;
+
+                // Try to close it
+                var okButton = modal.FindFirstDescendant(
+                    cf =&gt; cf.ByName("OK"));
+                var closeButton = modal.FindFirstDescendant(
+                    cf =&gt; cf.ByName("Close"));
+
+                (okButton ?? closeButton)?.Click();
+                return true;  // An unexpected dialog was handled
+            }
+        }
+        return false;
+    }
+
+    /// &lt;summary&gt;
+    /// Get dialog message text (for assertion).
+    /// &lt;/summary&gt;
+    public string GetDialogMessage()
+    {
+        var dialog = _mainWindow.ModalWindows.FirstOrDefault();
+        if (dialog == null)
+            return string.Empty;
+
+        var textElements = dialog.FindAllDescendants(
+            cf =&gt; cf.ByControlType(ControlType.Text));
+
+        return string.Join(" ",
+            textElements.Select(t =&gt; t.Name).Where(n =&gt; !string.IsNullOrEmpty(n)));
+    }
+}</code></pre>
+
+            <h2 id="switching-operations">6.8 Switching Operations</h2>
+            <pre><code>public class SwitchingOrderPage : BasePage
+{
+    public SwitchingOrderPage(Window window, AutomationBase automation)
+        : base(window, automation) { }
+
+    private AutomationElement SwitchingGrid =&gt;
+        FindElement(cf =&gt; cf.ByAutomationId("grdSwitchingOrders"));
+
+    /// &lt;summary&gt;
+    /// Create a new switching order with the given steps.
+    /// &lt;/summary&gt;
+    public string CreateSwitchingOrder(
+        string orderName,
+        string reason,
+        List&lt;SwitchingStep&gt; steps)
+    {
+        // Click "New Order" button
+        FindElement(cf =&gt; cf.ByAutomationId("btnNewOrder")).Click();
+
+        // Fill in order details dialog
+        var dialog = WaitHelper.WaitUntil(
+            () =&gt; Window.ModalWindows.FirstOrDefault(),
+            TimeSpan.FromSeconds(10))
+            ?? throw new ElementNotFoundException("Create Order dialog not found.");
+
+        dialog.FindFirstDescendant(cf =&gt; cf.ByAutomationId("txtOrderName"))
+            .AsTextBox().Enter(orderName);
+
+        dialog.FindFirstDescendant(cf =&gt; cf.ByAutomationId("txtReason"))
+            .AsTextBox().Enter(reason);
+
+        // Add switching steps
+        foreach (var step in steps)
+        {
+            AddSwitchingStep(dialog, step);
+        }
+
+        // Save the order
+        dialog.FindFirstDescendant(cf =&gt; cf.ByAutomationId("btnSave"))
+            .Click();
+
+        // Wait for order ID to be assigned
+        Thread.Sleep(2000);
+
+        // Return the order ID from the grid
+        var lastRow = new DevExpressGrid(SwitchingGrid);
+        return lastRow.GetCellValue(0, "Order ID");
+    }
+
+    private void AddSwitchingStep(Window dialog, SwitchingStep step)
+    {
+        dialog.FindFirstDescendant(
+            cf =&gt; cf.ByAutomationId("btnAddStep")).Click();
+        Thread.Sleep(500);
+
+        // Fill step details
+        var stepDialog = dialog.ModalWindows.FirstOrDefault()
+            ?? throw new ElementNotFoundException("Step dialog not found.");
+
+        // Select operation type
+        var opCombo = stepDialog.FindFirstDescendant(
+            cf =&gt; cf.ByAutomationId("cmbOperation")).AsComboBox();
+        opCombo.Select(step.Operation);
+
+        // Select equipment
+        stepDialog.FindFirstDescendant(cf =&gt; cf.ByAutomationId("txtEquipment"))
+            .AsTextBox().Enter(step.EquipmentId);
+
+        // Set position
+        var posCombo = stepDialog.FindFirstDescendant(
+            cf =&gt; cf.ByAutomationId("cmbPosition")).AsComboBox();
+        posCombo.Select(step.TargetPosition);
+
+        stepDialog.FindFirstDescendant(cf =&gt; cf.ByAutomationId("btnOk"))
+            .Click();
+    }
+
+    /// &lt;summary&gt;
+    /// Execute a switching order step by step.
+    /// &lt;/summary&gt;
+    public void ExecuteSwitchingOrder(string orderId)
+    {
+        var grid = new DevExpressGrid(SwitchingGrid);
+        var row = grid.FindRow("Order ID", orderId);
+        row?.DoubleClick();
+
+        Thread.Sleep(1000);
+        var detailWindow = WaitHelper.WaitUntil(
+            () =&gt; Window.ModalWindows.FirstOrDefault(),
+            TimeSpan.FromSeconds(10));
+
+        var executeBtn = detailWindow?.FindFirstDescendant(
+            cf =&gt; cf.ByAutomationId("btnExecute"));
+        executeBtn?.Click();
+
+        // Confirm execution
+        var confirmDialog = WaitHelper.WaitUntil(
+            () =&gt; detailWindow?.ModalWindows.FirstOrDefault(),
+            TimeSpan.FromSeconds(5));
+        confirmDialog?.FindFirstDescendant(
+            cf =&gt; cf.ByName("Confirm"))?.Click();
+
+        // Wait for execution to complete
+        WaitHelper.WaitFor(() =&gt;
+        {
+            var status = grid.GetCellValue(0, "Status");
+            return status == "Completed" || status == "Failed";
+        }, TimeSpan.FromMinutes(2));
+    }
+
+    public override bool IsLoaded()
+    {
+        return ElementExists(cf =&gt; cf.ByAutomationId("grdSwitchingOrders"));
+    }
+}
+
+public class SwitchingStep
+{
+    public string Operation { get; set; } = "";     // "Open", "Close", "Tag"
+    public string EquipmentId { get; set; } = "";   // e.g., "SW-001-A"
+    public string TargetPosition { get; set; } = ""; // e.g., "Open", "Closed"
+}</code></pre>
+
+
+            <!-- Section 7: Advanced Techniques -->
+            <h1 id="advanced-techniques">7. Advanced Techniques</h1>
+
+            <h2 id="wait-strategies">7.1 Wait &amp; Synchronization Strategies</h2>
+            <p>GE ADMS has varying load times depending on network model size and server response. A robust wait strategy is critical.</p>
+
+            <pre><code>public static class AdmsWaitStrategies
+{
+    /// &lt;summary&gt;
+    /// Wait for the ADMS "busy" spinner to disappear.
+    /// Many ADMS operations show a loading overlay.
+    /// &lt;/summary&gt;
+    public static void WaitForBusyIndicatorToDisappear(
+        Window window, TimeSpan? timeout = null)
+    {
+        var maxWait = timeout ?? TimeSpan.FromSeconds(120);
+
+        WaitHelper.WaitFor(() =&gt;
+        {
+            var spinner = window.FindFirstDescendant(
+                cf =&gt; cf.ByAutomationId("busyIndicator"));
+            return spinner == null || spinner.IsOffscreen;
+        }, maxWait);
+    }
+
+    /// &lt;summary&gt;
+    /// Wait for a SCADA value to update.
+    /// &lt;/summary&gt;
+    public static bool WaitForScadaValue(
+        AutomationElement element,
+        string expectedValue,
+        TimeSpan? timeout = null)
+    {
+        var maxWait = timeout ?? TimeSpan.FromSeconds(30);
+
+        return WaitHelper.WaitFor(() =&gt;
+        {
+            var currentValue = element.Patterns.Value.PatternOrDefault?.Value
+                               ?? element.Name;
+            return currentValue.Contains(expectedValue,
+                StringComparison.OrdinalIgnoreCase);
+        }, maxWait);
+    }
+
+    /// &lt;summary&gt;
+    /// Wait for the network model to finish loading.
+    /// &lt;/summary&gt;
+    public static void WaitForModelLoad(
+        Window window, TimeSpan? timeout = null)
+    {
+        var maxWait = timeout ?? TimeSpan.FromMinutes(3);
+
+        // Wait for status bar to show "Model Loaded" or "Ready"
+        WaitHelper.WaitFor(() =&gt;
+        {
+            var statusBar = window.FindFirstDescendant(
+                cf =&gt; cf.ByAutomationId("statusBar"));
+            var text = statusBar?.FindAllChildren()
+                .Select(c =&gt; c.Name)
+                .Aggregate("", (a, b) =&gt; a + " " + b) ?? "";
+
+            return text.Contains("Ready", StringComparison.OrdinalIgnoreCase)
+                || text.Contains("Model Loaded",
+                    StringComparison.OrdinalIgnoreCase);
+        }, maxWait);
+    }
+}</code></pre>
+
+            <h2 id="custom-controls">7.2 Handling Custom &amp; Third-Party Controls</h2>
+            <pre><code>/// &lt;summary&gt;
+/// Wrapper for DevExpress GridControl which may not expose
+/// standard DataGrid patterns.
+/// &lt;/summary&gt;
+public static class DevExpressHelper
+{
+    /// &lt;summary&gt;
+    /// DevExpress grids sometimes use custom row presentation.
+    /// Fall back to raw descendant search when Grid pattern is absent.
+    /// &lt;/summary&gt;
+    public static AutomationElement[] GetGridRows(
+        AutomationElement gridElement)
+    {
+        // Try standard DataItem pattern first
+        var rows = gridElement.FindAllDescendants(
+            cf =&gt; cf.ByControlType(ControlType.DataItem));
+
+        if (rows.Length &gt; 0) return rows;
+
+        // Fallback: DevExpress may use Custom control type
+        rows = gridElement.FindAllDescendants(
+            cf =&gt; cf.ByControlType(ControlType.Custom)
+                    .And(cf.ByClassName("DataRowView")));
+
+        if (rows.Length &gt; 0) return rows;
+
+        // Fallback: try ListItem
+        return gridElement.FindAllDescendants(
+            cf =&gt; cf.ByControlType(ControlType.ListItem));
+    }
+
+    /// &lt;summary&gt;
+    /// For DevExpress ComboBox that doesn't use standard ComboBox pattern.
+    /// &lt;/summary&gt;
+    public static void SelectDevExpressComboItem(
+        AutomationElement comboBox, string itemText)
+    {
+        comboBox.Click();
+        Thread.Sleep(300);
+
+        // DevExpress drops a popup window
+        var popup = comboBox.FindFirstDescendant(
+            cf =&gt; cf.ByControlType(ControlType.List));
+
+        if (popup == null)
+        {
+            // Try finding the popup as a top-level window
+            popup = comboBox.Automation.GetDesktop()
+                .FindFirstDescendant(
+                    cf =&gt; cf.ByControlType(ControlType.List)
+                            .And(cf.ByClassName("PopupListBox")));
+        }
+
+        var item = popup?.FindFirstDescendant(
+            cf =&gt; cf.ByName(itemText));
+        item?.Click();
+    }
+}</code></pre>
+
+            <h2 id="multi-window">7.3 Multi-Window &amp; Multi-Monitor</h2>
+            <pre><code>/// &lt;summary&gt;
+/// ADMS often opens views in separate windows (undocked panels,
+/// map views, etc.). This helper manages multiple windows.
+/// &lt;/summary&gt;
+public static class MultiWindowHelper
+{
+    /// &lt;summary&gt;
+    /// Find a child window by title.
+    /// &lt;/summary&gt;
+    public static Window? FindChildWindow(
+        Application app, AutomationBase automation, string titleContains)
+    {
+        return app.GetAllTopLevelWindows(automation)
+            .FirstOrDefault(w =&gt; w.Title.Contains(
+                titleContains, StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// &lt;summary&gt;
+    /// Wait for a new window to appear (e.g., undocked panel).
+    /// &lt;/summary&gt;
+    public static Window? WaitForNewWindow(
+        Application app, AutomationBase automation,
+        int previousWindowCount, TimeSpan? timeout = null)
+    {
+        var maxWait = timeout ?? TimeSpan.FromSeconds(15);
+
+        return WaitHelper.WaitUntil(() =&gt;
+        {
+            var windows = app.GetAllTopLevelWindows(automation);
+            if (windows.Length &gt; previousWindowCount)
+                return windows.Last();
+            return null;
+        }, maxWait);
+    }
+
+    /// &lt;summary&gt;
+    /// Bring a specific window to the foreground.
+    /// &lt;/summary&gt;
+    public static void BringToFront(Window window)
+    {
+        window.SetForeground();
+        Thread.Sleep(300);
+    }
+}</code></pre>
+
+            <h2 id="keyboard-mouse">7.4 Keyboard &amp; Mouse Simulation</h2>
+            <pre><code>using FlaUI.Core.Input;
+using FlaUI.Core.WindowsAPI;
+
+// Type text using keyboard (alternative to .Enter for stubborn controls)
+Keyboard.Type("equipment-id-123");
+
+// Keyboard shortcuts
+Keyboard.TypeSimultaneously(VirtualKeyShort.CONTROL, VirtualKeyShort.KEY_S);  // Save
+Keyboard.TypeSimultaneously(VirtualKeyShort.CONTROL, VirtualKeyShort.KEY_F);  // Find
+Keyboard.TypeSimultaneously(VirtualKeyShort.ALT, VirtualKeyShort.F4);         // Close
+
+// Special keys
+Keyboard.Press(VirtualKeyShort.TAB);
+Keyboard.Press(VirtualKeyShort.ENTER);
+Keyboard.Press(VirtualKeyShort.ESCAPE);
+
+// Mouse operations
+Mouse.MoveTo(500, 300);
+Mouse.Click(MouseButton.Left);
+Mouse.DoubleClick(MouseButton.Left);
+Mouse.Click(MouseButton.Right);  // Context menu
+Mouse.Scroll(5);                 // Scroll up
+Mouse.Scroll(-5);                // Scroll down
+
+// Drag and drop (e.g., rearranging switching steps)
+Mouse.Drag(startPoint, endPoint);</code></pre>
+
+            <h2 id="screenshots">7.5 Screenshots &amp; Visual Verification</h2>
+            <pre><code>using FlaUI.Core.Capturing;
+
+public static class ScreenshotHelper
+{
+    private static readonly string ScreenshotDir =
+        Path.Combine(TestContext.CurrentContext.WorkDirectory, "Screenshots");
+
+    /// &lt;summary&gt;
+    /// Capture the full desktop.
+    /// &lt;/summary&gt;
+    public static string CaptureFullScreen(string name)
+    {
+        Directory.CreateDirectory(ScreenshotDir);
+        var path = Path.Combine(ScreenshotDir, $"{name}_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+        var image = Capture.Screen();
+        image.ToFile(path);
+        return path;
+    }
+
+    /// &lt;summary&gt;
+    /// Capture a specific element.
+    /// &lt;/summary&gt;
+    public static string CaptureElement(AutomationElement element, string name)
+    {
+        Directory.CreateDirectory(ScreenshotDir);
+        var path = Path.Combine(ScreenshotDir, $"{name}_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+        var image = Capture.Element(element);
+        image.ToFile(path);
+        return path;
+    }
+
+    /// &lt;summary&gt;
+    /// Capture on test failure (call from teardown).
+    /// &lt;/summary&gt;
+    public static void CaptureOnFailure(Window mainWindow)
+    {
+        if (TestContext.CurrentContext.Result.Outcome.Status ==
+            NUnit.Framework.Interfaces.TestStatus.Failed)
+        {
+            var testName = TestContext.CurrentContext.Test.Name;
+            CaptureElement(mainWindow, $"FAILED_{testName}");
+        }
+    }
+}</code></pre>
+
+
+            <!-- Section 8: Test Patterns -->
+            <h1 id="test-patterns">8. Test Patterns &amp; Best Practices</h1>
+
+            <h2 id="test-structure">8.1 Test Structure</h2>
+
+            <h3>AdmsTestFixture.cs &mdash; Shared Setup/Teardown</h3>
+            <pre><code>using NUnit.Framework;
+
+namespace AdmsAutomation.Tests.Fixtures;
+
+[TestFixture]
+public class AdmsTestFixture
+{
+    protected AdmsApplication Adms = null!;
+    protected MainDashboard Dashboard = null!;
+    protected DialogHandler Dialogs = null!;
+
+    [OneTimeSetUp]
+    public void GlobalSetup()
+    {
+        Adms = new AdmsApplication();
+        Adms.Attach("ADMS.Client");
+        Dashboard = new MainDashboard(Adms.MainWindow, Adms.Automation);
+        Dialogs = new DialogHandler(Adms.MainWindow);
+
+        Assert.That(Dashboard.IsLoaded(),
+            "ADMS Dashboard must be loaded before running tests.");
+    }
+
+    [SetUp]
+    public void TestSetup()
+    {
+        // Dismiss any leftover dialogs from previous test
+        Dialogs.HandleUnexpectedDialogs();
+    }
+
+    [TearDown]
+    public void TestTeardown()
+    {
+        // Screenshot on failure
+        ScreenshotHelper.CaptureOnFailure(Adms.MainWindow);
+
+        // Clean up any open dialogs
+        Dialogs.HandleUnexpectedDialogs();
+    }
+
+    [OneTimeTearDown]
+    public void GlobalTeardown()
+    {
+        Adms.Dispose();
+    }
+}</code></pre>
+
+            <h3>Example Test Class</h3>
+            <pre><code>using FluentAssertions;
+using NUnit.Framework;
+
+namespace AdmsAutomation.Tests.Tests;
+
+[TestFixture]
+public class AlarmManagementTests : AdmsTestFixture
+{
+    private AlarmGridPage _alarmPage = null!;
+
+    [SetUp]
+    public void NavigateToAlarms()
+    {
+        _alarmPage = Dashboard.OpenAlarms();
+        AdmsWaitStrategies.WaitForBusyIndicatorToDisappear(Adms.MainWindow);
+        Assert.That(_alarmPage.IsLoaded(), "Alarm page should be loaded.");
+    }
+
+    [Test]
+    [Category("Smoke")]
+    public void AlarmGrid_ShouldDisplayActiveAlarms()
+    {
+        var alarmCount = _alarmPage.GetAlarmCount();
+        alarmCount.Should().BeGreaterThan(0,
+            "There should be active alarms in the test environment.");
+    }
+
+    [Test]
+    [Category("Functional")]
+    public void AcknowledgeAlarm_ShouldUpdateStatus()
+    {
+        var alarmIds = _alarmPage.GetActiveAlarmIds();
+        alarmIds.Should().NotBeEmpty("Need at least one alarm to acknowledge.");
+
+        var targetAlarm = alarmIds.First();
+        _alarmPage.AcknowledgeAlarm(targetAlarm);
+
+        // Verify alarm state changed
+        AdmsWaitStrategies.WaitForBusyIndicatorToDisappear(Adms.MainWindow);
+    }
+}
+
+[TestFixture]
+public class SwitchingOrderTests : AdmsTestFixture
+{
+    private SwitchingOrderPage _switchingPage = null!;
+
+    [SetUp]
+    public void NavigateToSwitching()
+    {
+        _switchingPage = Dashboard.OpenSwitchingOrders();
+        AdmsWaitStrategies.WaitForBusyIndicatorToDisappear(Adms.MainWindow);
+    }
+
+    [Test]
+    [Category("Functional")]
+    public void CreateSwitchingOrder_ShouldSucceed()
+    {
+        var steps = new List&lt;SwitchingStep&gt;
+        {
+            new() { Operation = "Open", EquipmentId = "SW-001-A",
+                     TargetPosition = "Open" },
+            new() { Operation = "Close", EquipmentId = "SW-002-B",
+                     TargetPosition = "Closed" },
+            new() { Operation = "Tag", EquipmentId = "SW-001-A",
+                     TargetPosition = "Do Not Operate" }
+        };
+
+        var orderId = _switchingPage.CreateSwitchingOrder(
+            orderName: "Maintenance Order - Feeder 01",
+            reason: "Planned maintenance on Feeder 01",
+            steps: steps);
+
+        orderId.Should().NotBeNullOrEmpty(
+            "A new switching order should receive an ID.");
+    }
+}</code></pre>
+
+            <h2 id="data-driven">8.2 Data-Driven Testing</h2>
+            <pre><code>[TestFixture]
+public class DataDrivenSwitchingTests : AdmsTestFixture
+{
+    [Test]
+    [TestCase("SW-001-A", "Open", TestName = "Open switch SW-001-A")]
+    [TestCase("SW-002-B", "Close", TestName = "Close switch SW-002-B")]
+    [TestCase("CB-010-C", "Open", TestName = "Open breaker CB-010-C")]
+    public void SwitchOperation_ShouldChangePosition(
+        string equipmentId, string targetPosition)
+    {
+        var switchPage = Dashboard.OpenSwitchingOrders();
+        // ... execute switch operation
+    }
+
+    // JSON file-driven tests
+    [Test]
+    [TestCaseSource(nameof(GetSwitchingOrdersFromFile))]
+    public void SwitchingOrder_FromTestData(SwitchingOrderData data)
+    {
+        var switchPage = Dashboard.OpenSwitchingOrders();
+        var orderId = switchPage.CreateSwitchingOrder(
+            data.Name, data.Reason, data.Steps);
+        orderId.Should().NotBeNullOrEmpty();
+    }
+
+    private static IEnumerable&lt;SwitchingOrderData&gt; GetSwitchingOrdersFromFile()
+    {
+        var json = File.ReadAllText("TestData/switching-orders.json");
+        return JsonSerializer.Deserialize&lt;List&lt;SwitchingOrderData&gt;&gt;(json)!;
+    }
+}
+
+public class SwitchingOrderData
+{
+    public string Name { get; set; } = "";
+    public string Reason { get; set; } = "";
+    public List&lt;SwitchingStep&gt; Steps { get; set; } = new();
+}</code></pre>
+
+            <h2 id="retry-resilience">8.3 Retry &amp; Resilience Patterns</h2>
+            <pre><code>/// &lt;summary&gt;
+/// Retry attribute for flaky ADMS interactions.
+/// &lt;/summary&gt;
+[Test]
+[Retry(3)]
+[Category("Flaky")]
+public void ScadaValue_ShouldUpdateAfterControl()
+{
+    // This test may be timing-sensitive due to SCADA communication delays
+}
+
+/// &lt;summary&gt;
+/// Custom retry logic for element interaction.
+/// &lt;/summary&gt;
+public static class RetryHelper
+{
+    public static T RetryOnException&lt;T&gt;(
+        Func&lt;T&gt; action,
+        int maxRetries = 3,
+        TimeSpan? delayBetweenRetries = null)
+    {
+        var delay = delayBetweenRetries ?? TimeSpan.FromSeconds(1);
+
+        for (int i = 0; i &lt; maxRetries; i++)
+        {
+            try
+            {
+                return action();
+            }
+            catch when (i &lt; maxRetries - 1)
+            {
+                Thread.Sleep(delay);
+            }
+        }
+
+        return action(); // Final attempt; let exception propagate
+    }
+}</code></pre>
+
+            <h2 id="logging-reporting">8.4 Logging &amp; Reporting</h2>
+            <pre><code>using Serilog;
+
+public static class TestLogger
+{
+    private static readonly ILogger Logger = new LoggerConfiguration()
+        .WriteTo.File("logs/adms-automation-.log",
+            rollingInterval: RollingInterval.Day,
+            outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message}{NewLine}{Exception}")
+        .WriteTo.Console()
+        .CreateLogger();
+
+    public static void Info(string message) =&gt; Logger.Information(message);
+    public static void Warn(string message) =&gt; Logger.Warning(message);
+    public static void Error(string message, Exception? ex = null)
+        =&gt; Logger.Error(ex, message);
+
+    /// &lt;summary&gt;
+    /// Log a test step for traceability.
+    /// &lt;/summary&gt;
+    public static void Step(string description)
+    {
+        Logger.Information("▶ STEP: {Description}", description);
+    }
+}
+
+// Usage in tests:
+TestLogger.Step("Opening Switching Orders page");
+TestLogger.Step("Creating new switching order with 3 steps");
+TestLogger.Info($"Order ID assigned: {orderId}");</code></pre>
+
+
+            <!-- Section 9: CI/CD -->
+            <h1 id="cicd">9. CI/CD Integration</h1>
+
+            <h2 id="agent-config">9.1 Agent Configuration</h2>
+            <div class="danger-box">
+                <p><strong>Critical Requirement:</strong> FlaUI (and all UI Automation tools) requires an <strong>interactive desktop session</strong>. Tests will fail on headless agents or services running as SYSTEM.</p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Agent Requirement</th>
+                        <th>Configuration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Desktop Session</strong></td>
+                        <td>Agent must run as a user with auto-logon; use RDP or console session</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Screen Resolution</strong></td>
+                        <td>Minimum 1920&times;1080; match the development/inspection resolution</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DPI Scaling</strong></td>
+                        <td>Set to 100% to avoid coordinate mismatches</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Power Settings</strong></td>
+                        <td>Disable sleep, screen saver, and lock screen</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ADMS Client</strong></td>
+                        <td>Pre-installed and configured to connect to the test SCADA server</td>
+                    </tr>
+                    <tr>
+                        <td><strong>UAC</strong></td>
+                        <td>Disable or configure silent elevation for ADMS</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="pipeline-setup">9.2 Pipeline Setup (Azure DevOps)</h2>
+            <pre><code># azure-pipelines.yml
+trigger:
+  branches:
+    include:
+      - main
+      - release/*
+
+pool:
+  name: 'ADMS-UI-Agents'  # Self-hosted agent pool with desktop access
+  demands:
+    - ADMS_CLIENT_INSTALLED
+    - INTERACTIVE_DESKTOP
+
+variables:
+  buildConfiguration: 'Release'
+  testResultsDir: '$(Build.ArtifactStagingDirectory)/TestResults'
+
+stages:
+  - stage: Build
+    jobs:
+      - job: BuildFramework
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore packages'
+            inputs:
+              command: restore
+              projects: '**/*.csproj'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Build solution'
+            inputs:
+              command: build
+              projects: '**/*.sln'
+              arguments: '--configuration $(buildConfiguration)'
+
+  - stage: Test
+    dependsOn: Build
+    jobs:
+      - job: UITests
+        timeoutInMinutes: 120
+        steps:
+          # Ensure ADMS is running before tests
+          - powershell: |
+              $admsProcess = Get-Process -Name "ADMS.Client" -ErrorAction SilentlyContinue
+              if (-not $admsProcess) {
+                  Start-Process "C:\Program Files\GE\ADMS\Client\ADMS.Client.exe" `
+                      -ArgumentList "--environment=TEST"
+                  Start-Sleep -Seconds 120  # Wait for ADMS to fully load
+              }
+            displayName: 'Ensure ADMS is running'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'Run UI Tests'
+            inputs:
+              command: test
+              projects: '**/AdmsAutomation.Tests.csproj'
+              arguments: >
+                --configuration $(buildConfiguration)
+                --logger "trx;LogFileName=test-results.trx"
+                --results-directory $(testResultsDir)
+                --filter "Category=Smoke|Category=Functional"
+
+          - task: PublishTestResults@2
+            displayName: 'Publish test results'
+            condition: always()
+            inputs:
+              testResultsFormat: 'VSTest'
+              testResultsFiles: '$(testResultsDir)/**/*.trx'
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish screenshots'
+            condition: always()
+            inputs:
+              pathToPublish: '$(Build.SourcesDirectory)/**/Screenshots'
+              artifactName: 'FailureScreenshots'</code></pre>
+
+            <h2 id="parallel-execution">9.3 Parallel Execution Considerations</h2>
+            <div class="warning-box">
+                <p><strong>UI automation tests cannot run in parallel on the same desktop session.</strong> Each FlaUI test interacts with the live desktop, so concurrent tests will conflict. Strategies to mitigate:</p>
+                <ul>
+                    <li><strong>Sequential execution</strong> on a single agent (safest)</li>
+                    <li><strong>Multiple VMs</strong> with one agent per VM for parallel suites</li>
+                    <li><strong>Test categories</strong> to split suites across agents (Smoke on VM1, Functional on VM2)</li>
+                    <li><strong>RDP multi-session</strong> with separate user sessions per test runner</li>
+                </ul>
+            </div>
+
+            <pre><code>&lt;!-- NUnit configuration to enforce sequential execution --&gt;
+&lt;!-- Add to .runsettings file --&gt;
+&lt;RunSettings&gt;
+  &lt;NUnit&gt;
+    &lt;NumberOfTestWorkers&gt;1&lt;/NumberOfTestWorkers&gt;
+  &lt;/NUnit&gt;
+&lt;/RunSettings&gt;</code></pre>
+
+
+            <!-- Section 10: Troubleshooting -->
+            <h1 id="troubleshooting">10. Troubleshooting &amp; Common Pitfalls</h1>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Problem</th>
+                        <th>Cause</th>
+                        <th>Solution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Elements not found</strong></td>
+                        <td>Element tree not loaded; wrong automation type (UIA2 vs UIA3)</td>
+                        <td>Use FlaUInspect to verify the tree. Try switching between UIA2 and UIA3. Add waits.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Click has no effect</strong></td>
+                        <td>Element is covered by an overlay, or coordinates are off-screen</td>
+                        <td>Use <code>element.SetForeground()</code> before clicking. Verify element is enabled and not obscured.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tests pass locally, fail on CI</strong></td>
+                        <td>No interactive desktop session; different screen resolution/DPI</td>
+                        <td>Ensure agent has auto-logon, 1920&times;1080 resolution, 100% DPI scaling.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DevExpress grid returns no rows</strong></td>
+                        <td>DevExpress uses virtualization; only visible rows are in UIA tree</td>
+                        <td>Scroll the grid before searching. Use the <code>ScrollToBottom()</code> helper.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Modal dialog not detected</strong></td>
+                        <td>Dialog may be a child of a different window, or a popup rather than modal</td>
+                        <td>Check <code>Window.ModalWindows</code>, try <code>app.GetAllTopLevelWindows()</code>, inspect the desktop.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Map elements not interactable</strong></td>
+                        <td>Custom-rendered GDI+/DirectX control with no UIA tree</td>
+                        <td>Use coordinate-based clicks. Use ADMS search/locate features. Consider API-level shortcuts.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stale element references</strong></td>
+                        <td>UI has been refreshed; cached element is invalid</td>
+                        <td>Always re-find elements before interaction. Use property-based lookups (lazy properties) in page objects.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slow test execution</strong></td>
+                        <td>Excessive <code>Thread.Sleep</code> calls or deep element tree searches</td>
+                        <td>Use intelligent waits. Narrow search scope with <code>FindFirstChild</code> instead of <code>FindFirstDescendant</code> where possible.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>COMException during automation</strong></td>
+                        <td>UIA3 COM interop failure; sometimes caused by ADMS window transitions</td>
+                        <td>Wrap interaction in <code>RetryHelper.RetryOnException()</code>. Update FlaUI to the latest version.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Text not entered in fields</strong></td>
+                        <td>Control doesn&rsquo;t support <code>ValuePattern</code>; may need keyboard simulation</td>
+                        <td>Use <code>Keyboard.Type()</code> as fallback. Click the field first, then type.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <!-- Section 11: Quick Reference -->
+            <h1 id="reference">11. Quick Reference &amp; Cheat Sheet</h1>
+
+            <h2>Application Lifecycle</h2>
+            <pre><code>// Launch
+var app = Application.Launch("path/to/ADMS.Client.exe");
+var automation = new UIA3Automation();
+var window = app.GetMainWindow(automation);
+
+// Attach
+var app = Application.Attach(Process.GetProcessesByName("ADMS.Client")[0]);
+
+// Close
+window.Close();
+app.Close();</code></pre>
+
+            <h2>Finding Elements</h2>
+            <pre><code>// By AutomationId
+window.FindFirstDescendant(cf =&gt; cf.ByAutomationId("myId"));
+
+// By Name
+window.FindFirstDescendant(cf =&gt; cf.ByName("Submit"));
+
+// By ControlType
+window.FindFirstDescendant(cf =&gt; cf.ByControlType(ControlType.Button));
+
+// By ClassName
+window.FindFirstDescendant(cf =&gt; cf.ByClassName("TextBox"));
+
+// Combined conditions
+window.FindFirstDescendant(cf =&gt;
+    cf.ByName("OK").And(cf.ByControlType(ControlType.Button)));
+
+// Find all
+window.FindAllDescendants(cf =&gt; cf.ByControlType(ControlType.TreeItem));
+
+// Child only (faster, no deep search)
+window.FindFirstChild(cf =&gt; cf.ByControlType(ControlType.Pane));</code></pre>
+
+            <h2>Interacting with Elements</h2>
+            <pre><code>// Click
+element.Click();
+element.DoubleClick();
+element.RightClick();
+
+// Text input
+element.AsTextBox().Enter("text");
+element.AsTextBox().Text = "text";
+
+// ComboBox
+element.AsComboBox().Select("Option A");
+element.AsComboBox().Expand();
+element.AsComboBox().Items[2].Select();
+
+// CheckBox
+element.AsCheckBox().IsChecked = true;
+
+// Tree
+element.AsTree();
+treeItem.Patterns.ExpandCollapse.Pattern.Expand();
+
+// Tab
+element.AsTab();
+tabItem.Select();
+
+// Menu
+element.AsMenu();
+menuItem.Click();</code></pre>
+
+            <h2>UIA Patterns</h2>
+            <pre><code>// Value pattern (read/write values)
+element.Patterns.Value.Pattern.SetValue("new value");
+var text = element.Patterns.Value.Pattern.Value;
+
+// Toggle pattern (checkboxes, toggle buttons)
+element.Patterns.Toggle.Pattern.Toggle();
+var state = element.Patterns.Toggle.Pattern.ToggleState;
+
+// Selection pattern
+element.Patterns.Selection.Pattern.GetSelection();
+
+// Scroll pattern
+element.Patterns.Scroll.Pattern.Scroll(
+    ScrollAmount.NoAmount, ScrollAmount.LargeIncrement);
+
+// ExpandCollapse pattern
+element.Patterns.ExpandCollapse.Pattern.Expand();
+element.Patterns.ExpandCollapse.Pattern.Collapse();
+
+// Invoke pattern (buttons)
+element.Patterns.Invoke.Pattern.Invoke();
+
+// Grid pattern
+var cell = element.Patterns.Grid.Pattern.GetItem(row, col);
+var rowCount = element.Patterns.Grid.Pattern.RowCount;</code></pre>
+
+            <h2>Input Simulation</h2>
+            <pre><code>using FlaUI.Core.Input;
+using FlaUI.Core.WindowsAPI;
+
+// Keyboard
+Keyboard.Type("Hello World");
+Keyboard.Press(VirtualKeyShort.ENTER);
+Keyboard.TypeSimultaneously(VirtualKeyShort.CONTROL, VirtualKeyShort.KEY_A);
+
+// Mouse
+Mouse.MoveTo(x, y);
+Mouse.Click(MouseButton.Left);
+Mouse.DoubleClick(MouseButton.Left);
+Mouse.Scroll(delta);
+Mouse.Drag(from, to);</code></pre>
+
+            <h2>Screenshots</h2>
+            <pre><code>using FlaUI.Core.Capturing;
+
+Capture.Screen().ToFile("screenshot.png");
+Capture.Element(element).ToFile("element.png");
+Capture.Rectangle(rect).ToFile("region.png");</code></pre>
+
+            <div class="success-box">
+                <p><strong>Summary:</strong> Automating GE ADMS with FlaUI provides a robust, open-source solution for testing complex desktop utility applications. By combining UIA3 element inspection, Page Object Model patterns, intelligent wait strategies, and coordinate-based fallbacks for custom-rendered views, you can achieve comprehensive test coverage across SCADA, switching, outage management, and alarm workflows. Always validate your element identification strategy with FlaUInspect before writing automation code, and ensure your CI/CD agents have properly configured interactive desktop sessions.</p>
+            </div>
+
+        </div><!-- end .content -->
+    </div><!-- end .container -->
+</body>
+</html>
